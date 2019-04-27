@@ -31,9 +31,8 @@
   "author": "Axel Havukangas <axel@havukangas.fi>",
   "license": "MIT",
   "dependencies": {
-    "@types/pixelmatch": "^4.0.0",
     "fs-extra": ">=3.0.0",
-    "sharp": "^0.22.1"
+    "sharp": ">=0.22.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
@@ -44,6 +43,7 @@
     "@types/fs-extra": "^5.0.5",
     "@types/jest": "^24.0.11",
     "@types/node": "^11.13.7",
+    "@types/pixelmatch": "^4.0.0",
     "@types/sharp": "^0.22.1",
     "@types/tmp": "^0.1.0",
     "@typescript-eslint/eslint-plugin": "^1.7.0",
