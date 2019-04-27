@@ -18,7 +18,7 @@ export async function* genaratePngs(
   fileInput: GenerateInput,
   outputs: GenerateConfig[]
 ): AsyncIterable<string> {
-  for await (let output of outputs) {
+  for (let output of outputs) {
     yield* genaratePng(fileInput, output);
   }
 }

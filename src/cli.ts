@@ -5,7 +5,7 @@ import * as reactNativeSvgAppIcon from "./index";
 async function main(): Promise<void> {
   console.log("Running react-native-svg-app-icon");
 
-  const generatedFiles = reactNativeSvgAppIcon.generate({
+  const generatedFiles = await reactNativeSvgAppIcon.generate({
     icon: "./icon.svg"
   });
 
