@@ -3,11 +3,9 @@ import * as path from "path";
 import * as input from "./input";
 import * as output from "./output";
 
-const roundIconMinSdk = 25;
 const adaptiveIconMinSdk = 26;
 
 const densities: { name: ResourceDensity; scale: number }[] = [
-  { name: "ldpi", scale: 0.75 },
   { name: "mdpi", scale: 1 },
   { name: "hdpi", scale: 1.5 },
   { name: "xhdpi", scale: 2 },
@@ -127,7 +125,7 @@ async function* generateRoundIcons(
       filePath: getIconPath(
         config,
         "mipmap",
-        { density: density.name, minApiLevel: roundIconMinSdk },
+        { density: density.name },
         `${roundIconName}.png`
       ),
       outputSize: legacyIconBaseSize * density.scale

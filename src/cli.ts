@@ -18,3 +18,5 @@ async function main(): Promise<void> {
 if (require.main === module) {
   main();
 }
+
+export default main;
