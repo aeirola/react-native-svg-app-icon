@@ -1,5 +1,7 @@
 # react-native-svg-app-icon
 
+[![Build Status](https://travis-ci.org/aeirola/react-native-svg-app-icon.svg?branch=master)](https://travis-ci.org/aeirola/react-native-svg-app-icon)
+
 CLI tool for generating all the necessary iOS and Android application launcher icons for React Native projects from a single SVG source file. Features include:
 
 - iOS PNG icon generation
