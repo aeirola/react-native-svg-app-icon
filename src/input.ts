@@ -12,7 +12,7 @@ export interface FileInput {
 }
 
 interface LazyLoaded {
-  sharp: typeof SharpType;
+  sharp: typeof SharpType.default;
   imageData: ImageData;
 }
 
@@ -56,7 +56,7 @@ function lazyLoadProvider(filePath: string): () => Promise<LazyLoaded> {
 }
 
 async function loadData(filePath: string): Promise<LazyLoaded> {
-  const sharpInstance = await import("sharp");
+  const sharpInstance = (await import("sharp")).default;
   const imageData = await readImage(sharpInstance, filePath);
 
   return {
@@ -66,7 +66,7 @@ async function loadData(filePath: string): Promise<LazyLoaded> {
 }
 
 async function readImage(
-  sharp: typeof SharpType,
+  sharp: typeof SharpType.default,
   filePath: string
 ): Promise<ImageData> {
   const fileData = await fse.readFile(filePath);

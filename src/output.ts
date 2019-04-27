@@ -1,8 +1,8 @@
 import * as fse from "fs-extra";
 import * as path from "path";
+import * as SharpType from "sharp";
 
 import * as input from "./input";
-import sharp = require("sharp");
 
 interface GenerateInput extends input.FileInput {
   mask?: string;
@@ -18,7 +18,7 @@ export async function* genaratePngs(
   fileInput: GenerateInput,
   outputs: GenerateConfig[]
 ): AsyncIterable<string> {
-  for await (let output of outputs) {
+  for (let output of outputs) {
     yield* genaratePng(fileInput, output);
   }
 }
@@ -84,7 +84,7 @@ function getExtractRegion(
   targetDensity: number,
   metadata: input.ImageData["metadata"],
   outputSize: number
-): sharp.Region {
+): SharpType.Region {
   // Android Studio seems to use floor for crop pixel alignment
   // so we just follow suit for consistency
   const imageMargin = Math.floor(

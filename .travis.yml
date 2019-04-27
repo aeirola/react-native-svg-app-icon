@@ -1,0 +1,6 @@
+dist: xenial
+language: node_js
+node_js:
+  - lts/dubnium # v10
+  - lts/*
+cache: npm
