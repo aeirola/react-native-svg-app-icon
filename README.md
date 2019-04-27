@@ -42,12 +42,12 @@ With the various icons cropped according to the following image
 
 ![Icon copping anatomy](cropping.svg)
 
-- <span style="color: #444">&#9632;</span> Overflow area
-- <span style="color: #666">&#9632;</span> Visible area
-- <span style="color: #888">&#9632;</span> iOS / Android legacy square crop
-- <span style="color: #AAA">&#9632;</span> Android legacy circular crop
-- <span style="color: #CCC">&#9632;</span> Safe area
-- <span style="color: #F00">&#9632;</span> Icon keylines
+- <span style="background-color: #444">&ensp;</span> Overflow area
+- <span style="background-color: #666">&ensp;</span> Visible area
+- <span style="background-color: #888">&ensp;</span> iOS / Android legacy square crop
+- <span style="background-color: #AAA">&ensp;</span> Android legacy circular crop
+- <span style="background-color: #CCC">&ensp;</span> Safe area
+- <span style="color: #F00">&ndash;</span> Icon keylines
 
 For an example icon file, see [`example/icon.svg`](example/icon.svg).
 
