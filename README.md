@@ -42,12 +42,12 @@ With the various icons cropped according to the following image
 
 ![Icon copping anatomy](cropping.svg)
 
-- <span style="color: #444">&#9632;</span> Overflow area
-- <span style="color: #666">&#9632;</span> Visible area
-- <span style="color: #888">&#9632;</span> iOS / Android legacy square crop
-- <span style="color: #AAA">&#9632;</span> Android legacy circular crop
-- <span style="color: #CCC">&#9632;</span> Safe area
-- <span style="color: #F00">&#9632;</span> Icon keylines
+- ![#444](https://placehold.it/15/444?text=+) Overflow area
+- ![#666](https://placehold.it/15/666?text=+) Visible area
+- ![#888](https://placehold.it/15/888?text=+) iOS / Android legacy square crop
+- ![#AAA](https://placehold.it/15/AAA?text=+) Android legacy circular crop
+- ![#CCC](https://placehold.it/15/CCC?text=+) Safe area
+- ![#F00](https://placehold.it/15/F00?text=+) Icon keylines
 
 For an example icon file, see [`example/icon.svg`](example/icon.svg).
 
