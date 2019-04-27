@@ -57,7 +57,7 @@ For an example icon file, see [`example/icon.svg`](example/icon.svg).
 
 React Native aims to provide tools for building cross platform native mobile applications using technologies familiar from web development. Since the core tooling doesn't provide a solution for building the laundher icons for those applications, this tool aims to fill that gap.
 
-Luckily, most icons follow a similar structure of a foreground shape on a background, which is easily adapted to different shapes and sizes. This is the idea behind Android [Adaptive Icons](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive), and what the [Anddroid Image Asset Studio](https://developer.android.com/studio/write/image-asset-studio) implements nicely for generating leagy icons. This tool can actually be though of as a NPM CLI port of the Image Asset Studio, with added support for generating iOS icons as well.
+Luckily, most icons follow a similar structure of a foreground shape on a background, which is easily adapted to different shapes and sizes. This is the idea behind Android [Adaptive Icons](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive), and what the [Android Image Asset Studio](https://developer.android.com/studio/write/image-asset-studio) implements nicely for generating leagy icons. This tool can actually be though of as a NPM CLI port of the Image Asset Studio, with added support for generating iOS icons as well.
 
 ### Other work
 
@@ -85,7 +85,6 @@ you have probably encountered the issue described in https://github.com/lovell/s
 ## Future improvements
 
 - Allow configuring icon path in `app.json`, similarly to https://docs.expo.io/versions/latest/guides/app-icons/
-- Add integration tests comparing generated images to output from Android Studio
 - Add drop shadow to android legacy icons
 - Add generation of Android notification icons
 - Support separate background and foreground for adaptive icons
