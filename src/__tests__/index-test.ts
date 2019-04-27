@@ -8,18 +8,23 @@ import * as index from "../index";
 
 describe("index", () => {
   const fixturesPath = path.join(__dirname, "fixtures");
+
   let tmpDir: tmp.DirResult;
-  beforeEach(async () => {
-    tmpDir = await tmp.dirSync({
+  beforeEach(() => {
+    tmpDir = tmp.dirSync({
       unsafeCleanup: true
     });
   });
-  afterEach(async () => {
-    await tmpDir.removeCallback();
+  afterEach(() => {
+    tmpDir.removeCallback();
   });
 
   it("generates files from example matching fixtures", async () => {
-    const fixtureDir = path.join(fixturesPath, "example");
+    await testFixture("example");
+  });
+
+  async function testFixture(fixture: string): Promise<void> {
+    const fixtureDir = path.join(fixturesPath, fixture);
     const generator = index.generate({
       icon: path.join(fixtureDir, "icon.svg"),
       resDirPath: path.join(
@@ -30,7 +35,7 @@ describe("index", () => {
         "main",
         "res"
       ),
-      iconsetDir: path.join(tmpDir.name, "ios", "example", "Images.xcassets")
+      iconsetDir: path.join(tmpDir.name, "ios", fixture, "Images.xcassets")
     });
 
     for await (let file of generator) {
@@ -38,7 +43,7 @@ describe("index", () => {
       const fixturePath = path.join(fixtureDir, localPath);
       await expectFilesToEqual(file, fixturePath, 0.85);
     }
-  });
+  }
 });
 
 async function expectFilesToEqual(
