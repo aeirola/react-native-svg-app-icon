@@ -1,0 +1,91 @@
+# react-native-svg-app-icon
+
+CLI tool for generating all the necessary iOS and Android application launcher icons for React Native projects from a single SVG source file. Features include:
+
+- iOS PNG icon generation
+- Android 8.0, and higher, PNG adaptive icon generation
+- Android 7.1 legacy circular icon generation
+- Android 7.0, and lower, legacy square icon generation
+
+## Installation
+
+```bash
+npm install --save-dev react-native-svg-app-icon
+```
+
+SVG rendering handled by the splendid [`sharp`](https://github.com/lovell/sharp) library, meaning no dependencies outside of npm is required.
+
+## Usage
+
+Place your square 108x108 SVG app icon file named `icon.svg` in the project root and run
+
+```bash
+react-native-svg-app-icon
+```
+
+This will generate all the required icons under the `android/` and `ios/` directories.
+
+## Icon format
+
+The input icon should be a SVG file adhering to the [Android adaptive icon specification](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive). Specifically, the image should:
+
+- Be a valid SVG image
+- have a 1:1 aspect ratio
+- Have a size of 108x108dp
+
+of which the:
+
+- Center 72x72dp square is the normally visible area
+- Center 66dp diameter circle is the safe area which will always be visible
+
+With the various icons cropped according to the following image
+
+![Icon copping anatomy](cropping.svg)
+
+- <span style="color: #444">&#9632;</span> Overflow area
+- <span style="color: #666">&#9632;</span> Visible area
+- <span style="color: #888">&#9632;</span> iOS / Android legacy square crop
+- <span style="color: #AAA">&#9632;</span> Android legacy circular crop
+- <span style="color: #CCC">&#9632;</span> Safe area
+- <span style="color: #F00">&#9632;</span> Icon keylines
+
+For an example icon file, see [`example/icon.svg`](example/icon.svg).
+
+## Rationale
+
+React Native aims to provide tools for building cross platform native mobile applications using technologies familiar from web development. Since the core tooling doesn't provide a solution for building the laundher icons for those applications, this tool aims to fill that gap.
+
+Luckily, most icons follow a similar structure of a foreground shape on a background, which is easily adapted to different shapes and sizes. This is the idea behind Android [Adaptive Icons](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive), and what the [Anddroid Image Asset Studio](https://developer.android.com/studio/write/image-asset-studio) implements nicely for generating leagy icons. This tool can actually be though of as a NPM CLI port of the Image Asset Studio, with added support for generating iOS icons as well.
+
+### Other work
+
+Most existing solutions are centered around the idea of scaling PNG images.
+
+- [Expo](https://docs.expo.io/versions/latest/guides/app-icons/): Scales PNG files generating the required iOS and Android variants, but requires users to supply platform specific PNGs in order to adhere to platform icon design guidelines.
+- [app-icon](https://github.com/dwmkerr/app-icon): Similar to Expo, with some added features such as labeling the icons. Requires imagemagick.
+
+## Troubleshooting
+
+### Supported SVG features
+
+Most common SVG features are supported, including masks and styles. The underlying SVG rendering library is [`librsvg`](https://developer.gnome.org/rsvg/stable/rsvg.html) which claims to support most SVG 1.1 features, excluding scripts, animations and SVG fonts.
+
+### `SVG has no elements`
+
+If the command fails with the following error
+
+```
+(node:4752) UnhandledPromiseRejectionWarning: Error: Input buffer has corrupt header: glib: SVG has no elements
+```
+
+you have probably encountered the issue described in https://github.com/lovell/sharp/issues/1593. The current workaround is to install `libvips` through brew with `brew install vips`.
+
+## Future improvements
+
+- Allow configuring icon path in `app.json`, similarly to https://docs.expo.io/versions/latest/guides/app-icons/
+- Add integration tests comparing generated images to output from Android Studio
+- Add drop shadow to android legacy icons
+- Add generation of Android notification icons
+- Support separate background and foreground for adaptive icons
+- Generate Android vector drawables from SVG
+- Generate iOS PDF icons from SVG
