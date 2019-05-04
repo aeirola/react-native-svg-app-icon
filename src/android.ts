@@ -49,7 +49,7 @@ const legacyLightningFilter = `
     <feComponentTransfer in="SourceAlpha" result="opaque-alpha">
       <feFuncA type="linear" slope="0.2"/>
     </feComponentTransfer>
-    <feOffset dx="-0.4" dy="-0.4" in="SourceAlpha" result="offset-alpha" />
+    <feOffset dx="-0.2" dy="-0.2" in="SourceAlpha" result="offset-alpha" />
     <feComposite in="opaque-alpha" in2="offset-alpha" operator="out"
       result="edge"
     />

@@ -105,7 +105,7 @@ function getExtractRegion(
   metadata: input.ImageData["metadata"],
   outputSize: number
 ): SharpType.Region {
-  const imageMargin = Math.round(
+  const imageMargin = Math.floor(
     ((targetDensity / metadata.density) * metadata.width - outputSize) / 2
   );
 

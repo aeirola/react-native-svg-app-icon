@@ -24,7 +24,7 @@ describe("index", () => {
   });
 
   it("generates files from white matching fixtures", async () => {
-    await testFixture("white", 0.11);
+    await testFixture("white", 0.1);
   });
 
   async function testFixture(
