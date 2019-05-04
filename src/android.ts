@@ -30,6 +30,36 @@ const adaptiveIconContent = `<?xml version="1.0" encoding="utf-8"?>
 const legacyIconBaseSize = 48;
 const inputIconContentRatio = input.inputContentSize / input.inputImageSize;
 
+// Based on images at
+// https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/resources/images/launcher_stencil/
+// https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/src/com/android/tools/idea/npw/assetstudio/LauncherLegacyIconGenerator.java
+const legacyLightningFilter = `
+  <filter id="legacyLightningFilter">
+    <!-- Drop shadow -->
+    <feGaussianBlur in="SourceAlpha" stdDeviation="0.4" />
+    <feOffset dx="0" dy="1.125" />
+    <feComponentTransfer>
+      <feFuncA type="linear" slope="0.2"/>
+    </feComponentTransfer>
+    <feComposite in2="SourceAlpha" operator="out"
+      result="shadow"
+    />
+
+    <!-- Edge shade -->
+    <feComponentTransfer in="SourceAlpha" result="opaque-alpha">
+      <feFuncA type="linear" slope="0.2"/>
+    </feComponentTransfer>
+    <feOffset dx="-0.4" dy="-0.4" in="SourceAlpha" result="offset-alpha" />
+    <feComposite in="opaque-alpha" in2="offset-alpha" operator="out"
+      result="edge"
+    />
+
+    <feMerge>
+      <feMergeNode in="shadow" />
+      <feMergeNode in="edge" />
+    </feMerge>
+  </filter>`;
+
 /** Legacy Square Icon **/
 const legacySquareIconContentSize = 38;
 const legacySquareIconBorderRadius = 3;
@@ -48,6 +78,18 @@ const legacySquareIconMask = `<svg version="1.1" xmlns="http://www.w3.org/2000/s
     />
 </svg>`;
 
+const legacySquareIconOverlay = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+  viewBox="${getViewBox(legacySquareIconContentSize)}"
+  width="${input.inputImageSize}" height="${input.inputImageSize}">
+    ${legacyLightningFilter}
+    <rect
+      x="${legacySquareIconMargin}" y="${legacySquareIconMargin}"
+      width="${legacySquareIconContentSize}" height="${legacySquareIconContentSize}"
+      rx="${legacySquareIconBorderRadius}" ry="${legacySquareIconBorderRadius}"
+      filter="url(#legacyLightningFilter)"
+    />
+</svg>`;
+
 /** Legacy Round Icon **/
 const legacyRoundIconContentSize = 44;
 const legacyRoundIconContentRatio =
@@ -59,6 +101,17 @@ const roundIconMask = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
     <circle
       cx="${legacyIconBaseSize / 2}" cy="${legacyIconBaseSize / 2}"
       r="${legacyRoundIconContentSize / 2}"
+    />
+</svg>`;
+
+const roundIconOverlay = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+  viewBox="${getViewBox(legacyRoundIconContentSize)}"
+  width="${input.inputImageSize}" height="${input.inputImageSize}">
+    ${legacyLightningFilter}
+    <circle
+      cx="${legacyIconBaseSize / 2}" cy="${legacyIconBaseSize / 2}"
+      r="${legacyRoundIconContentSize / 2}"
+      filter="url(#legacyLightningFilter)"
     />
 </svg>`;
 
@@ -97,6 +150,7 @@ async function* generateLegacyIcons(
     {
       ...fileInput,
       mask: legacySquareIconMask,
+      overlay: legacySquareIconOverlay,
       cropSize: input.inputContentSize / legacySquareIconContentRatio
     },
     densities.map(density => ({
@@ -119,6 +173,7 @@ async function* generateRoundIcons(
     {
       ...fileInput,
       mask: roundIconMask,
+      overlay: roundIconOverlay,
       cropSize: input.inputContentSize / legacyRoundIconContentRatio
     },
     densities.map(density => ({

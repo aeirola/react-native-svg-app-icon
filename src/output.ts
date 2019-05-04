@@ -6,6 +6,7 @@ import * as input from "./input";
 
 interface GenerateInput extends input.FileInput {
   mask?: string;
+  overlay?: string;
   cropSize?: number;
 }
 
@@ -54,18 +55,37 @@ async function* genaratePng(
   image = image.extract(extractRegion);
 
   if (fileInput.mask) {
-    image = image.composite([
-      {
-        input: await sharp(Buffer.from(fileInput.mask, "utf-8"), {
-          // TODO: Ensure correct density on differing input image sizes
-          density: targetDensity
-        })
-          // TODO: Check github issues why we need to extract here as well
-          .extract(extractRegion)
-          .toBuffer(),
-        blend: "dest-in"
-      }
-    ]);
+    image = sharp(
+      await image
+        .composite([
+          {
+            input: await sharp(Buffer.from(fileInput.mask, "utf-8"), {
+              // TODO: Ensure correct density on differing input image sizes
+              density: targetDensity
+            })
+              // TODO: Check github issues why we need to extract here as well
+              .extract(extractRegion)
+              .toBuffer(),
+            blend: "dest-in"
+          }
+        ])
+        .toBuffer()
+    );
+
+    if (fileInput.overlay) {
+      image = image.composite([
+        {
+          input: await sharp(Buffer.from(fileInput.overlay, "utf-8"), {
+            // TODO: Ensure correct density on differing input image sizes
+            density: targetDensity
+          })
+            // TODO: Check github issues why we need to extract here as well
+            .extract(extractRegion)
+            .toBuffer(),
+          blend: "over"
+        }
+      ]);
+    }
   } else {
     image = image.removeAlpha();
   }
@@ -85,9 +105,7 @@ function getExtractRegion(
   metadata: input.ImageData["metadata"],
   outputSize: number
 ): SharpType.Region {
-  // Android Studio seems to use floor for crop pixel alignment
-  // so we just follow suit for consistency
-  const imageMargin = Math.floor(
+  const imageMargin = Math.round(
     ((targetDensity / metadata.density) * metadata.width - outputSize) / 2
   );
 

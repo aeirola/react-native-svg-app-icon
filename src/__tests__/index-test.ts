@@ -20,10 +20,17 @@ describe("index", () => {
   });
 
   it("generates files from example matching fixtures", async () => {
-    await testFixture("example");
+    await testFixture("example", 0.16);
   });
 
-  async function testFixture(fixture: string): Promise<void> {
+  it("generates files from white matching fixtures", async () => {
+    await testFixture("white", 0.11);
+  });
+
+  async function testFixture(
+    fixture: string,
+    threshold: number
+  ): Promise<void> {
     const fixtureDir = path.join(fixturesPath, fixture);
     const generator = index.generate({
       icon: path.join(fixtureDir, "icon.svg"),
@@ -41,7 +48,7 @@ describe("index", () => {
     for await (let file of generator) {
       const localPath = path.relative(tmpDir.name, file);
       const fixturePath = path.join(fixtureDir, localPath);
-      await expectFilesToEqual(file, fixturePath, 0.85);
+      await expectFilesToEqual(file, fixturePath, threshold);
     }
   }
 });
@@ -115,6 +122,7 @@ async function expectImagesToEqual(
     );
   }
 
+  const totalPixelCount = expectedMetadata.width * expectedMetadata.height;
   const mismatchingPixelCount = pixelmatch(
     await expectedImage.toBuffer(),
     await actualImage.toBuffer(),
@@ -124,5 +132,7 @@ async function expectImagesToEqual(
     { threshold }
   );
 
-  expect(mismatchingPixelCount).toEqual(0);
+  expect(mismatchingPixelCount / totalPixelCount).toBeLessThanOrEqual(
+    threshold
+  );
 }
