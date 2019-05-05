@@ -1,4 +1,5 @@
 import * as fse from "fs-extra";
+import glob from "glob-promise";
 import * as path from "path";
 import pixelmatch from "pixelmatch";
 import sharp from "sharp";
@@ -45,11 +46,17 @@ describe("index", () => {
       iconsetDir: path.join(tmpDir.name, "ios", fixture, "Images.xcassets")
     });
 
+    const generatedFiles = [];
     for await (let file of generator) {
       const localPath = path.relative(tmpDir.name, file);
       const fixturePath = path.join(fixtureDir, localPath);
       await expectFilesToEqual(file, fixturePath, threshold);
+      generatedFiles.push(localPath);
     }
+
+    expect(generatedFiles.sort()).toEqual(
+      (await glob("*/**", { cwd: fixtureDir, nodir: true })).sort()
+    );
   }
 });
 
