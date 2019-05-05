@@ -1,6 +1,8 @@
 dist: xenial
 language: node_js
 node_js:
+  - lts/carbon # v10
   - lts/dubnium # v10
-  - lts/*
+  - "11"
+  - "12"
 cache: npm
