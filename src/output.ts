@@ -63,7 +63,6 @@ async function* genaratePng(
               // TODO: Ensure correct density on differing input image sizes
               density: targetDensity
             })
-              // TODO: Check github issues why we need to extract here as well
               .extract(extractRegion)
               .toBuffer(),
             blend: "dest-in"
@@ -79,7 +78,6 @@ async function* genaratePng(
             // TODO: Ensure correct density on differing input image sizes
             density: targetDensity
           })
-            // TODO: Check github issues why we need to extract here as well
             .extract(extractRegion)
             .toBuffer(),
           blend: "over"

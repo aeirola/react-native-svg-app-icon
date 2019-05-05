@@ -30,7 +30,7 @@ const adaptiveIconContent = `<?xml version="1.0" encoding="utf-8"?>
 const legacyIconBaseSize = 48;
 const inputIconContentRatio = input.inputContentSize / input.inputImageSize;
 
-// Based on images at
+// Based on images from image asset studio at
 // https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/resources/images/launcher_stencil/
 // https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/src/com/android/tools/idea/npw/assetstudio/LauncherLegacyIconGenerator.java
 const legacyLightningFilter = `
