@@ -32,7 +32,7 @@ describe("index", () => {
     threshold: number
   ): Promise<void> {
     const fixtureDir = path.join(fixturesPath, fixture);
-    const generator = await index.generate({
+    const generator = index.generate({
       icon: path.join(fixtureDir, "icon.svg"),
       resDirPath: path.join(
         tmpDir.name,
