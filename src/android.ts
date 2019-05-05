@@ -22,7 +22,7 @@ const adaptiveIconBaseSize = 108;
 const adaptiveIconContent = `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@android:color/white" />
-    <foreground android:drawable="@drawable/${launcherForegroundName}" />
+    <foreground android:drawable="@mipmap/${launcherForegroundName}" />
 </adaptive-icon>`;
 
 /** Legacy Icon **/
@@ -198,7 +198,7 @@ async function* generateAdaptiveIcon(
     densities.map(density => ({
       filePath: getIconPath(
         config,
-        "drawable",
+        "mipmap",
         { density: density.name, minApiLevel: adaptiveIconMinSdk },
         `${launcherForegroundName}.png`
       ),
@@ -212,6 +212,15 @@ async function* generateAdaptiveIcon(
       "mipmap",
       { density: "anydpi", minApiLevel: 26 },
       `${launcherName}.xml`
+    ),
+    adaptiveIconContent
+  );
+  yield* output.ensureFileContents(
+    getIconPath(
+      config,
+      "mipmap",
+      { density: "anydpi", minApiLevel: 26 },
+      `${roundIconName}.xml`
     ),
     adaptiveIconContent
   );
