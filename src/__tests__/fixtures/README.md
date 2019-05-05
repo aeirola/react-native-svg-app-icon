@@ -3,6 +3,7 @@
 Fixture explanations:
 
 - `example`: Icon used for example app, based on React Native logo
+- `white`: Completely white icon, for testing legacy shades
 
 ## Android icons
 

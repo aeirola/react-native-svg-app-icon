@@ -85,7 +85,6 @@ you have probably encountered the issue described in https://github.com/lovell/s
 ## Future improvements
 
 - Allow configuring icon path in `app.json`, similarly to https://docs.expo.io/versions/latest/guides/app-icons/
-- Add drop shadow to android legacy icons
 - Add generation of Android notification icons
 - Support separate background and foreground for adaptive icons
 - Generate Android vector drawables from SVG
