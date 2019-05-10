@@ -72,16 +72,6 @@ Most existing solutions are centered around the idea of scaling PNG images.
 
 Most common SVG features are supported, including masks and styles. The underlying SVG rendering library is [`librsvg`](https://developer.gnome.org/rsvg/stable/rsvg.html) which claims to support most SVG 1.1 features, excluding scripts, animations and SVG fonts.
 
-### `SVG has no elements`
-
-If the command fails with the following error
-
-```
-(node:4752) UnhandledPromiseRejectionWarning: Error: Input buffer has corrupt header: glib: SVG has no elements
-```
-
-you have probably encountered the issue described in https://github.com/lovell/sharp/issues/1593. The current workaround is to install `libvips` through brew with `brew install vips`.
-
 ## Future improvements
 
 - Allow configuring icon path in `app.json`, similarly to https://docs.expo.io/versions/latest/guides/app-icons/

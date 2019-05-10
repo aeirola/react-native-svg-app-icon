@@ -56,13 +56,31 @@ function lazyLoadProvider(filePath: string): () => Promise<LazyLoaded> {
 }
 
 async function loadData(filePath: string): Promise<LazyLoaded> {
-  const sharpInstance = (await import("sharp")).default;
-  const imageData = await readImage(sharpInstance, filePath);
+  const sharpImport = await import("sharp");
+  const warmedSharpInstance = await warmupSharp(sharpImport.default);
+  const imageData = await readImage(warmedSharpInstance, filePath);
 
   return {
-    sharp: sharpInstance,
+    sharp: warmedSharpInstance,
     imageData: imageData
   };
+}
+
+// First run might cause a xmllib error, run safe warmup
+// See https://github.com/lovell/sharp/issues/1593
+async function warmupSharp(
+  sharp: typeof SharpType.default
+): Promise<typeof SharpType.default> {
+  try {
+    await sharp(
+      Buffer.from(
+        `<svg xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1" /></svg>`,
+        "utf-8"
+      )
+    ).metadata();
+  } catch {}
+
+  return sharp;
 }
 
 async function readImage(
