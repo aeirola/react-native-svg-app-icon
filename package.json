@@ -32,7 +32,8 @@
   "license": "MIT",
   "dependencies": {
     "fs-extra": ">=3.0.0",
-    "sharp": ">=0.22.0"
+    "sharp": ">=0.22.0",
+    "svg2vectordrawable": "Ashung/svg2vectordrawable#master"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",

@@ -21,15 +21,16 @@ describe("index", () => {
   });
 
   it("generates files from example matching fixtures", async () => {
-    await testFixture("example", 0.16);
+    await testFixture("example", false, 0.16);
   });
 
   it("generates files from white matching fixtures", async () => {
-    await testFixture("white", 0.1);
+    await testFixture("white", true, 0.1);
   });
 
   async function testFixture(
     fixture: string,
+    vectorDrawables: boolean,
     threshold: number
   ): Promise<void> {
     const fixtureDir = path.join(fixturesPath, fixture);
@@ -43,6 +44,7 @@ describe("index", () => {
         "main",
         "res"
       ),
+      vectorDrawables: vectorDrawables,
       iconsetDir: path.join(tmpDir.name, "ios", fixture, "Images.xcassets")
     });
 
@@ -92,7 +94,9 @@ async function expectXmlToEqual(
   actual: string
 ): Promise<void> {
   // TODO: Compare XML structure
-  expect(await fse.readFile(expected)).toEqual(await fse.readFile(actual));
+  expect(await fse.readFile(expected, "utf-8")).toEqual(
+    await fse.readFile(actual, "utf-8")
+  );
 }
 
 async function expectJsonToEqual(

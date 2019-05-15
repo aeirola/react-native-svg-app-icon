@@ -5,7 +5,7 @@
 CLI tool for generating all the necessary iOS and Android application launcher icons for React Native projects from a single SVG source file. Features include:
 
 - iOS PNG icon generation
-- Android 8.0, and higher, PNG adaptive icon generation
+- Android 8.0, and higher, vector drawable adaptive icon generation with PNG fallback
 - Android 7.1 legacy circular icon generation
 - Android 7.0, and lower, legacy square icon generation
 
@@ -77,5 +77,4 @@ Most common SVG features are supported, including masks and styles. The underlyi
 - Allow configuring icon path in `app.json`, similarly to https://docs.expo.io/versions/latest/guides/app-icons/
 - Add generation of Android notification icons
 - Support separate background and foreground for adaptive icons
-- Generate Android vector drawables from SVG
 - Generate iOS PDF icons from SVG
