@@ -4,6 +4,7 @@ Fixture explanations:
 
 - `example`: Icon used for example app, based on React Native logo
 - `white`: Completely white icon, for testing legacy shades
+- `text`: Icon with SVG text element, for testing PNG fallback of adaptive icons
 
 ## Android icons
 

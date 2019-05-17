@@ -239,7 +239,9 @@ async function* generateAdaptiveVdForeground(
 
   const fileData = await fileInput.read();
   const vdData = await svg2vectordrawable(
-    fileData.imageData.data.toString("utf-8")
+    fileData.imageData.data.toString("utf-8"),
+    undefined,
+    true
   );
   yield* output.ensureFileContents(
     getIconPath(

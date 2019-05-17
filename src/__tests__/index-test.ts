@@ -8,6 +8,8 @@ import * as tmp from "tmp";
 import * as index from "../index";
 
 describe("index", () => {
+  jest.setTimeout(30 * 1000);
+
   const fixturesPath = path.join(__dirname, "fixtures");
 
   let tmpDir: tmp.DirResult;
@@ -21,16 +23,19 @@ describe("index", () => {
   });
 
   it("generates files from example matching fixtures", async () => {
-    await testFixture("example", false, 0.16);
+    await testFixture("example", 0.16);
   });
 
   it("generates files from white matching fixtures", async () => {
-    await testFixture("white", true, 0.1);
+    await testFixture("white", 0.1);
+  });
+
+  it("generates files from text matching fixtures", async () => {
+    await testFixture("text", 0.14);
   });
 
   async function testFixture(
     fixture: string,
-    vectorDrawables: boolean,
     threshold: number
   ): Promise<void> {
     const fixtureDir = path.join(fixturesPath, fixture);
@@ -44,7 +49,6 @@ describe("index", () => {
         "main",
         "res"
       ),
-      vectorDrawables: vectorDrawables,
       iconsetDir: path.join(tmpDir.name, "ios", fixture, "Images.xcassets")
     });
 
