@@ -8,8 +8,6 @@ import * as tmp from "tmp";
 import * as index from "../index";
 
 describe("index", () => {
-  jest.setTimeout(30 * 1000);
-
   const fixturesPath = path.join(__dirname, "fixtures");
 
   let tmpDir: tmp.DirResult;
@@ -30,9 +28,11 @@ describe("index", () => {
     await testFixture("white", 0.1);
   });
 
-  it("generates files from text matching fixtures", async () => {
-    await testFixture("text", 0.14);
-  });
+  it(
+    "generates files from text matching fixtures",
+    () => testFixture("text", 0.14),
+    20 * 1000
+  );
 
   async function testFixture(
     fixture: string,
