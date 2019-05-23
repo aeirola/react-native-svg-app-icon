@@ -22,7 +22,7 @@ SVG rendering handled by the splendid [`sharp`](https://github.com/lovell/sharp)
 Place your square 108x108 SVG app icon file named `icon.svg` in the project root and run
 
 ```bash
-react-native-svg-app-icon
+npx react-native-svg-app-icon
 ```
 
 This will generate all the required icons under the `android/` and `ios/` directories.

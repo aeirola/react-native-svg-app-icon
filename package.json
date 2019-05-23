@@ -7,9 +7,9 @@
     "svg",
     "app-icon"
   ],
-  "repository": {
-    "type": "git",
-    "url": ""
+  "homepage": "https://github.com/aeirola/react-native-svg-app-icon",
+  "bugs": {
+    "url": "https://github.com/aeirola/react-native-svg-app-icon/issues"
   },
   "files": [
     "lib/"
@@ -30,6 +30,10 @@
   },
   "author": "Axel Havukangas <axel@havukangas.fi>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aeirola/react-native-svg-app-icon.git"
+  },
   "dependencies": {
     "fs-extra": ">=3.0.0",
     "sharp": ">=0.22.0",
