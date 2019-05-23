@@ -5,3 +5,11 @@ node_js:
   - "11"
   - "12"
 cache: npm
+deploy:
+  provider: npm
+  email: axel@havukangas.fi
+  api_key:
+    secure: QNZCx6nqAuszA+VZDnMs+0Wf+oarCfsJ+B+YpE5GK9NdyEmQXUeOhMP7AHMibL1/NXYGUrXPxGFknp7gCMKa5N4JJumTzzKFv8FzRYc8e4CxXOFbJ0mY3o1u690T6tTl6z1O0nWWuoC7qj9chbz4wKnOSspGl8vapr2BroXSpG8R0zFlm1McpwJqHDO2SZsPf3Y4Q9RQJ9L4eSy8jdl4GRj5YkAwDdy58NIhycuQftUWqfeOKCktMuGw+y+RSxsD2YEq3crYzwKkVzsqmObCWhmvZYTR/Nm6Qstb5YLgSf07pfCD1L3kZkI9FBiHDUuTvnPdilvzMcdocxK5/wLIK+M+7/CusAtwwSQzZhbgzeatquwGL0UR8nlg2pdWZoFC1sQ8FBFIacYJjWTT/F+1X3KgvC9i/S+pNbXqbdX58w/osclITcZSOfa1DvAdqH9lZd5MUb6sSklAitz5i5foxzSFJC4xKQceczEJZv1HiPwJzq2M7TsHwG98JCyFwZj9Cc2XfEC/A6iY5Q+gGNrg0UqLa58yr4W6zKLgAK431S0pl2U6OxM1dYAfo7PStK7cMbCXerQyxrdW9tF2yKufVPDiolxVja+Abq/kMnlfDoJSzGK6/kQrGOxokG4RpUyj9dKJf7voVx/W1hcuGt2/wJT20WpSsHMKjwLFTgApLt0=
+  on:
+    tags: true
+    repo: aeirola/react-native-svg-app-icon
