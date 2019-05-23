@@ -1,4 +1,5 @@
 import * as path from "path";
+import svg2vectordrawable from "svg2vectordrawable";
 
 import * as input from "./input";
 import * as output from "./output";
@@ -19,10 +20,12 @@ const launcherForegroundName = "ic_launcher_foreground";
 
 /** Adaptive Icon **/
 const adaptiveIconBaseSize = 108;
-const adaptiveIconContent = `<?xml version="1.0" encoding="utf-8"?>
+const adaptiveIconContent = (
+  launcherForegroundType: string
+): string => `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@android:color/white" />
-    <foreground android:drawable="@mipmap/${launcherForegroundName}" />
+    <foreground android:drawable="@${launcherForegroundType}/${launcherForegroundName}" />
 </adaptive-icon>`;
 
 /** Legacy Icon **/
@@ -124,6 +127,7 @@ function getViewBox(input: number): string {
 
 export interface Config {
   resDirPath: string;
+  vectorDrawables: boolean;
 }
 
 export async function* generate(
@@ -138,7 +142,9 @@ export async function* generate(
 
 async function getConfig(config: Partial<Config>): Promise<Config> {
   return {
-    resDirPath: config.resDirPath || "./android/app/src/main/res"
+    resDirPath: config.resDirPath || "./android/app/src/main/res",
+    vectorDrawables:
+      config.vectorDrawables === undefined ? true : config.vectorDrawables
   };
 }
 
@@ -192,7 +198,66 @@ async function* generateAdaptiveIcon(
   fileInput: input.FileInput,
   config: Config
 ): AsyncIterable<string> {
-  // Foreground
+  let foregroundResourceType: string;
+  try {
+    yield* generateAdaptiveVdForeground(fileInput, config);
+    foregroundResourceType = "drawable";
+  } catch {
+    yield* generateAdaptivePngForeground(fileInput, config);
+    foregroundResourceType = "mipmap";
+  }
+
+  // Adaptive icon
+  const adaptiveIconXml = adaptiveIconContent(foregroundResourceType);
+  yield* output.ensureFileContents(
+    getIconPath(
+      config,
+      "mipmap",
+      { density: "anydpi", minApiLevel: 26 },
+      `${launcherName}.xml`
+    ),
+    adaptiveIconXml
+  );
+  yield* output.ensureFileContents(
+    getIconPath(
+      config,
+      "mipmap",
+      { density: "anydpi", minApiLevel: 26 },
+      `${roundIconName}.xml`
+    ),
+    adaptiveIconXml
+  );
+}
+
+async function* generateAdaptiveVdForeground(
+  fileInput: input.FileInput,
+  config: Config
+): AsyncIterable<string> {
+  if (!config.vectorDrawables) {
+    throw Error("Vector drawables disabled");
+  }
+
+  const fileData = await fileInput.read();
+  const vdData = await svg2vectordrawable(
+    fileData.imageData.data.toString("utf-8"),
+    undefined,
+    true
+  );
+  yield* output.ensureFileContents(
+    getIconPath(
+      config,
+      "drawable",
+      { density: "anydpi", minApiLevel: 26 },
+      `${launcherForegroundName}.xml`
+    ),
+    vdData
+  );
+}
+
+async function* generateAdaptivePngForeground(
+  fileInput: input.FileInput,
+  config: Config
+): AsyncIterable<string> {
   yield* output.genaratePngs(
     fileInput,
     densities.map(density => ({
@@ -204,25 +269,6 @@ async function* generateAdaptiveIcon(
       ),
       outputSize: adaptiveIconBaseSize * density.scale
     }))
-  );
-  // Adaptive icon
-  yield* output.ensureFileContents(
-    getIconPath(
-      config,
-      "mipmap",
-      { density: "anydpi", minApiLevel: 26 },
-      `${launcherName}.xml`
-    ),
-    adaptiveIconContent
-  );
-  yield* output.ensureFileContents(
-    getIconPath(
-      config,
-      "mipmap",
-      { density: "anydpi", minApiLevel: 26 },
-      `${roundIconName}.xml`
-    ),
-    adaptiveIconContent
   );
 }
 

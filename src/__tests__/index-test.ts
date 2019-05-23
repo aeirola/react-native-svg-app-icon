@@ -28,6 +28,12 @@ describe("index", () => {
     await testFixture("white", 0.1);
   });
 
+  it(
+    "generates files from text matching fixtures",
+    () => testFixture("text", 0.14),
+    20 * 1000
+  );
+
   async function testFixture(
     fixture: string,
     threshold: number
@@ -92,7 +98,9 @@ async function expectXmlToEqual(
   actual: string
 ): Promise<void> {
   // TODO: Compare XML structure
-  expect(await fse.readFile(expected)).toEqual(await fse.readFile(actual));
+  expect(await fse.readFile(expected, "utf-8")).toEqual(
+    await fse.readFile(actual, "utf-8")
+  );
 }
 
 async function expectJsonToEqual(
