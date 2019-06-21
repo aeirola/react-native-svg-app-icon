@@ -17,6 +17,8 @@ npm install --save-dev react-native-svg-app-icon
 
 SVG rendering handled by the splendid [`sharp`](https://github.com/lovell/sharp) library, meaning no dependencies outside of npm is required.
 
+Requires node version 10, or later.
+
 ## Usage
 
 Place your square 108x108 SVG app icon file named `icon.svg` in the project root and run
