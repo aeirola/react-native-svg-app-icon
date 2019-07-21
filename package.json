@@ -37,7 +37,8 @@
   "dependencies": {
     "fs-extra": ">=3.0.0",
     "sharp": ">=0.22.0",
-    "svg2vectordrawable": "2.6.15"
+    "svg2vectordrawable": "2.6.15",
+    "svgo": "1.2.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

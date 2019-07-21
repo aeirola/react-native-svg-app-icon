@@ -7,23 +7,21 @@
     "pretest": "npx install-local",
     "test": "npm run test:icon",
     "test:icon": "npm run clean:icon && react-native-svg-app-icon && test -d ios/example/Images.xcassets/AppIcon.appiconset && test -d android/app/src/main/res/mipmap-xhdpi",
-    "clean:icon": "rm -rf ios/example/Images.xcassets/AppIcon.appiconset android/app/src/main/res/mipmap-* android/app/src/main/res/drawable-*",
-    "lint": "eslint ."
+    "clean:icon": "rm -rf ios/example/Images.xcassets/AppIcon.appiconset android/app/src/main/res/mipmap-* android/app/src/main/res/drawable-*"
   },
   "dependencies": {
-    "react": "16.8.3",
-    "react-native": "0.59.2"
+    "react": "16.8.6",
+    "react-native": "0.60.4"
   },
   "devDependencies": {
-    "@babel/core": "7.4.0",
-    "@babel/runtime": "7.4.2",
-    "@react-native-community/eslint-config": "0.0.3",
-    "babel-jest": "24.5.0",
-    "eslint": "5.15.3",
+    "@babel/core": "^7.5.0",
+    "@babel/runtime": "^7.5.0",
+    "@react-native-community/eslint-config": "^0.0.3",
+    "babel-jest": "^24.1.0",
     "install-local": "1.0.0",
-    "jest": "24.5.0",
-    "metro-react-native-babel-preset": "0.53.1",
-    "react-test-renderer": "16.8.3"
+    "jest": "^24.1.0",
+    "metro-react-native-babel-preset": "^0.54.1",
+    "react-test-renderer": "16.8.6"
   },
   "localDependencies": {
     "react-native-svg-app-icon": ".."
