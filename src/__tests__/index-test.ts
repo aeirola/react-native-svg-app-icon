@@ -20,17 +20,15 @@ describe("index", () => {
     tmpDir.removeCallback();
   });
 
-  it("generates files from example matching fixtures", async () => {
-    await testFixture("example", 0.16);
-  });
+  it("generates files from example matching fixtures", () =>
+    testFixture("example", 0.13));
 
-  it("generates files from white matching fixtures", async () => {
-    await testFixture("white", 0.1);
-  });
+  it("generates files from white matching fixtures", () =>
+    testFixture("white", 0.06));
 
   it(
     "generates files from text matching fixtures",
-    () => testFixture("text", 0.14),
+    () => testFixture("text", 0.06),
     20 * 1000
   );
 
@@ -118,32 +116,24 @@ async function expectImagesToEqual(
   const expectedImage = sharp(expected);
   const actualImage = sharp(actual);
 
-  const expectedMetadata = await expectedImage.metadata();
-  const actualMetadata = await actualImage.metadata();
+  const expectedData = await expectedImage
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const actualData = await actualImage
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
 
-  expect({
-    width: expectedMetadata.width,
-    height: expectedMetadata.height
-  }).toEqual({
-    width: actualMetadata.width,
-    height: actualMetadata.height
-  });
+  expect(actualData.info).toEqual(expectedData.info);
 
-  if (!(expectedMetadata.width && expectedMetadata.height)) {
-    throw new Error(
-      `Image dimensions not match: expected ${expectedMetadata.width}x${
-        expectedMetadata.height
-      }, got ${actualMetadata.width}x${actualMetadata.height}`
-    );
-  }
-
-  const totalPixelCount = expectedMetadata.width * expectedMetadata.height;
+  const totalPixelCount = expectedData.info.width * expectedData.info.height;
   const mismatchingPixelCount = pixelmatch(
-    await expectedImage.toBuffer(),
-    await actualImage.toBuffer(),
+    expectedData.data,
+    actualData.data,
     null,
-    expectedMetadata.width,
-    expectedMetadata.height,
+    expectedData.info.width,
+    expectedData.info.height,
     { threshold }
   );
 

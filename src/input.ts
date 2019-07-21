@@ -108,9 +108,8 @@ async function readImage(
 function validateMetadata(metadata: SharpType.Metadata): ValidMetadata {
   if (metadata.format !== "svg") {
     throw new Error(
-      `Unsupported image format ${
-        metadata.format
-      }. Only SVG images are supported.`
+      `Unsupported image format ${metadata.format}.` +
+        `Only SVG images are supported.`
     );
   }
 
