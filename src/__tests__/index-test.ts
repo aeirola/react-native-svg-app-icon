@@ -47,7 +47,13 @@ describe("index", () => {
         "main",
         "res"
       ),
-      iconsetDir: path.join(tmpDir.name, "ios", fixture, "Images.xcassets")
+      iconsetDir: path.join(
+        tmpDir.name,
+        "ios",
+        fixture,
+        "Images.xcassets",
+        "AppIcon.appiconset"
+      )
     });
 
     const generatedFiles = [];
