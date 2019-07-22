@@ -15,6 +15,7 @@ describe("index", () => {
     tmpDir = tmp.dirSync({
       unsafeCleanup: true
     });
+    process.chdir(tmpDir.name);
   });
   afterEach(() => {
     tmpDir.removeCallback();
@@ -31,6 +32,23 @@ describe("index", () => {
     () => testFixture("text", 0.06),
     20 * 1000
   );
+
+  it("determines the correct ios asset path", async () => {
+    fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
+
+    const generator = index.generate({
+      icon: path.join(fixturesPath, "example", "icon.svg")
+    });
+
+    const generatedFiles = [];
+    for await (let file of generator) {
+      generatedFiles.push(file);
+    }
+
+    expect(generatedFiles).toContain(
+      "ios/project/Images.xcassets/AppIcon.appiconset/iphone-40@3x.png"
+    );
+  });
 
   async function testFixture(
     fixture: string,
