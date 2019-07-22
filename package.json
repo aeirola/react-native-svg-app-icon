@@ -37,8 +37,7 @@
   "dependencies": {
     "fs-extra": ">=3.0.0",
     "sharp": ">=0.22.0",
-    "svg2vectordrawable": "2.6.15",
-    "svgo": "1.2.2"
+    "svg2vectordrawable": "2.6.16"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -52,8 +51,8 @@
     "@types/pixelmatch": "^5.0.0",
     "@types/sharp": "^0.22.2",
     "@types/tmp": "^0.1.0",
-    "@typescript-eslint/eslint-plugin": "^1.12.0",
-    "@typescript-eslint/parser": "^1.12.0",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
     "babel-jest": "^24.8.0",
     "babel-plugin-dynamic-import-node": "^2.3.0",
     "eslint": "^6.1.0",
