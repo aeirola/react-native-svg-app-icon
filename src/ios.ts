@@ -4,7 +4,6 @@ import * as path from "path";
 import * as input from "./input";
 import * as output from "./output";
 
-const assetName = "AppIcon.appiconset";
 const iosIcons = [
   { idiom: "iphone", scale: 2, size: 20 },
   { idiom: "iphone", scale: 3, size: 20 },
@@ -41,14 +40,22 @@ export async function* generate(
 
 async function getConfig(config: Partial<Config>): Promise<Config> {
   return {
-    iconsetDir:
-      config.iconsetDir || `./ios/${await getAppName()}/Images.xcassets`
+    iconsetDir: config.iconsetDir || (await getIconsetDir())
   };
 }
 
-async function getAppName(): Promise<string> {
-  const appJson = JSON.parse(await fse.readFile("./app.json", "utf-8"));
-  return appJson.name;
+async function getIconsetDir(): Promise<string> {
+  for (const fileName of await fse.readdir("ios")) {
+    const testPath = path.join("ios", fileName, "Images.xcassets");
+    if (
+      (await fse.pathExists(testPath)) &&
+      (await fse.stat(testPath)).isDirectory
+    ) {
+      return path.join(testPath, "AppIcon.appiconset");
+    }
+  }
+
+  throw new Error("No Images.xcassets found under ios/ subdirectories");
 }
 
 async function* generateImages(
@@ -61,7 +68,7 @@ async function* generateImages(
       cropSize: input.inputContentSize
     },
     iosIcons.map(icon => ({
-      filePath: path.join(config.iconsetDir, assetName, getIconFilename(icon)),
+      filePath: path.join(config.iconsetDir, getIconFilename(icon)),
       flattenAlpha: icon.flattenAlpha,
       outputSize: icon.size * icon.scale
     }))
@@ -69,7 +76,7 @@ async function* generateImages(
 }
 
 async function* generateManifest(config: Config): AsyncIterable<string> {
-  const fileName = path.join(config.iconsetDir, assetName, "Contents.json");
+  const fileName = path.join(config.iconsetDir, "Contents.json");
   yield* output.ensureFileContents(fileName, {
     images: iosIcons.map(icon => ({
       filename: getIconFilename(icon),
