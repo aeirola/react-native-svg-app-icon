@@ -22,7 +22,7 @@ describe("index", () => {
   });
 
   it("generates files from example matching fixtures", () =>
-    testFixture("example", 0.13));
+    testFixture("example", 0.14));
 
   it("generates files from white matching fixtures", () =>
     testFixture("white", 0.06));

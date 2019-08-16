@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "fs-extra": ">=3.0.0",
-    "sharp": ">=0.22.0",
+    "sharp": ">=0.23.0",
     "svg2vectordrawable": "2.6.16"
   },
   "devDependencies": {
