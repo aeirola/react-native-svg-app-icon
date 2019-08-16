@@ -9,7 +9,7 @@ async function main(): Promise<void> {
     icon: "./icon.svg"
   });
 
-  for await (let file of generatedFiles) {
+  for await (const file of generatedFiles) {
     console.log("Wrote " + file);
   }
   console.log("Done");
