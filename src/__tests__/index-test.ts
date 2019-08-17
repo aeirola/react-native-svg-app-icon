@@ -41,7 +41,7 @@ describe("index", () => {
     });
 
     const generatedFiles = [];
-    for await (let file of generator) {
+    for await (const file of generator) {
       generatedFiles.push(file);
     }
 
@@ -75,7 +75,7 @@ describe("index", () => {
     });
 
     const generatedFiles = [];
-    for await (let file of generator) {
+    for await (const file of generator) {
       const localPath = path.relative(tmpDir.name, file);
       const fixturePath = path.join(fixtureDir, localPath);
       await expectFilesToEqual(file, fixturePath, threshold);

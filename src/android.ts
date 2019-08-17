@@ -134,13 +134,13 @@ export async function* generate(
   config: Partial<Config>,
   fileInput: input.FileInput
 ): AsyncIterable<string> {
-  const fullConfig = await getConfig(config);
+  const fullConfig = getConfig(config);
   yield* generateLegacyIcons(fileInput, fullConfig);
   yield* generateRoundIcons(fileInput, fullConfig);
   yield* generateAdaptiveIcon(fileInput, fullConfig);
 }
 
-async function getConfig(config: Partial<Config>): Promise<Config> {
+function getConfig(config: Partial<Config>): Config {
   return {
     resDirPath: config.resDirPath || "./android/app/src/main/res",
     vectorDrawables:

@@ -78,7 +78,9 @@ async function warmupSharp(
         "utf-8"
       )
     ).metadata();
-  } catch {}
+  } catch {
+    // Error only occurs once, so now safe to use sharp
+  }
 
   return sharp;
 }
