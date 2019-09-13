@@ -9,6 +9,8 @@ CLI tool for generating all the necessary iOS and Android application launcher i
 - Android 7.1 legacy circular icon generation
 - Android 7.0, and lower, legacy square icon generation
 
+:curly_loop: If you also want to use SVG images within your React Native application, you might want to check out [react-native-svg-asset-plugin](https://github.com/aeirola/react-native-svg-asset-plugin).
+
 ## Installation
 
 ```bash
