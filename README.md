@@ -81,4 +81,3 @@ Most common SVG features are supported, including masks and styles. The underlyi
 - Allow configuring icon path in `app.json`, similarly to https://docs.expo.io/versions/latest/guides/app-icons/
 - Add generation of Android notification icons
 - Support separate background and foreground for adaptive icons
-- Generate iOS PDF icons from SVG
