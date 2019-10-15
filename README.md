@@ -1,5 +1,20 @@
 # react-native-svg-app-icon
 
+<p align="center">
+  <img alt="input"
+    style="vertical-align: middle;"
+    src="src/__tests__/fixtures/example/icon.svg" />
+  <img alt="iOS"
+    style="vertical-align: middle;"
+    src="src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-29@3x.png" />
+  <img alt="android"
+    style="vertical-align: middle;"
+    src="src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
+  <img alt="android"
+    style="vertical-align: middle;"
+    src="src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" />
+</p>
+
 [![Build Status](https://travis-ci.org/aeirola/react-native-svg-app-icon.svg?branch=master)](https://travis-ci.org/aeirola/react-native-svg-app-icon)
 
 CLI tool for generating all the necessary iOS and Android application launcher icons for React Native projects from a single SVG source file. Features include:
@@ -8,6 +23,8 @@ CLI tool for generating all the necessary iOS and Android application launcher i
 - Android 8.0, and higher, vector drawable adaptive icon generation with PNG fallback
 - Android 7.1 legacy circular icon generation
 - Android 7.0, and lower, legacy square icon generation
+
+For more information about the generated files, see the [docs](docs/generated_files.md).
 
 :curly_loop: If you also want to use SVG images within your React Native application, you might want to check out [react-native-svg-asset-plugin](https://github.com/aeirola/react-native-svg-asset-plugin).
 
