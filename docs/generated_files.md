@@ -1,8 +1,8 @@
 # Generated images
 
-All images are generated from a single source file, but are processed in different ways to produce optimal results for eacth platform and device.
+All icon images are generated from a single source file, but are processed in different ways to produce optimal results for eacth platform and device.
 
-This document describes the different images being produced.
+This document describes how the different images are being produced.
 
 ## Android
 
@@ -10,7 +10,7 @@ Android icons consist of the newer [adaptive icons](https://developer.android.co
 
 ### Adaptive icon
 
-Adaptive icons consist of a partially transparent foreground layer and solid background layer, which are rendered on top of each other to produce a final icon. In theory this enables interesting parallax effects, but in pratice these effects are never seen by the user. Thus, for simplicity, the whole icon is rendered in the foregraound layer, leaving the background layer unused. If multilayer support is something that is needed, don't hesitate to create an issue.
+Adaptive icons consist of a partially transparent foreground layer and solid background layer, which are rendered on top of each other to produce a final icon. In theory this enables interesting parallax effects, but in pratice these effects are never seen by the user. Thus, for simplicity, the whole icon is rendered in the foreground layer, leaving the background layer unused. If multilayer support is something that is needed, don't hesitate to create an issue.
 
 This foreground layer is generated as vector drawable icons when possible, with fallback to PNG images in case the SVG source images contains incompatible content.
 
@@ -56,37 +56,37 @@ Vector drawable icons are generated using the [svg2vectordrawable](https://githu
 
 In case the input SVG contains elements not supported by vector drawable, such as `<text>`, then the foreground is rendered as a normal PNG images for each density, which would look like this:
 
-![input](../src/__tests__/fixtures/example/icon.svg)
+![Android adaptive foreground](../src/__tests__/fixtures/example/icon.svg)
 
 ### Legacy icons
 
-Traditional Android launcher icons have lacked enforced design guidelines, and are allowed to have basically any shape. Here, the icons are generated similarly to the [Image asset studio](https://developer.android.com/studio/write/image-asset-studio) whit cropping and shading applied according to the [Material design](https://material.io/design/iconography/) guidelines. This means that there is an appropriate transparent margin around the icons, with drop shadows added to mimic
+Traditional Android launcher icons have lacked enforced design guidelines, and are allowed to have basically any shape. Here, the icons are generated similarly to the [Image asset studio](https://developer.android.com/studio/write/image-asset-studio) with cropping and shading applied according to the [Material design](https://material.io/design/iconography/) guidelines. This means that there is an appropriate transparent margin around the icons, with drop shadows added to mimic
 
 PNG icons are generated for all different [densities](https://developer.android.com/training/multiscreen/screendensities.html#TaskProvideAltBmp), from `mdpi` to `xxxhdpi`.
 
-### Square
+#### Square
 
 Normal legacy icons supported by all Android versions.
 
-`mipmap-#dpi/ic_launcher.png`
+`mipmap-*dpi/ic_launcher.png`
 
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png)
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png)
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-hdpi/ic_launcher.png)
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-mdpi/ic_launcher.png)
+![Android xxxhdpi legacy square](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+![Android xxhdpi legacy square](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png)
+![Android xhdpi legacy square](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png)
+![Android hdpi legacy square](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-hdpi/ic_launcher.png)
+![Android mdpi legacy square](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-mdpi/ic_launcher.png)
 
-### Round
+#### Round
 
 Android 7.1 included support for defining specifically circular launcher icons. These are rendered separately from the square format for consistent style on all platforms.
 
-`mipmap-#dpi/ic_launcher_round.png`
+`mipmap-*dpi/ic_launcher_round.png`
 
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png)
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png)
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png)
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
-![android](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png)
+![Android xxxhdpi legacy round](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png)
+![Android xxhdpi legacy round](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png)
+![Android xhdpi legacy round](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png)
+![Android hdpi legacy round](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
+![Android mdpi legacy round](../src/__tests__/fixtures/example/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png)
 
 
 
@@ -94,31 +94,31 @@ Android 7.1 included support for defining specifically circular launcher icons. 
 
 All iOS images follow the same square cropped shape without any transparency, with rounder corners produced by the platform. The source image is cropped according to the Android adaptive icon viewport (center 2/3), providing consistent icons across all platforms.
 
-Icons are generated for all devices supported by React Native, meaning iPhones and iPads running iOS 9 or later.
+Launcher, settings and spotlight icons are generated for all devices supported by React Native, meaning iPhones and iPads running iOS 9 or later.
 
 ### iPhone
 
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//iphone-60@3x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//iphone-60@2x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//iphone-40@3x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//iphone-29@3x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//iphone-40@2x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//iphone-20@3x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//iphone-29@2x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//iphone-20@2x.png)
+![iOS iPhone icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-60@3x.png)
+![iOS iPhone icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-60@2x.png)
+![iOS iPhone icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-40@3x.png)
+![iOS iPhone icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-29@3x.png)
+![iOS iPhone icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-40@2x.png)
+![iOS iPhone icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-20@3x.png)
+![iOS iPhone icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-29@2x.png)
+![iOS iPhone icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-20@2x.png)
 
 ### iPad
 
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-83.5@2x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-76@2x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-40@2x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-76@1x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-29@2x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-40@1x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-20@2x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-29@1x.png)
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ipad-20@1x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-83.5@2x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-76@2x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-40@2x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-76@1x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-29@2x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-40@1x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-20@2x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-29@1x.png)
+![iOS iPad icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ipad-20@1x.png)
 
 ### Marketing icon
 
-![iOS](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset//ios-marketing-1024@1x.png)
+![iOS marketing icon](../src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/ios-marketing-1024@1x.png)

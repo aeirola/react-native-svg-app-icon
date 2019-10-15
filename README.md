@@ -1,17 +1,17 @@
 # react-native-svg-app-icon
 
 <p align="center">
-  <img alt="input"
-    style="vertical-align: middle;"
+  <img alt="Android adaptive icon"
+    align="middle"
     src="src/__tests__/fixtures/example/icon.svg" />
-  <img alt="iOS"
-    style="vertical-align: middle;"
+  <img alt="iOS icon"
+    align="middle"
     src="src/__tests__/fixtures/example/ios/example/Images.xcassets/AppIcon.appiconset/iphone-29@3x.png" />
-  <img alt="android"
-    style="vertical-align: middle;"
+  <img alt="Android legacy square icon"
+    align="middle"
     src="src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
-  <img alt="android"
-    style="vertical-align: middle;"
+  <img alt="Android legacy round icon"
+    align="middle"
     src="src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" />
 </p>
 
