@@ -1,20 +1,41 @@
 import * as fse from "fs-extra";
+import path from "path";
 
 // sharp library is slow to load, only import types here, and import when needed
 import * as SharpType from "sharp";
 
+const defaultBackgroundPath = path.join(
+  __dirname,
+  "..",
+  "assets",
+  "default-icon-background.svg"
+);
+
 export const inputImageSize = 108;
 export const inputContentSize = 72;
 
-export interface FileInput {
-  fileStats: fse.Stats;
-  read: () => Promise<LazyLoaded>;
+export interface Config {
+  backgroundPath: string;
+  foregroundPath: string;
 }
 
-interface LazyLoaded {
-  sharp: typeof SharpType.default;
-  imageData: ImageData;
+type FileModificationTime = fse.Stats["mtimeMs"];
+
+export type FileInput = Input<InputData>;
+type LoadedInput = Loaded<InputData>;
+interface InputData {
+  backgroundImageData: BackgroundImageData;
+  foregroundImageData: ImageData;
 }
+
+export interface Input<Data extends object> {
+  lastModified: FileModificationTime;
+  read: () => Promise<Loaded<Data>>;
+}
+
+type Loaded<Data extends {}> = Data & {
+  sharp: typeof SharpType.default;
+};
 
 interface ValidMetadata extends SharpType.Metadata {
   format: "svg";
@@ -23,46 +44,79 @@ interface ValidMetadata extends SharpType.Metadata {
   density: number;
 }
 
-interface ValidStats extends SharpType.Stats {
+interface OpaqueImageStats extends SharpType.Stats {
   isOpaque: true;
 }
 
 export interface ImageData {
   data: Buffer;
   metadata: ValidMetadata;
-  stats: ValidStats;
+  stats: SharpType.Stats;
 }
 
-export async function readFile(filePath: string): Promise<FileInput> {
-  console.debug("Reading file", filePath);
-  const fileStats = await fse.stat(filePath);
+interface BackgroundImageData extends ImageData {
+  stats: OpaqueImageStats;
+}
+
+export async function readIcon(config: Partial<Config>): Promise<FileInput> {
+  if (config.backgroundPath) {
+    console.debug("Reading background file", config.backgroundPath);
+  }
+  if (config.foregroundPath) {
+    console.debug("Reading file", config.foregroundPath);
+  }
+  const fullConfig = getConfig(config);
 
   return {
-    fileStats: fileStats,
-    read: lazyLoadProvider(filePath)
+    lastModified: await getLastModifiedTime(fullConfig),
+    read: lazyLoadProvider(fullConfig)
   };
 }
 
-function lazyLoadProvider(filePath: string): () => Promise<LazyLoaded> {
-  let lazyLoadedData: Promise<LazyLoaded> | undefined = undefined;
+function getConfig(config: Partial<Config>): Config {
+  return {
+    backgroundPath: config.backgroundPath || defaultBackgroundPath,
+    foregroundPath: config.foregroundPath || "./icon.svg"
+  };
+}
 
-  return function(): Promise<LazyLoaded> {
+async function getLastModifiedTime(
+  config: Config
+): Promise<FileModificationTime> {
+  const fileModifiedTimes = await Promise.all([
+    fse.stat(config.backgroundPath).then(stat => stat.mtimeMs),
+    fse.stat(config.foregroundPath).then(stat => stat.mtimeMs)
+  ]);
+
+  return Math.max(...fileModifiedTimes);
+}
+
+function lazyLoadProvider(config: Config): () => Promise<LoadedInput> {
+  let lazyLoadedData: Promise<LoadedInput> | undefined = undefined;
+
+  return function(): Promise<LoadedInput> {
     if (lazyLoadedData === undefined) {
-      lazyLoadedData = loadData(filePath);
+      lazyLoadedData = loadData(config);
     }
 
     return lazyLoadedData;
   };
 }
 
-async function loadData(filePath: string): Promise<LazyLoaded> {
+async function loadData(config: Config): Promise<Loaded<InputData>> {
   const sharpImport = await import("sharp");
   const warmedSharpInstance = await warmupSharp(sharpImport.default);
-  const imageData = await readImage(warmedSharpInstance, filePath);
+  const [backgroundImageData, foregroundImageData] = await Promise.all([
+    readImage(warmedSharpInstance, config.backgroundPath),
+    readImage(warmedSharpInstance, config.foregroundPath)
+  ]);
+
+  const validBackgroundImage = validateBackgroundImage(backgroundImageData);
 
   return {
     sharp: warmedSharpInstance,
-    imageData: imageData
+    backgroundImageData: validBackgroundImage,
+    foregroundImageData: foregroundImageData
   };
 }
 
@@ -98,12 +152,11 @@ async function readImage(
   ]);
 
   const validMetadata = validateMetadata(metadata);
-  const validStats = validateStats(stats);
 
   return {
     data: fileData,
     metadata: validMetadata,
-    stats: validStats
+    stats: stats
   };
 }
 
@@ -137,13 +190,35 @@ function validateMetadata(metadata: SharpType.Metadata): ValidMetadata {
   };
 }
 
-function validateStats(stats: SharpType.Stats): ValidStats {
-  if (stats.isOpaque) {
+function validateBackgroundImage(imageData: ImageData): BackgroundImageData {
+  if (imageData.stats.isOpaque) {
     return {
-      ...stats,
-      isOpaque: stats.isOpaque
+      ...imageData,
+      stats: {
+        ...imageData.stats,
+        isOpaque: imageData.stats.isOpaque
+      }
     };
   } else {
     throw new Error("Input image should be opaque");
   }
+}
+
+export function mapInput<
+  OriginalData extends object,
+  MappedData extends object
+>(
+  fileInput: Input<OriginalData>,
+  mapFunction: (data: OriginalData) => MappedData
+): Input<MappedData> {
+  return {
+    ...fileInput,
+    read: async (): Promise<Loaded<MappedData>> => {
+      const data = await fileInput.read();
+      return {
+        sharp: data.sharp,
+        ...mapFunction(data)
+      };
+    }
+  };
 }

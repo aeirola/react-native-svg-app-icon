@@ -16,15 +16,17 @@ const densities: { name: ResourceDensity; scale: number }[] = [
 
 const launcherName = "ic_launcher";
 const roundIconName = "ic_launcher_round";
+const launcherBackgroundName = "ic_launcher_background";
 const launcherForegroundName = "ic_launcher_foreground";
 
 /** Adaptive Icon **/
 const adaptiveIconBaseSize = 108;
 const adaptiveIconContent = (
-  launcherForegroundType: string
+  launcherBackgroundType: ResourceType,
+  launcherForegroundType: ResourceType
 ): string => `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@android:color/white" />
+    <background android:drawable="@${launcherBackgroundType}/${launcherBackgroundName}" />
     <foreground android:drawable="@${launcherForegroundType}/${launcherForegroundName}" />
 </adaptive-icon>`;
 
@@ -71,7 +73,8 @@ const legacySquareIconMargin =
 const legacySquareIconContentRatio =
   legacySquareIconContentSize / legacyIconBaseSize;
 
-const legacySquareIconMask = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+const legacySquareIconMask = Buffer.from(
+  `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
   viewBox="${getViewBox(legacySquareIconContentSize)}"
   width="${input.inputImageSize}" height="${input.inputImageSize}">
     <rect
@@ -79,9 +82,12 @@ const legacySquareIconMask = `<svg version="1.1" xmlns="http://www.w3.org/2000/s
       width="${legacySquareIconContentSize}" height="${legacySquareIconContentSize}"
       rx="${legacySquareIconBorderRadius}" ry="${legacySquareIconBorderRadius}"
     />
-</svg>`;
+</svg>`,
+  "utf-8"
+);
 
-const legacySquareIconOverlay = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+const legacySquareIconOverlay = Buffer.from(
+  `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
   viewBox="${getViewBox(legacySquareIconContentSize)}"
   width="${input.inputImageSize}" height="${input.inputImageSize}">
     ${legacyLightningFilter}
@@ -91,23 +97,29 @@ const legacySquareIconOverlay = `<svg version="1.1" xmlns="http://www.w3.org/200
       rx="${legacySquareIconBorderRadius}" ry="${legacySquareIconBorderRadius}"
       filter="url(#legacyLightningFilter)"
     />
-</svg>`;
+</svg>`,
+  "utf-8"
+);
 
 /** Legacy Round Icon **/
 const legacyRoundIconContentSize = 44;
 const legacyRoundIconContentRatio =
   legacyRoundIconContentSize / legacyIconBaseSize;
 
-const roundIconMask = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+const roundIconMask = Buffer.from(
+  `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
   viewBox="${getViewBox(legacyRoundIconContentSize)}"
   width="${input.inputImageSize}" height="${input.inputImageSize}">
     <circle
       cx="${legacyIconBaseSize / 2}" cy="${legacyIconBaseSize / 2}"
       r="${legacyRoundIconContentSize / 2}"
     />
-</svg>`;
+</svg>`,
+  "utf-8"
+);
 
-const roundIconOverlay = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+const roundIconOverlay = Buffer.from(
+  `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
   viewBox="${getViewBox(legacyRoundIconContentSize)}"
   width="${input.inputImageSize}" height="${input.inputImageSize}">
     ${legacyLightningFilter}
@@ -116,7 +128,9 @@ const roundIconOverlay = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
       r="${legacyRoundIconContentSize / 2}"
       filter="url(#legacyLightningFilter)"
     />
-</svg>`;
+</svg>`,
+  "utf-8"
+);
 
 function getViewBox(input: number): string {
   const size = input / inputIconContentRatio;
@@ -154,9 +168,14 @@ async function* generateLegacyIcons(
 ): AsyncIterable<string> {
   yield* output.genaratePngs(
     {
-      ...fileInput,
-      mask: legacySquareIconMask,
-      overlay: legacySquareIconOverlay,
+      ...input.mapInput(fileInput, inputData => ({
+        baseImage: inputData.backgroundImageData,
+        operations: [
+          { type: "composite", file: inputData.foregroundImageData.data },
+          { type: "composite", blend: "mask", file: legacySquareIconMask },
+          { type: "composite", file: legacySquareIconOverlay }
+        ]
+      })),
       cropSize: input.inputContentSize / legacySquareIconContentRatio
     },
     densities.map(density => ({
@@ -177,9 +196,14 @@ async function* generateRoundIcons(
 ): AsyncIterable<string> {
   yield* output.genaratePngs(
     {
-      ...fileInput,
-      mask: roundIconMask,
-      overlay: roundIconOverlay,
+      ...input.mapInput(fileInput, inputData => ({
+        baseImage: inputData.backgroundImageData,
+        operations: [
+          { type: "composite", file: inputData.foregroundImageData.data },
+          { type: "composite", blend: "mask", file: roundIconMask },
+          { type: "composite", file: roundIconOverlay }
+        ]
+      })),
       cropSize: input.inputContentSize / legacyRoundIconContentRatio
     },
     densities.map(density => ({
@@ -198,17 +222,51 @@ async function* generateAdaptiveIcon(
   fileInput: input.FileInput,
   config: Config
 ): AsyncIterable<string> {
-  let foregroundResourceType: string;
+  const backgroundImageInput = input.mapInput(fileInput, inputData => ({
+    image: inputData.backgroundImageData
+  }));
+  let backgroundResourceType: ResourceType;
   try {
-    yield* generateAdaptiveVdForeground(fileInput, config);
+    yield* generateAdaptiveIconLayerVd(
+      backgroundImageInput,
+      launcherBackgroundName,
+      config
+    );
+    backgroundResourceType = "drawable";
+  } catch {
+    yield* generateAdaptiveIconLayerPng(
+      backgroundImageInput,
+      launcherBackgroundName,
+      config
+    );
+    backgroundResourceType = "mipmap";
+  }
+
+  const foregroundImageInput = input.mapInput(fileInput, inputData => ({
+    image: inputData.foregroundImageData
+  }));
+  let foregroundResourceType: ResourceType;
+  try {
+    yield* generateAdaptiveIconLayerVd(
+      foregroundImageInput,
+      launcherForegroundName,
+      config
+    );
     foregroundResourceType = "drawable";
   } catch {
-    yield* generateAdaptivePngForeground(fileInput, config);
+    yield* generateAdaptiveIconLayerPng(
+      foregroundImageInput,
+      launcherForegroundName,
+      config
+    );
     foregroundResourceType = "mipmap";
   }
 
   // Adaptive icon
-  const adaptiveIconXml = adaptiveIconContent(foregroundResourceType);
+  const adaptiveIconXml = adaptiveIconContent(
+    backgroundResourceType,
+    foregroundResourceType
+  );
   yield* output.ensureFileContents(
     getIconPath(
       config,
@@ -229,17 +287,18 @@ async function* generateAdaptiveIcon(
   );
 }
 
-async function* generateAdaptiveVdForeground(
-  fileInput: input.FileInput,
+async function* generateAdaptiveIconLayerVd(
+  imageInput: input.Input<{ image: input.ImageData }>,
+  fileName: string,
   config: Config
 ): AsyncIterable<string> {
   if (!config.vectorDrawables) {
     throw Error("Vector drawables disabled");
   }
 
-  const fileData = await fileInput.read();
+  const imageData = await imageInput.read();
   const vdData = await svg2vectordrawable(
-    fileData.imageData.data.toString("utf-8"),
+    imageData.image.data.toString("utf-8"),
     undefined,
     true
   );
@@ -248,29 +307,34 @@ async function* generateAdaptiveVdForeground(
       config,
       "drawable",
       { density: "anydpi", minApiLevel: 26 },
-      `${launcherForegroundName}.xml`
+      `${fileName}.xml`
     ),
     vdData
   );
 }
 
-async function* generateAdaptivePngForeground(
-  fileInput: input.FileInput,
+async function* generateAdaptiveIconLayerPng(
+  imageInput: input.Input<{ image: input.ImageData }>,
+  fileName: string,
   config: Config
 ): AsyncIterable<string> {
   yield* output.genaratePngs(
-    fileInput,
+    input.mapInput(imageInput, imageData => ({
+      baseImage: imageData.image
+    })),
     densities.map(density => ({
       filePath: getIconPath(
         config,
         "mipmap",
         { density: density.name, minApiLevel: adaptiveIconMinSdk },
-        `${launcherForegroundName}.png`
+        `${fileName}.png`
       ),
       outputSize: adaptiveIconBaseSize * density.scale
     }))
   );
 }
+
+type ResourceType = "mipmap" | "drawable";
 
 type ResourceDensity =
   | "ldpi"
@@ -283,7 +347,7 @@ type ResourceDensity =
 
 function getIconPath(
   config: Config,
-  resourceType: "mipmap" | "drawable",
+  resourceType: ResourceType,
   qualifier: {
     density: ResourceDensity;
     minApiLevel?: number;

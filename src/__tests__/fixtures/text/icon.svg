@@ -1,12 +1,6 @@
 <svg version="1.2" xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 108 108"
     width="108" height="108">
-    <g id="background">
-        <rect fill="#FFFFFF" width="108" height="108" />
-    </g>
-    <g id="foreground">
-        <text fill="#000000" x="54" y="78"
-            font-family="Arial" font-size="68"
-            text-anchor="middle">A</text>    
-    </g>
+    <text fill="#000000" x="31" y="78"
+        font-family="Arial" font-size="68">A</text>
 </svg>

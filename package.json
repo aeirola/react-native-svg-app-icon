@@ -12,6 +12,7 @@
     "url": "https://github.com/aeirola/react-native-svg-app-icon/issues"
   },
   "files": [
+    "assets/",
     "lib/"
   ],
   "bin": {

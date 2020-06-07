@@ -48,6 +48,10 @@ npx react-native-svg-app-icon
 
 This will generate all the required icons under the `android/` and `ios/` directories.
 
+### Icon background
+
+If you want to use a separate background layer for Android adaptive icons, or because your source icon file doesn't contain a background, you can create an `icon-background.svg` file which will be used as the background layer for the generated icons.
+
 ## Icon format
 
 The input icon should be a SVG file adhering to the [Android adaptive icon specification](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive). Specifically, the image should:
@@ -97,4 +101,3 @@ Most common SVG features are supported, including masks and styles. The underlyi
 
 - Allow configuring icon path in `app.json`, similarly to https://docs.expo.io/versions/latest/guides/app-icons/
 - Add generation of Android notification icons
-- Support separate background and foreground for adaptive icons

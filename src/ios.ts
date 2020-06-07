@@ -64,7 +64,13 @@ async function* generateImages(
 ): AsyncIterable<string> {
   yield* output.genaratePngs(
     {
-      ...fileInput,
+      ...input.mapInput(fileInput, inputData => ({
+        baseImage: inputData.backgroundImageData,
+        operations: [
+          { type: "composite", file: inputData.foregroundImageData.data },
+          { type: "remove-alpha" }
+        ]
+      })),
       cropSize: input.inputContentSize
     },
     iosIcons.map(icon => ({

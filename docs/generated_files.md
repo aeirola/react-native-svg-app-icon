@@ -1,6 +1,6 @@
 # Generated images
 
-All icon images are generated from a single source file, but are processed in different ways to produce optimal results for eacth platform and device.
+All icon images are generated from a single source file, with an optional background, but are processed in different ways to produce optimal results for eacth platform and device.
 
 This document describes how the different images are being produced.
 
@@ -10,18 +10,18 @@ Android icons consist of the newer [adaptive icons](https://developer.android.co
 
 ### Adaptive icon
 
-Adaptive icons consist of a partially transparent foreground layer and solid background layer, which are rendered on top of each other to produce a final icon. In theory this enables interesting parallax effects, but in pratice these effects are never seen by the user. Thus, for simplicity, the whole icon is rendered in the foreground layer, leaving the background layer unused. If multilayer support is something that is needed, don't hesitate to create an issue.
+Adaptive icons consist of a partially transparent foreground layer and solid background layer, which are rendered on top of each other to produce a final icon. This enables interesting parallax effects in Android launchers which support it.
 
-This foreground layer is generated as vector drawable icons when possible, with fallback to PNG images in case the SVG source images contains incompatible content.
+This foreground and background layers are generated as vector drawable icons when possible, with fallback to PNG images in case the SVG source images contains incompatible content.
 
-Regardless of the foreground format, the adaptive icon file is produced which specifies the correct background and foreground layers:
+Regardless of the generated layer formats, the adaptive icon file is produced which specifies the correct background and foreground layers:
 
 `mipmap-anydpi-v26/ic_launcher.xml`
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@android:color/white" />
+    <background android:drawable="@drawable/ic_launcher_background" />
     <foreground android:drawable="@drawable/ic_launcher_foreground" />
 </adaptive-icon>
 ```
