@@ -2,7 +2,6 @@
     (https://commons.wikimedia.org/wiki/File:React-icon.svg -->
 <svg xmlns="http://www.w3.org/2000/svg" width="108" height="108"
     viewBox="0 0 108 108">
-    <path d="M0 0h108v108H0V0z" fill="#222"/>
     <path
         d="M58.833 53.827a4.844 4.844 0 1 1-9.687 0 4.844 4.844 0 0 1 9.687 0z"
         fill="#FFF"/>

@@ -1,7 +1,7 @@
 import main from "../cli";
 
 describe("cli", () => {
-  it("fails on missing file", () => {
-    expect(main()).rejects.toThrow();
+  it("fails on missing file", async () => {
+    await expect(main()).rejects.toThrow();
   });
 });

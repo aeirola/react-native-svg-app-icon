@@ -4,9 +4,18 @@ import * as SharpType from "sharp";
 
 import * as input from "./input";
 
-interface GenerateInput extends input.FileInput {
-  mask?: string;
-  overlay?: string;
+interface GenerateInput
+  extends input.Input<{
+    baseImage: input.ImageData;
+    operations?: Array<
+      | {
+          type: "composite";
+          blend?: "overlay" | "mask";
+          file: Buffer;
+        }
+      | { type: "remove-alpha" }
+    >;
+  }> {
   cropSize?: number;
 }
 
@@ -32,8 +41,8 @@ async function* genaratePng(
     return;
   }
 
-  const { sharp, imageData } = await fileInput.read();
-  const metadata = imageData.metadata;
+  const { sharp, baseImage, operations = [] } = await fileInput.read();
+  const metadata = baseImage.metadata;
 
   await fse.ensureDir(path.dirname(output.filePath));
 
@@ -43,9 +52,42 @@ async function* genaratePng(
       : input.inputImageSize / fileInput.cropSize;
   const targetDensity =
     (output.outputSize / metadata.width) * metadata.density * scale;
-  let image = sharp(imageData.data, {
-    density: targetDensity
-  });
+  let image = sharp(baseImage.data, { density: targetDensity });
+
+  for (const operation of operations) {
+    switch (operation.type) {
+      case "composite": {
+        let blend: SharpType.Blend;
+        switch (operation.blend) {
+          case "overlay":
+            blend = "over";
+            break;
+          case "mask":
+            blend = "dest-in";
+            break;
+          default:
+            blend = "over";
+        }
+
+        image = sharp(
+          await image
+            .composite([
+              {
+                input: await sharp(operation.file, {
+                  density: targetDensity
+                }).toBuffer(),
+                blend: blend
+              }
+            ])
+            .toBuffer()
+        );
+        break;
+      }
+      case "remove-alpha":
+        image = image.removeAlpha();
+        break;
+    }
+  }
 
   const extractRegion = getExtractRegion(
     targetDensity,
@@ -53,40 +95,6 @@ async function* genaratePng(
     output.outputSize
   );
   image = image.extract(extractRegion);
-
-  if (fileInput.mask) {
-    image = sharp(
-      await image
-        .composite([
-          {
-            input: await sharp(Buffer.from(fileInput.mask, "utf-8"), {
-              // TODO: Ensure correct density on differing input image sizes
-              density: targetDensity
-            })
-              .extract(extractRegion)
-              .toBuffer(),
-            blend: "dest-in"
-          }
-        ])
-        .toBuffer()
-    );
-
-    if (fileInput.overlay) {
-      image = image.composite([
-        {
-          input: await sharp(Buffer.from(fileInput.overlay, "utf-8"), {
-            // TODO: Ensure correct density on differing input image sizes
-            density: targetDensity
-          })
-            .extract(extractRegion)
-            .toBuffer(),
-          blend: "over"
-        }
-      ]);
-    }
-  } else {
-    image = image.removeAlpha();
-  }
 
   await image
     .png({
@@ -116,10 +124,9 @@ function getExtractRegion(
 }
 
 async function hasChanged(
-  input: input.FileInput,
+  input: input.Input<{}>,
   output: GenerateConfig
 ): Promise<boolean> {
-  const inputStat = input.fileStats;
   let outputStat: fse.Stats | null;
   try {
     outputStat = await fse.stat(output.filePath);
@@ -127,7 +134,7 @@ async function hasChanged(
     return true;
   }
 
-  if (inputStat.mtimeMs > outputStat.mtimeMs) {
+  if (input.lastModified > outputStat.mtimeMs) {
     return true;
   } else {
     return false;

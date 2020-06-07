@@ -24,8 +24,8 @@ describe("index", () => {
   it("generates files from example matching fixtures", () =>
     testFixture("example", 0.14));
 
-  it("generates files from white matching fixtures", () =>
-    testFixture("white", 0.06));
+  it("generates files from empty matching fixtures", () =>
+    testFixture("empty", 0.06));
 
   it(
     "generates files from text matching fixtures",
@@ -37,7 +37,14 @@ describe("index", () => {
     fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
 
     const generator = index.generate({
-      icon: path.join(fixturesPath, "example", "icon.svg")
+      icon: {
+        backgroundPath: path.join(
+          fixturesPath,
+          "example",
+          "icon-background.svg"
+        ),
+        foregroundPath: path.join(fixturesPath, "example", "icon.svg")
+      }
     });
 
     const generatedFiles = [];
@@ -56,7 +63,14 @@ describe("index", () => {
   ): Promise<void> {
     const fixtureDir = path.join(fixturesPath, fixture);
     const generator = index.generate({
-      icon: path.join(fixtureDir, "icon.svg"),
+      icon: {
+        backgroundPath: (await fse.pathExists(
+          path.join(fixtureDir, "icon-background.svg")
+        ))
+          ? path.join(fixtureDir, "icon-background.svg")
+          : undefined,
+        foregroundPath: path.join(fixtureDir, "icon.svg")
+      },
       resDirPath: path.join(
         tmpDir.name,
         "android",
