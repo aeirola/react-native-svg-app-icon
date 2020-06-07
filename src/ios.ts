@@ -64,7 +64,7 @@ async function* generateImages(
 ): AsyncIterable<string> {
   yield* output.genaratePngs(
     {
-      ...input.mapInput(fileInput, inputData => ({
+      ...input.mapInput(fileInput, (inputData) => ({
         baseImage: inputData.backgroundImageData,
         operations: [
           { type: "composite", file: inputData.foregroundImageData.data },
@@ -73,7 +73,7 @@ async function* generateImages(
       })),
       cropSize: input.inputContentSize
     },
-    iosIcons.map(icon => ({
+    iosIcons.map((icon) => ({
       filePath: path.join(config.iconsetDir, getIconFilename(icon)),
       flattenAlpha: icon.flattenAlpha,
       outputSize: icon.size * icon.scale
@@ -84,7 +84,7 @@ async function* generateImages(
 async function* generateManifest(config: Config): AsyncIterable<string> {
   const fileName = path.join(config.iconsetDir, "Contents.json");
   yield* output.ensureFileContents(fileName, {
-    images: iosIcons.map(icon => ({
+    images: iosIcons.map((icon) => ({
       filename: getIconFilename(icon),
       idiom: icon.idiom,
       scale: `${icon.scale}x`,

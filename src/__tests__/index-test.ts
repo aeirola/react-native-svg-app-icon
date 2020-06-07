@@ -34,7 +34,7 @@ describe("index", () => {
   );
 
   it("determines the correct ios asset path", async () => {
-    fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
+    await fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
 
     const generator = index.generate({
       icon: {
@@ -107,8 +107,8 @@ async function expectFilesToEqual(
   actual: string,
   threshold: number
 ): Promise<void> {
-  expectFileToExist(expected);
-  expectFileToExist(actual);
+  await expectFileToExist(expected);
+  await expectFileToExist(actual);
 
   const extension = path.extname(expected);
   switch (extension) {

@@ -1,9 +1,9 @@
-dist: xenial
+dist: bionic
 language: node_js
 node_js:
   - lts/dubnium # v10
-  - "11"
-  - "12"
+  - "lts/erbium" # 12
+  - "14"
 cache: npm
 deploy:
   provider: npm

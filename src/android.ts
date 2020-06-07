@@ -168,7 +168,7 @@ async function* generateLegacyIcons(
 ): AsyncIterable<string> {
   yield* output.genaratePngs(
     {
-      ...input.mapInput(fileInput, inputData => ({
+      ...input.mapInput(fileInput, (inputData) => ({
         baseImage: inputData.backgroundImageData,
         operations: [
           { type: "composite", file: inputData.foregroundImageData.data },
@@ -178,7 +178,7 @@ async function* generateLegacyIcons(
       })),
       cropSize: input.inputContentSize / legacySquareIconContentRatio
     },
-    densities.map(density => ({
+    densities.map((density) => ({
       filePath: getIconPath(
         config,
         "mipmap",
@@ -196,7 +196,7 @@ async function* generateRoundIcons(
 ): AsyncIterable<string> {
   yield* output.genaratePngs(
     {
-      ...input.mapInput(fileInput, inputData => ({
+      ...input.mapInput(fileInput, (inputData) => ({
         baseImage: inputData.backgroundImageData,
         operations: [
           { type: "composite", file: inputData.foregroundImageData.data },
@@ -206,7 +206,7 @@ async function* generateRoundIcons(
       })),
       cropSize: input.inputContentSize / legacyRoundIconContentRatio
     },
-    densities.map(density => ({
+    densities.map((density) => ({
       filePath: getIconPath(
         config,
         "mipmap",
@@ -222,7 +222,7 @@ async function* generateAdaptiveIcon(
   fileInput: input.FileInput,
   config: Config
 ): AsyncIterable<string> {
-  const backgroundImageInput = input.mapInput(fileInput, inputData => ({
+  const backgroundImageInput = input.mapInput(fileInput, (inputData) => ({
     image: inputData.backgroundImageData
   }));
   let backgroundResourceType: ResourceType;
@@ -242,7 +242,7 @@ async function* generateAdaptiveIcon(
     backgroundResourceType = "mipmap";
   }
 
-  const foregroundImageInput = input.mapInput(fileInput, inputData => ({
+  const foregroundImageInput = input.mapInput(fileInput, (inputData) => ({
     image: inputData.foregroundImageData
   }));
   let foregroundResourceType: ResourceType;
@@ -319,10 +319,10 @@ async function* generateAdaptiveIconLayerPng(
   config: Config
 ): AsyncIterable<string> {
   yield* output.genaratePngs(
-    input.mapInput(imageInput, imageData => ({
+    input.mapInput(imageInput, (imageData) => ({
       baseImage: imageData.image
     })),
-    densities.map(density => ({
+    densities.map((density) => ({
       filePath: getIconPath(
         config,
         "mipmap",
