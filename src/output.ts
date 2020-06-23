@@ -124,7 +124,7 @@ function getExtractRegion(
 }
 
 async function hasChanged(
-  input: input.Input<{}>,
+  input: input.Input<Record<string, unknown>>,
   output: GenerateConfig
 ): Promise<boolean> {
   let outputStat: fse.Stats | null;
@@ -143,7 +143,7 @@ async function hasChanged(
 
 export async function* ensureFileContents(
   path: string,
-  content: string | object
+  content: string | Record<string, unknown>
 ): AsyncIterable<string> {
   let stringContent;
   switch (typeof content) {

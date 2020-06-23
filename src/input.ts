@@ -23,17 +23,17 @@ type FileModificationTime = fse.Stats["mtimeMs"];
 
 export type FileInput = Input<InputData>;
 type LoadedInput = Loaded<InputData>;
-interface InputData {
+type InputData = {
   backgroundImageData: BackgroundImageData;
   foregroundImageData: ImageData;
-}
+};
 
-export interface Input<Data extends object> {
+export interface Input<Data extends Record<string, unknown>> {
   lastModified: FileModificationTime;
   read: () => Promise<Loaded<Data>>;
 }
 
-type Loaded<Data extends {}> = Data & {
+type Loaded<Data extends Record<string, unknown>> = Data & {
   sharp: typeof SharpType.default;
 };
 
@@ -84,8 +84,8 @@ async function getLastModifiedTime(
   config: Config
 ): Promise<FileModificationTime> {
   const fileModifiedTimes = await Promise.all([
-    fse.stat(config.backgroundPath).then(stat => stat.mtimeMs),
-    fse.stat(config.foregroundPath).then(stat => stat.mtimeMs)
+    fse.stat(config.backgroundPath).then((stat) => stat.mtimeMs),
+    fse.stat(config.foregroundPath).then((stat) => stat.mtimeMs)
   ]);
 
   return Math.max(...fileModifiedTimes);
@@ -94,7 +94,7 @@ async function getLastModifiedTime(
 function lazyLoadProvider(config: Config): () => Promise<LoadedInput> {
   let lazyLoadedData: Promise<LoadedInput> | undefined = undefined;
 
-  return function(): Promise<LoadedInput> {
+  return function (): Promise<LoadedInput> {
     if (lazyLoadedData === undefined) {
       lazyLoadedData = loadData(config);
     }
@@ -163,7 +163,7 @@ async function readImage(
 function validateMetadata(metadata: SharpType.Metadata): ValidMetadata {
   if (metadata.format !== "svg") {
     throw new Error(
-      `Unsupported image format ${metadata.format}.` +
+      `Unsupported image format ${metadata.format || "undefined"}.` +
         `Only SVG images are supported.`
     );
   }
@@ -205,8 +205,8 @@ function validateBackgroundImage(imageData: ImageData): BackgroundImageData {
 }
 
 export function mapInput<
-  OriginalData extends object,
-  MappedData extends object
+  OriginalData extends Record<string, unknown>,
+  MappedData extends Record<string, unknown>
 >(
   fileInput: Input<OriginalData>,
   mapFunction: (data: OriginalData) => MappedData
