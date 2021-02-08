@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xml:space="preserve"
+   width="108"
+   height="108"
+   version="1.1"
+   style="clip-rule:evenodd;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
+   viewBox="0 0 2857.5002 2857.5"
+   id="svg907"
+   sodipodi:docname="icon.svg"
+   inkscape:version="1.0.1 (0767f8302a, 2020-10-17)"
+   inkscape:export-filename="/home/hb/Dev/Contador-de-Clientes/resources/logo/png/32-android-front-1024.png"
+   inkscape:export-xdpi="910.22223"
+   inkscape:export-ydpi="910.22223"><metadata
+   id="metadata911"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1080"
+   inkscape:window-height="617"
+   id="namedview909"
+   showgrid="false"
+   inkscape:zoom="2.8294819"
+   inkscape:cx="29.72623"
+   inkscape:cy="55.268523"
+   inkscape:window-x="1481"
+   inkscape:window-y="209"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="layer4"
+   inkscape:document-rotation="0"
+   units="px"
+   inkscape:pagecheckerboard="true" />
+ <defs
+   id="defs893"><inkscape:perspective
+   sodipodi:type="inkscape:persp3d"
+   inkscape:vp_x="616.48763 : 1133.3718 : 1"
+   inkscape:vp_y="0 : 331.1027 : 0"
+   inkscape:vp_z="1899.8242 : 1142.5367 : 1"
+   inkscape:persp3d-origin="1186.3642 : 984.84896 : 1"
+   id="perspective858" /><linearGradient
+   inkscape:collect="always"
+   id="linearGradient2210"><stop
+     style="stop-color:#fff700;stop-opacity:1"
+     offset="0"
+     id="stop2206" /><stop
+     style="stop-color:#ffe600;stop-opacity:1"
+     offset="1"
+     id="stop2208" /></linearGradient>
+  <style
+   type="text/css"
+   id="style891">
+   <![CDATA[
+    .str1 {stroke:#FEFEFE;stroke-width:67.73;stroke-miterlimit:22.9256}
+    .str0 {stroke:#373435;stroke-width:67.73;stroke-miterlimit:22.9256}
+    .fil0 {fill:none}
+    .fil1 {fill:#5FBC62}
+    .fil3 {fill:#00A859}
+    .fil2 {fill:#FFE756}
+   ]]>
+  </style>
+ 
+  
+  
+  
+ 
+  
+  
+  
+ <linearGradient
+   inkscape:collect="always"
+   xlink:href="#linearGradient2210"
+   id="linearGradient2212"
+   x1="1800.28"
+   y1="2827.3115"
+   x2="850.75024"
+   y2="2827.3115"
+   gradientUnits="userSpaceOnUse" /><filter
+   style="color-interpolation-filters:sRGB;"
+   inkscape:label="Drop Shadow"
+   id="filter904"
+   x="-0.067570385"
+   width="1.1351408"
+   y="-0.12422824"
+   height="1.2484565"><feFlood
+     flood-opacity="0.498039"
+     flood-color="rgb(0,0,0)"
+     result="flood"
+     id="feFlood894" /><feComposite
+     in="flood"
+     in2="SourceGraphic"
+     operator="in"
+     result="composite1"
+     id="feComposite896" /><feGaussianBlur
+     in="composite1"
+     stdDeviation="16.675902"
+     result="blur"
+     id="feGaussianBlur898" /><feOffset
+     dx="0"
+     dy="0"
+     result="offset"
+     id="feOffset900" /><feComposite
+     in="SourceGraphic"
+     in2="offset"
+     operator="over"
+     result="composite2"
+     id="feComposite902" /></filter></defs>
+ 
+ 
+<g
+   inkscape:groupmode="layer"
+   id="layer3"
+   inkscape:label="_back"><g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="BG"
+     style="display:inline;opacity:1"><rect
+       style="fill:#adb649;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:22.9256;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect971"
+       width="2857.5"
+       height="2857.5"
+       x="7.2686151e-07"
+       y="8.377657e-07"
+       inkscape:export-filename="/home/hb/Imagens/Dev/Contador/Logo/4-greenGradientBgc.png"
+       inkscape:export-xdpi="302"
+       inkscape:export-ydpi="302" /></g><g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="SafeZone"
+     style="display:none"
+     sodipodi:insensitive="true"><circle
+       style="opacity:0.998;fill:#f500e0;fill-opacity:1;stroke:none;stroke-width:119.467;stroke-miterlimit:22.93;paint-order:stroke markers fill"
+       id="path931"
+       cx="1428.75"
+       cy="1428.75"
+       r="873.12506" /></g></g><g
+   inkscape:groupmode="layer"
+   id="layer2"
+   inkscape:label="_fore"><g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Pyramid"
+     style="display:inline"><g
+       sodipodi:type="inkscape:box3d"
+       id="g860"
+       style="fill:#fffb00;stroke-width:0;stroke-miterlimit:22.9256;paint-order:stroke markers fill"
+       inkscape:perspectiveID="#perspective858"
+       inkscape:corner0="47.135747 : 2.8250115 : 0 : 1"
+       inkscape:corner7="0.019085045 : -0.51145018 : 162.37085 : 1"><path
+         sodipodi:type="inkscape:box3dside"
+         id="path872"
+         style="fill:#e9e9ff;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round"
+         inkscape:box3dsidetype="11"
+         d="m 1609.0756,1713.3212 286.232,-3.1164 v 6.7612 l -286.232,1.6031 z"
+         points="1895.3076,1710.2048 1895.3076,1716.966 1609.0756,1718.5691 1609.0756,1713.3212 " /><path
+         sodipodi:type="inkscape:box3dside"
+         id="path862"
+         style="fill:#353564;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round"
+         inkscape:box3dsidetype="6"
+         d="m 628.32656,1707.7819 v 22.9499 l 980.74904,-12.1627 v -5.2479 z"
+         points="628.32656,1730.7318 1609.0756,1718.5691 1609.0756,1713.3212 628.32656,1707.7819 " /><path
+         sodipodi:type="inkscape:box3dside"
+         id="path870"
+         style="fill:#afafde;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round"
+         inkscape:box3dsidetype="13"
+         d="m 628.32656,1730.7318 547.36514,305.309 719.6159,-319.0748 -286.232,1.6031 z"
+         points="1175.6917,2036.0408 1895.3076,1716.966 1609.0756,1718.5691 628.32656,1730.7318 " /><path
+         sodipodi:type="inkscape:box3dside"
+         id="path864"
+         style="fill:#4d4d9f;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round"
+         inkscape:box3dsidetype="5"
+         d="m 628.32656,1707.7819 547.36514,-755.764 719.6159,758.1869 -286.232,3.1164 z"
+         points="1175.6917,952.0179 1895.3076,1710.2048 1609.0756,1713.3212 628.32656,1707.7819 " /><path
+         sodipodi:type="inkscape:box3dside"
+         id="path868"
+         style="fill:#d7d7ff;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round"
+         inkscape:box3dsidetype="14"
+         d="m 1175.6917,952.0179 v 1084.0229 l 719.6159,-319.0748 v -6.7612 z"
+         points="1175.6917,2036.0408 1895.3076,1716.966 1895.3076,1710.2048 1175.6917,952.0179 " /><path
+         sodipodi:type="inkscape:box3dside"
+         id="path866"
+         style="fill:#8686bf;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round"
+         inkscape:box3dsidetype="3"
+         d="M 628.32656,1707.7819 1175.6917,952.0179 V 2036.0408 L 628.32656,1730.7318 Z"
+         points="1175.6917,952.0179 1175.6917,2036.0408 628.32656,1730.7318 628.32656,1707.7819 " /></g></g><g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Sun"><circle
+       style="clip-rule:evenodd;display:inline;fill:#ffd200;fill-rule:evenodd;stroke-width:0;stroke-miterlimit:22.9256;paint-order:stroke markers fill;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision;fill-opacity:1"
+       id="path874"
+       cx="1914.297"
+       cy="1027.1948"
+       r="203.69254" /></g></g></svg>
