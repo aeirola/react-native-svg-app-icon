@@ -48,6 +48,22 @@ npx react-native-svg-app-icon
 
 This will generate all the required icons under the `android/` and `ios/` directories.
 
+### Extension
+
+As experimental feature, if using Inkscape to create the image, you may have a `_fore` and `_back` layers in your SVG, and by calling
+
+```bash
+npx react-native-svg-app-icon --layers
+```
+
+two temporary files will be created, one for each layer, and they will be normally used as the icon.svg and the icon-background.svg files. Using this feature, there must not be other layers at the root level, but there may be sublayers below them.
+
+Under the hoods, the content of the SVG is copied, and `style="display:none"` is added at the end of the respective _fore and _back layers <g> opening tag.
+
+You may and should for now also pass the `--keepLayers` argument so those temporary files aren't automatically excluded, and you may verify if both layers are properly splitted.
+
+You may also pass `--dontCreate`, so the output icon files aren't generated.
+
 ### Icon background
 
 If you want to use a separate background layer for Android adaptive icons, or because your source icon file doesn't contain a background, you can create an `icon-background.svg` file which will be used as the background layer for the generated icons.
