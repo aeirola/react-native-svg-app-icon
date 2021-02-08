@@ -46,9 +46,9 @@ function splitIconLayers() {
   console.log("Created both layer files");
 }
 
-function deleteSplitted() {
-  fse.unlinkSync(layerBackgroundPath);
-  fse.unlinkSync(layerForegroundPath);
+function deleteLayersFiles() {
+  if (fse.existsSync(layerBackgroundPath)) fse.unlinkSync(layerBackgroundPath);
+  if (fse.existsSync(layerForegroundPath)) fse.unlinkSync(layerForegroundPath);
 }
 
 async function main(): Promise<void> {
@@ -89,7 +89,7 @@ async function main(): Promise<void> {
     }
   } finally {
     if (usingLayers) {
-      if (!keepLayerFiles) deleteSplitted();
+      if (!keepLayerFiles) deleteLayersFiles();
     }
 
     console.log("Done");
