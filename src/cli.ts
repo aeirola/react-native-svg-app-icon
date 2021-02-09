@@ -16,7 +16,7 @@ function addStringAtPos(original: string, add: string, position: number) {
 function splitIconLayers() {
   const iconContent = fse.readFileSync(defaultForegroundPath, "utf-8");
 
-  const _foreCloseTagMatch = /(?<=label="_fore").*(>)/g.exec(iconContent);
+  const _foreCloseTagMatch = /(?<=label="_fore"[\s\S]*)(>)/gm.exec(iconContent);
   if (!_foreCloseTagMatch) {
     throw new Error("_fore layer not found");
   }
@@ -28,7 +28,7 @@ function splitIconLayers() {
     _foreClosingTagPos
   );
 
-  const _backCloseTagMatch = /(?<=label="_back").*(>)/g.exec(iconContent);
+  const _backCloseTagMatch = /(?<=label="_back"[\s\S]*)(>)/gm.exec(iconContent);
   if (!_backCloseTagMatch) {
     throw new Error("_back layer not found");
   }
@@ -87,12 +87,11 @@ async function main(): Promise<void> {
         console.log("Wrote " + file);
       }
     }
+    console.log("Done");
   } finally {
     if (usingLayers) {
       if (!keepLayerFiles) deleteLayersFiles();
     }
-
-    console.log("Done");
   }
 }
 
