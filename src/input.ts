@@ -200,7 +200,7 @@ function validateBackgroundImage(imageData: ImageData): BackgroundImageData {
       }
     };
   } else {
-    throw new Error("Input image should be opaque");
+    throw new Error("Background image needs to be opaque");
   }
 }
 
