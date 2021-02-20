@@ -29,7 +29,7 @@ describe("index", () => {
 
   it(
     "generates files from text matching fixtures",
-    () => testFixture("text", 0.06),
+    () => testFixture("text", 0.12),
     20 * 1000
   );
 
