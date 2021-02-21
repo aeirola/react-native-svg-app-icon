@@ -23,7 +23,7 @@
     "lint": "npm run lint:eslint && npm run lint:typescript",
     "lint:eslint": "eslint 'src/**/*.ts'",
     "lint:typescript": "tsc --noEmit",
-    "jest": "jest src/",
+    "jest": "jest --runInBand src/",
     "test": "npm run lint && npm run jest && npm run test:example",
     "test:example": "cd example && npm test",
     "build": "babel src/ -d lib/ -x .ts",
@@ -69,5 +69,8 @@
   },
   "engines": {
     "node": ">=10.0.0"
+  },
+  "jest": {
+    "testTimeout": 10000
   }
 }
