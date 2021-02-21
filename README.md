@@ -15,7 +15,7 @@
     src="src/__tests__/fixtures/example/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" />
 </p>
 
-[![Build Status](https://travis-ci.org/aeirola/react-native-svg-app-icon.svg?branch=master)](https://travis-ci.org/aeirola/react-native-svg-app-icon)
+![Build Status](https://github.com/aeirola/react-native-svg-app-icon/actions/workflows/main.yml/badge.svg?branch=master)
 
 CLI tool for generating all the necessary iOS and Android application launcher icons for React Native projects from a single SVG source file. Features include:
 
