@@ -52,6 +52,30 @@ This will generate all the required icons under the `android/` and `ios/` direct
 
 If you want to use a separate background layer for Android adaptive icons, or because your source icon file doesn't contain a background, you can create an `icon-background.svg` file which will be used as the background layer for the generated icons.
 
+In case you want to produce both foreground and background layers from a single SVG file, you can use [svg-deconstruct](https://github.com/not-fred/svg-deconstruct) to split layers to separate files. See configuration section below on how to specify input file paths.
+
+## Configuration
+
+Behaviour can be configured in the `app.json` under the `svgAppIcon` field. For example if you want to store icon layers under an `icon/` directory, you might want to use:
+
+```json
+{
+  "name": "example",
+  "displayName": "example",
+  "svgAppIcon": {
+    "foregroundPath": "./icon/icon-foreground.svg",
+    "backgroundPath": "./icon/icon-background.svg"
+  }
+}
+```
+
+Supported configuration values are
+
+| Field            | Default                   | Description                                                                                                                                                     |
+| ---------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `foregroundPath` | `"./icon.svg"`            | Input file path for the foreground layer. File needs to exist, and may contain transparency.                                                                    |
+| `backgroundPath` | `"./icon-background.svg"` | Input file path for the background layer. File doesn't need to exist, and will default to a fully white background. If file exist, it needs to be fully opaque. |
+
 ## Icon format
 
 The input icon should be a SVG file adhering to the [Android adaptive icon specification](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive). Specifically, the image should:
@@ -99,5 +123,4 @@ Most common SVG features are supported, including masks and styles. The underlyi
 
 ## Future improvements
 
-- Allow configuring icon path in `app.json`, similarly to https://docs.expo.io/versions/latest/guides/app-icons/
 - Add generation of Android notification icons
