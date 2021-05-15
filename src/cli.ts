@@ -11,7 +11,13 @@ import * as reactNativeSvgAppIcon from "./index";
 type CliConfig = {
   backgroundPath: string;
   foregroundPath: string;
+  excludePlatforms: Platform[];
 };
+
+/**
+ * Supported platforms for generating icons.
+ */
+type Platform = "android" | "ios";
 
 /**
  * Custom extension of RN / Expo app.json for file based configuration.
@@ -27,7 +33,8 @@ type AppJson = Partial<{
  */
 const defaultCliConfig: CliConfig = {
   backgroundPath: "./icon-background.svg",
-  foregroundPath: "./icon.svg"
+  foregroundPath: "./icon.svg",
+  excludePlatforms: []
 };
 
 async function main(): Promise<void> {
@@ -50,6 +57,10 @@ async function main(): Promise<void> {
         ? cliConfig.backgroundPath
         : undefined,
       foregroundPath: cliConfig.foregroundPath
+    },
+    exclude: {
+      android: cliConfig.excludePlatforms.includes("android"),
+      ios: cliConfig.excludePlatforms.includes("ios")
     }
   });
 
