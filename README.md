@@ -64,17 +64,19 @@ Behaviour can be configured in the `app.json` under the `svgAppIcon` field. For 
   "displayName": "example",
   "svgAppIcon": {
     "foregroundPath": "./icon/icon-foreground.svg",
-    "backgroundPath": "./icon/icon-background.svg"
+    "backgroundPath": "./icon/icon-background.svg",
+    "excludePlatforms": ["android"]
   }
 }
 ```
 
 Supported configuration values are
 
-| Field            | Default                   | Description                                                                                                                                                     |
-| ---------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `foregroundPath` | `"./icon.svg"`            | Input file path for the foreground layer. File needs to exist, and may contain transparency.                                                                    |
-| `backgroundPath` | `"./icon-background.svg"` | Input file path for the background layer. File doesn't need to exist, and will default to a fully white background. If file exist, it needs to be fully opaque. |
+| Field              | Default                   | Description                                                                                                                                                     |
+| ------------------ | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `foregroundPath`   | `"./icon.svg"`            | Input file path for the foreground layer. File needs to exist, and may contain transparency.                                                                    |
+| `backgroundPath`   | `"./icon-background.svg"` | Input file path for the background layer. File doesn't need to exist, and will default to a fully white background. If file exist, it needs to be fully opaque. |
+| `excludePlatforms` | `[]`                      | Array of platforms for which no application launcher icons should be generated. Possible values are `android` and `ios`.                                        |
 
 ## Icon format
 
