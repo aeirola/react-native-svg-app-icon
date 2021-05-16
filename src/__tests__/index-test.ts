@@ -44,7 +44,8 @@ describe("index", () => {
           "icon-background.svg"
         ),
         foregroundPath: path.join(fixturesPath, "example", "icon.svg")
-      }
+      },
+      platforms: ["android", "ios"]
     });
 
     const generatedFiles = [];
@@ -71,6 +72,7 @@ describe("index", () => {
           : undefined,
         foregroundPath: path.join(fixtureDir, "icon.svg")
       },
+      platforms: ["android", "ios"],
       resDirPath: path.join(
         tmpDir.name,
         "android",
