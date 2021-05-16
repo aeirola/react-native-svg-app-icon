@@ -65,18 +65,18 @@ Behaviour can be configured in the `app.json` under the `svgAppIcon` field. For 
   "svgAppIcon": {
     "foregroundPath": "./icon/icon-foreground.svg",
     "backgroundPath": "./icon/icon-background.svg",
-    "excludePlatforms": ["android"]
+    "platforms": ["ios"]
   }
 }
 ```
 
 Supported configuration values are
 
-| Field              | Default                   | Description                                                                                                                                                     |
-| ------------------ | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `foregroundPath`   | `"./icon.svg"`            | Input file path for the foreground layer. File needs to exist, and may contain transparency.                                                                    |
-| `backgroundPath`   | `"./icon-background.svg"` | Input file path for the background layer. File doesn't need to exist, and will default to a fully white background. If file exist, it needs to be fully opaque. |
-| `excludePlatforms` | `[]`                      | Array of platforms for which no application launcher icons should be generated. Possible values are `android` and `ios`.                                        |
+| Field            | Default                   | Description                                                                                                                                                     |
+| ---------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `foregroundPath` | `"./icon.svg"`            | Input file path for the foreground layer. File needs to exist, and may contain transparency.                                                                    |
+| `backgroundPath` | `"./icon-background.svg"` | Input file path for the background layer. File doesn't need to exist, and will default to a fully white background. If file exist, it needs to be fully opaque. |
+| `platforms`      | `["android", "ios"]`      | Array of platforms for which application launcher icons should be generated. Possible values are `android` and `ios`.                                           |
 
 ## Icon format
 
