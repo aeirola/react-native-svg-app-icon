@@ -43,9 +43,14 @@ async function main(): Promise<void> {
   let cliConfig: CliConfig;
   try {
     const appJson = (await fse.readJson("./app.json")) as AppJson;
+    const { platforms, ...appJsonConfig } = appJson.svgAppIcon || {};
+
     cliConfig = {
       ...defaultCliConfig,
-      ...appJson.svgAppIcon
+      ...appJsonConfig,
+      ...(Array.isArray(platforms) && {
+        platforms: platforms.map((e) => e.toLowerCase() as Platform)
+      })
     };
   } catch {
     cliConfig = defaultCliConfig;
