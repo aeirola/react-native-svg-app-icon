@@ -4,6 +4,11 @@ import * as SharpType from "sharp";
 
 import * as input from "./input";
 
+export interface OutputConfig {
+  /** Write output files even if they are newer than input files. */
+  force: boolean;
+}
+
 interface GenerateInput
   extends input.Input<{
     baseImage: input.ImageData;
@@ -19,7 +24,7 @@ interface GenerateInput
   cropSize?: number;
 }
 
-interface GenerateConfig {
+interface GenerateConfig extends OutputConfig {
   filePath: string;
   outputSize: number;
 }
@@ -37,7 +42,7 @@ async function* genaratePng(
   fileInput: GenerateInput,
   output: GenerateConfig
 ): AsyncIterable<string> {
-  if (!(await hasChanged(fileInput, output))) {
+  if (!(output.force || (await hasChanged(fileInput, output)))) {
     return;
   }
 
@@ -143,7 +148,8 @@ async function hasChanged(
 
 export async function* ensureFileContents(
   path: string,
-  content: string | Record<string, unknown>
+  content: string | Record<string, unknown>,
+  config: OutputConfig
 ): AsyncIterable<string> {
   let stringContent;
   switch (typeof content) {
@@ -158,18 +164,22 @@ export async function* ensureFileContents(
   }
   const contentBuffer = Buffer.from(stringContent, "utf-8");
 
-  let equal;
-  try {
-    const diskFileBuffer = await fse.readFile(path);
-    equal = diskFileBuffer.equals(contentBuffer);
-  } catch {
-    equal = false;
-  }
-
-  if (equal) {
+  if (!config.force && (await hasFileContent(path, contentBuffer))) {
     return;
   } else {
     await fse.outputFile(path, contentBuffer);
     yield path;
+  }
+}
+
+async function hasFileContent(
+  path: string,
+  contentBuffer: Buffer
+): Promise<boolean> {
+  try {
+    const diskFileBuffer = await fse.readFile(path);
+    return diskFileBuffer.equals(contentBuffer);
+  } catch {
+    return false;
   }
 }

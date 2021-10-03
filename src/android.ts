@@ -139,7 +139,7 @@ function getViewBox(input: number): string {
   return viewBox.join(" ");
 }
 
-export interface Config {
+export interface Config extends output.OutputConfig {
   resDirPath: string;
   vectorDrawables: boolean;
 }
@@ -158,7 +158,8 @@ function getConfig(config: Partial<Config>): Config {
   return {
     resDirPath: config.resDirPath || "./android/app/src/main/res",
     vectorDrawables:
-      config.vectorDrawables === undefined ? true : config.vectorDrawables
+      config.vectorDrawables === undefined ? true : config.vectorDrawables,
+    force: config.force || false
   };
 }
 
@@ -185,7 +186,8 @@ async function* generateLegacyIcons(
         { density: density.name },
         `${launcherName}.png`
       ),
-      outputSize: legacyIconBaseSize * density.scale
+      outputSize: legacyIconBaseSize * density.scale,
+      force: config.force
     }))
   );
 }
@@ -213,7 +215,8 @@ async function* generateRoundIcons(
         { density: density.name },
         `${roundIconName}.png`
       ),
-      outputSize: legacyIconBaseSize * density.scale
+      outputSize: legacyIconBaseSize * density.scale,
+      force: config.force
     }))
   );
 }
@@ -274,7 +277,8 @@ async function* generateAdaptiveIcon(
       { density: "anydpi", minApiLevel: 26 },
       `${launcherName}.xml`
     ),
-    adaptiveIconXml
+    adaptiveIconXml,
+    config
   );
   yield* output.ensureFileContents(
     getIconPath(
@@ -283,7 +287,8 @@ async function* generateAdaptiveIcon(
       { density: "anydpi", minApiLevel: 26 },
       `${roundIconName}.xml`
     ),
-    adaptiveIconXml
+    adaptiveIconXml,
+    config
   );
 }
 
@@ -309,7 +314,8 @@ async function* generateAdaptiveIconLayerVd(
       { density: "anydpi", minApiLevel: 26 },
       `${fileName}.xml`
     ),
-    vdData
+    vdData,
+    config
   );
 }
 
@@ -329,7 +335,8 @@ async function* generateAdaptiveIconLayerPng(
         { density: density.name, minApiLevel: adaptiveIconMinSdk },
         `${fileName}.png`
       ),
-      outputSize: adaptiveIconBaseSize * density.scale
+      outputSize: adaptiveIconBaseSize * density.scale,
+      force: config.force
     }))
   );
 }

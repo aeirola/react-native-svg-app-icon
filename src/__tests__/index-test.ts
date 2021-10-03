@@ -9,6 +9,14 @@ import * as index from "../index";
 
 describe("index", () => {
   const fixturesPath = path.join(__dirname, "fixtures");
+  const defaultConfig: index.Config = {
+    icon: {
+      backgroundPath: path.join(fixturesPath, "example", "icon-background.svg"),
+      foregroundPath: path.join(fixturesPath, "example", "icon.svg")
+    },
+    platforms: ["android", "ios"],
+    force: false
+  };
 
   let tmpDir: tmp.DirResult;
   beforeEach(() => {
@@ -36,26 +44,34 @@ describe("index", () => {
   it("determines the correct ios asset path", async () => {
     await fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
 
-    const generator = index.generate({
-      icon: {
-        backgroundPath: path.join(
-          fixturesPath,
-          "example",
-          "icon-background.svg"
-        ),
-        foregroundPath: path.join(fixturesPath, "example", "icon.svg")
-      },
-      platforms: ["android", "ios"]
-    });
-
-    const generatedFiles = [];
-    for await (const file of generator) {
-      generatedFiles.push(file);
-    }
+    const generator = index.generate(defaultConfig);
+    const generatedFiles = await readIterable(generator);
 
     expect(generatedFiles).toContain(
       "ios/project/Images.xcassets/AppIcon.appiconset/iphone-40@3x.png"
     );
+  });
+
+  it("does not re-render files on second run", async () => {
+    await fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
+
+    const firstRunFiles = await readIterable(index.generate(defaultConfig));
+    const sedonRunFiles = await readIterable(index.generate(defaultConfig));
+
+    expect(firstRunFiles.length).toBeGreaterThan(0);
+    expect(sedonRunFiles.length).toBe(0);
+  });
+
+  it.only("does re-renders files on second run when force is set to true", async () => {
+    await fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
+
+    const firstRunFiles = await readIterable(index.generate(defaultConfig));
+    const sedonRunFiles = await readIterable(
+      index.generate({ ...defaultConfig, force: true })
+    );
+
+    expect(firstRunFiles.length).toBeGreaterThan(0);
+    expect(sedonRunFiles.length).toBeGreaterThan(0);
   });
 
   async function testFixture(
@@ -64,6 +80,7 @@ describe("index", () => {
   ): Promise<void> {
     const fixtureDir = path.join(fixturesPath, fixture);
     const generator = index.generate({
+      ...defaultConfig,
       icon: {
         backgroundPath: (await fse.pathExists(
           path.join(fixtureDir, "icon-background.svg")
@@ -72,7 +89,6 @@ describe("index", () => {
           : undefined,
         foregroundPath: path.join(fixtureDir, "icon.svg")
       },
-      platforms: ["android", "ios"],
       resDirPath: path.join(
         tmpDir.name,
         "android",
@@ -103,6 +119,17 @@ describe("index", () => {
     );
   }
 });
+
+async function readIterable<Data>(
+  iterable: AsyncIterable<Data>
+): Promise<Data[]> {
+  const values = [];
+  for await (const value of iterable) {
+    values.push(value);
+  }
+
+  return values;
+}
 
 async function expectFilesToEqual(
   expected: string,

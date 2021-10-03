@@ -25,7 +25,7 @@ const iosIcons = [
   { idiom: "ios-marketing", scale: 1, size: 1024, flattenAlpha: true }
 ];
 
-export interface Config {
+export interface Config extends output.OutputConfig {
   iconsetDir: string;
 }
 export async function* generate(
@@ -40,7 +40,8 @@ export async function* generate(
 
 async function getConfig(config: Partial<Config>): Promise<Config> {
   return {
-    iconsetDir: config.iconsetDir || (await getIconsetDir())
+    iconsetDir: config.iconsetDir || (await getIconsetDir()),
+    force: config.force || false
   };
 }
 
@@ -76,25 +77,30 @@ async function* generateImages(
     iosIcons.map((icon) => ({
       filePath: path.join(config.iconsetDir, getIconFilename(icon)),
       flattenAlpha: icon.flattenAlpha,
-      outputSize: icon.size * icon.scale
+      outputSize: icon.size * icon.scale,
+      force: config.force
     }))
   );
 }
 
 async function* generateManifest(config: Config): AsyncIterable<string> {
   const fileName = path.join(config.iconsetDir, "Contents.json");
-  yield* output.ensureFileContents(fileName, {
-    images: iosIcons.map((icon) => ({
-      filename: getIconFilename(icon),
-      idiom: icon.idiom,
-      scale: `${icon.scale}x`,
-      size: `${icon.size}x${icon.size}`
-    })),
-    info: {
-      author: "react-native-svg-app-icon",
-      version: 1
-    }
-  });
+  yield* output.ensureFileContents(
+    fileName,
+    {
+      images: iosIcons.map((icon) => ({
+        filename: getIconFilename(icon),
+        idiom: icon.idiom,
+        scale: `${icon.scale}x`,
+        size: `${icon.size}x${icon.size}`
+      })),
+      info: {
+        author: "react-native-svg-app-icon",
+        version: 1
+      }
+    },
+    config
+  );
 }
 
 function getIconFilename(icon: {
