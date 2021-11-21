@@ -14,6 +14,8 @@ type CliConfig = {
   foregroundPath: string;
   platforms: Platform[];
   force: boolean;
+  androidOutputPath: string;
+  iosOutputPath?: string;
 };
 
 /**
@@ -37,7 +39,8 @@ const defaultConfig: CliConfig = {
   backgroundPath: "./icon-background.svg",
   foregroundPath: "./icon.svg",
   platforms: ["android", "ios"],
-  force: false
+  force: false,
+  androidOutputPath: "./android/app/src/main/res"
 };
 
 async function main(args: string[] = []): Promise<void> {
@@ -61,7 +64,11 @@ async function main(args: string[] = []): Promise<void> {
       foregroundPath: cliConfig.foregroundPath
     },
     platforms: cliConfig.platforms,
-    force: cliConfig.force
+    force: cliConfig.force,
+    androidOutputPath: (await fse.pathExists(cliConfig.androidOutputPath))
+      ? cliConfig.androidOutputPath
+      : undefined,
+    iosOutputPath: cliConfig.iosOutputPath ?? undefined // no default, determined dynamically in ios.ts
   });
 
   for await (const file of generatedFiles) {
@@ -75,6 +82,7 @@ async function readFileConfig(): Promise<Partial<CliConfig>> {
     const appJson = (await fse.readJson("./app.json")) as AppJson;
     return appJson.svgAppIcon || {};
   } catch (error) {
+    console.log(`Configuration error: ${JSON.stringify(error)}`);
     return {};
   }
 }
@@ -111,6 +119,18 @@ async function readArgsConfig(args: string[]): Promise<Partial<CliConfig>> {
       .long("force")
       .short("f")
       .flag()
+      .end()
+      // --android-output-path
+      .opt()
+      .name("androidOutputPath")
+      .title("android output path")
+      .long("android-output-path")
+      .end()
+      // --ios-output-path
+      .opt()
+      .name("iosOutputPath")
+      .title("ios-output path")
+      .long("ios-output-path")
       .end()
       .act(resolve)
       .run(args.slice(2))

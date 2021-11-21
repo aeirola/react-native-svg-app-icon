@@ -26,7 +26,7 @@ const iosIcons = [
 ];
 
 export interface Config extends output.OutputConfig {
-  iconsetDir: string;
+  iosOutputPath: string;
 }
 export async function* generate(
   config: Partial<Config>,
@@ -40,7 +40,7 @@ export async function* generate(
 
 async function getConfig(config: Partial<Config>): Promise<Config> {
   return {
-    iconsetDir: config.iconsetDir || (await getIconsetDir()),
+    iosOutputPath: config.iosOutputPath || (await getIconsetDir()),
     force: config.force || false
   };
 }
@@ -75,7 +75,7 @@ async function* generateImages(
       cropSize: input.inputContentSize
     },
     iosIcons.map((icon) => ({
-      filePath: path.join(config.iconsetDir, getIconFilename(icon)),
+      filePath: path.join(config.iosOutputPath, getIconFilename(icon)),
       flattenAlpha: icon.flattenAlpha,
       outputSize: icon.size * icon.scale,
       force: config.force
@@ -84,7 +84,7 @@ async function* generateImages(
 }
 
 async function* generateManifest(config: Config): AsyncIterable<string> {
-  const fileName = path.join(config.iconsetDir, "Contents.json");
+  const fileName = path.join(config.iosOutputPath, "Contents.json");
   yield* output.ensureFileContents(
     fileName,
     {

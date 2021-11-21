@@ -140,7 +140,7 @@ function getViewBox(input: number): string {
 }
 
 export interface Config extends output.OutputConfig {
-  resDirPath: string;
+  androidOutputPath: string;
   vectorDrawables: boolean;
 }
 
@@ -156,7 +156,7 @@ export async function* generate(
 
 function getConfig(config: Partial<Config>): Config {
   return {
-    resDirPath: config.resDirPath || "./android/app/src/main/res",
+    androidOutputPath: config.androidOutputPath || "./android/app/src/main/res",
     vectorDrawables:
       config.vectorDrawables === undefined ? true : config.vectorDrawables,
     force: config.force || false
@@ -370,5 +370,5 @@ function getIconPath(
   if (qualifier.minApiLevel) {
     directoryName = [...directoryName, `v${qualifier.minApiLevel}`];
   }
-  return path.join(config.resDirPath, directoryName.join("-"), fileName);
+  return path.join(config.androidOutputPath, directoryName.join("-"), fileName);
 }
