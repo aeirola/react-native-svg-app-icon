@@ -80,6 +80,8 @@ Supported configuration values are
 | `platforms`      | `["android", "ios"]`      | Array of platforms for which application launcher icons should be generated. Possible values are `android` and `ios`.                                           |
 | `force`          | `false`                   | When `true`, output files will always be written even if they are newer than the input files.                                                                   |
 
+Alternatively, the configuration parameters can also be set as CLI flags. See `react-native-svg-app-icon --help` for details.
+
 ## Icon format
 
 The input icon should be a SVG file adhering to the [Android adaptive icon specification](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive). Specifically, the image should:
