@@ -46,7 +46,7 @@ async function main(args: string[] = []): Promise<void> {
   const cliConfig: CliConfig = {
     ...defaultConfig,
     ...(await readFileConfig()),
-    ...readArgsConfig(args)
+    ...(await readArgsConfig(args))
   };
 
   cliConfig.platforms = cliConfig.platforms.map(
@@ -80,44 +80,41 @@ async function readFileConfig(): Promise<Partial<CliConfig>> {
 }
 
 async function readArgsConfig(args: string[]): Promise<Partial<CliConfig>> {
-  let argsConfig: Partial<CliConfig> = {};
-  coa
-    .Cmd()
-    .name("react-native-svg-app-icon")
-    .helpful()
-    // --background-path
-    .opt()
-    .name("backgroundPath")
-    .title("Background path")
-    .long("background-path")
-    .end()
-    // --foreground-path
-    .opt()
-    .name("foregroundPath")
-    .title("Foreground path")
-    .long("foreground-path")
-    .end()
-    // --platform
-    .opt()
-    .name("platforms")
-    .title("Platform")
-    .long("platform")
-    .arr()
-    .end()
-    // --force
-    .opt()
-    .name("force")
-    .title("Force")
-    .long("force")
-    .short("f")
-    .flag()
-    .end()
-    .act((opts: Partial<CliConfig>) => {
-      argsConfig = opts;
-    })
-    .run(args.slice(2));
-
-  return argsConfig;
+  return new Promise((resolve) =>
+    coa
+      .Cmd()
+      .name("react-native-svg-app-icon")
+      .helpful()
+      // --background-path
+      .opt()
+      .name("backgroundPath")
+      .title("Background path")
+      .long("background-path")
+      .end()
+      // --foreground-path
+      .opt()
+      .name("foregroundPath")
+      .title("Foreground path")
+      .long("foreground-path")
+      .end()
+      // --platform
+      .opt()
+      .name("platforms")
+      .title("Platform")
+      .long("platform")
+      .arr()
+      .end()
+      // --force
+      .opt()
+      .name("force")
+      .title("Force")
+      .long("force")
+      .short("f")
+      .flag()
+      .end()
+      .act(resolve)
+      .run(args.slice(2))
+  );
 }
 
 if (require.main === module) {

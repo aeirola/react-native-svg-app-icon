@@ -40,4 +40,16 @@ describe("cli", () => {
 
     await expect(main()).resolves.toBeUndefined();
   });
+
+  it("reads icon path from arguments", async () => {
+    await fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
+
+    await expect(
+      main([
+        "/usr/local/bin/node",
+        "cli.js",
+        `--foreground-path=${path.join(fixturesPath, "example", "icon.svg")}`
+      ])
+    ).resolves.toBeUndefined();
+  });
 });
