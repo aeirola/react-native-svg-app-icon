@@ -53,7 +53,7 @@ async function main(args: string[] = []): Promise<void> {
     (platform) => platform.toLowerCase() as Platform
   );
 
-  const generatedFiles = await reactNativeSvgAppIcon.generate({
+  const generatedFiles = reactNativeSvgAppIcon.generate({
     icon: {
       backgroundPath: (await fse.pathExists(cliConfig.backgroundPath))
         ? cliConfig.backgroundPath
