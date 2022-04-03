@@ -30,7 +30,7 @@ describe("index", () => {
   });
 
   it("generates files from example matching fixtures", () =>
-    testFixture("example", 0.14));
+    testFixture("example", 0.16));
 
   it("generates files from empty matching fixtures", () =>
     testFixture("empty", 0.06));
@@ -62,7 +62,7 @@ describe("index", () => {
     expect(sedonRunFiles.length).toBe(0);
   });
 
-  it.only("does re-renders files on second run when force is set to true", async () => {
+  it("does re-renders files on second run when force is set to true", async () => {
     await fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
 
     const firstRunFiles = await readIterable(index.generate(defaultConfig));
@@ -148,13 +148,13 @@ async function expectFilesToEqual(
     case ".xml":
       return expectXmlToEqual(expected, actual);
     default:
-      return fail(`Unsupported comparison file type ${extension}`);
+      throw Error(`Unsupported comparison file type ${extension}`);
   }
 }
 
 async function expectFileToExist(path: string): Promise<void> {
   if (!(await fse.pathExists(path))) {
-    fail(`File did not exist: ${path}`);
+    throw Error(`File did not exist: ${path}`);
   }
 }
 
