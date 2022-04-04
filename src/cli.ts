@@ -65,10 +65,8 @@ async function main(args: string[] = []): Promise<void> {
     },
     platforms: cliConfig.platforms,
     force: cliConfig.force,
-    androidOutputPath: (await fse.pathExists(cliConfig.androidOutputPath))
-      ? cliConfig.androidOutputPath
-      : undefined,
-    iosOutputPath: cliConfig.iosOutputPath ?? undefined // no default, determined dynamically in ios.ts
+    androidOutputPath: cliConfig.androidOutputPath,
+    iosOutputPath: cliConfig.iosOutputPath
   });
 
   for await (const file of generatedFiles) {
@@ -82,7 +80,6 @@ async function readFileConfig(): Promise<Partial<CliConfig>> {
     const appJson = (await fse.readJson("./app.json")) as AppJson;
     return appJson.svgAppIcon || {};
   } catch (error) {
-    console.log(`Configuration error: ${JSON.stringify(error)}`);
     return {};
   }
 }
@@ -123,13 +120,13 @@ async function readArgsConfig(args: string[]): Promise<Partial<CliConfig>> {
       // --android-output-path
       .opt()
       .name("androidOutputPath")
-      .title("android output path")
+      .title("Android Output Path")
       .long("android-output-path")
       .end()
       // --ios-output-path
       .opt()
       .name("iosOutputPath")
-      .title("ios-output path")
+      .title("iOS Output Path")
       .long("ios-output-path")
       .end()
       .act(resolve)

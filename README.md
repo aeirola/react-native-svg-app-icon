@@ -81,8 +81,8 @@ Supported configuration values are
 | `backgroundPath`    | `"./icon-background.svg"`                            | Input file path for the background layer. File doesn't need to exist, and will default to a fully white background. If file exist, it needs to be fully opaque. |
 | `platforms`         | `["android", "ios"]`                                 | Array of platforms for which application launcher icons should be generated. Possible values are `android` and `ios`.                                           |
 | `force`             | `false`                                              | When `true`, output files will always be written even if they are newer than the input files.                                                                   |
-| `androidOutputPath` | `./android/app/src/main/res`                         | Where to place generated Android icons                                                                                                                          |
-| `iosOutputPath`     | `./ios/*/Images.xcassets/AppIcon.appiconset`         | Where to place generated iOS icons, defaults to first `Images.xcassets` found as a sub-sub-directory in `./ios`                                                 |
+| `androidOutputPath` | `./android/app/src/main/res`                         | Where to place generated Android icons, can be used for flavor-specific icon generation                                                                         |
+| `iosOutputPath`     | `./ios/*/Images.xcassets/AppIcon.appiconset`         | Where to place generated iOS icons, defaults to `AppIcon.appiconset` in first `Images.xcassets` found as a sub-sub-directory in `./ios`                         |
 
 Alternatively, the configuration parameters can also be set as CLI flags. See `react-native-svg-app-icon --help` for details.
 
