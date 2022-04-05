@@ -89,7 +89,7 @@ describe("index", () => {
           : undefined,
         foregroundPath: path.join(fixtureDir, "icon.svg")
       },
-      resDirPath: path.join(
+      androidOutputPath: path.join(
         tmpDir.name,
         "android",
         "app",
@@ -97,7 +97,7 @@ describe("index", () => {
         "main",
         "res"
       ),
-      iconsetDir: path.join(
+      iosOutputPath: path.join(
         tmpDir.name,
         "ios",
         fixture,

@@ -14,6 +14,8 @@ type CliConfig = {
   foregroundPath: string;
   platforms: Platform[];
   force: boolean;
+  androidOutputPath: string;
+  iosOutputPath?: string;
 };
 
 /**
@@ -37,7 +39,8 @@ const defaultConfig: CliConfig = {
   backgroundPath: "./icon-background.svg",
   foregroundPath: "./icon.svg",
   platforms: ["android", "ios"],
-  force: false
+  force: false,
+  androidOutputPath: "./android/app/src/main/res"
 };
 
 async function main(args: string[] = []): Promise<void> {
@@ -61,7 +64,9 @@ async function main(args: string[] = []): Promise<void> {
       foregroundPath: cliConfig.foregroundPath
     },
     platforms: cliConfig.platforms,
-    force: cliConfig.force
+    force: cliConfig.force,
+    androidOutputPath: cliConfig.androidOutputPath,
+    iosOutputPath: cliConfig.iosOutputPath
   });
 
   for await (const file of generatedFiles) {
@@ -111,6 +116,18 @@ async function readArgsConfig(args: string[]): Promise<Partial<CliConfig>> {
       .long("force")
       .short("f")
       .flag()
+      .end()
+      // --android-output-path
+      .opt()
+      .name("androidOutputPath")
+      .title("Android Output Path")
+      .long("android-output-path")
+      .end()
+      // --ios-output-path
+      .opt()
+      .name("iosOutputPath")
+      .title("iOS Output Path")
+      .long("ios-output-path")
       .end()
       .act(resolve)
       .run(args.slice(2))
