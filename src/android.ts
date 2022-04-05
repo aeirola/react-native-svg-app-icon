@@ -141,7 +141,6 @@ function getViewBox(input: number): string {
 
 export interface Config extends output.OutputConfig {
   androidOutputPath: string;
-  vectorDrawables: boolean;
 }
 
 export async function* generate(
@@ -157,8 +156,6 @@ export async function* generate(
 function getConfig(config: Partial<Config>): Config {
   return {
     androidOutputPath: config.androidOutputPath || "./android/app/src/main/res",
-    vectorDrawables:
-      config.vectorDrawables === undefined ? true : config.vectorDrawables,
     force: config.force || false
   };
 }
@@ -297,16 +294,11 @@ async function* generateAdaptiveIconLayerVd(
   fileName: string,
   config: Config
 ): AsyncIterable<string> {
-  if (!config.vectorDrawables) {
-    throw Error("Vector drawables disabled");
-  }
-
   const imageData = await imageInput.read();
   const vdData = await svg2vectordrawable(
     imageData.image.data.toString("utf-8"),
-    {
-      strict: true
-    }
+    undefined,
+    true
   );
   yield* output.ensureFileContents(
     getIconPath(

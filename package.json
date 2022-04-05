@@ -39,7 +39,7 @@
     "coa": "^2.0.2",
     "fs-extra": ">=3.0.0",
     "sharp": ">=0.23.0",
-    "svg2vectordrawable": "2.8.3"
+    "svg2vectordrawable": "2.6.26"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.8",
