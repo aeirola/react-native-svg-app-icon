@@ -22,7 +22,7 @@ describe("cli", () => {
   });
 
   it("fails on missing file", async () => {
-    await expect(main()).rejects.toThrow("no such file or directory");
+    await expect(main()).rejects.toThrow("Icon is required");
   });
 
   it("does not fail for existing file", async () => {

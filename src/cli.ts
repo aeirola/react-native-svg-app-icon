@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import * as coa from "coa";
+import * as commander from "commander";
 import * as fse from "fs-extra";
 
 import * as reactNativeSvgAppIcon from "./index";
@@ -12,16 +12,11 @@ import * as reactNativeSvgAppIcon from "./index";
 type CliConfig = {
   backgroundPath: string;
   foregroundPath: string;
-  platforms: Platform[];
+  platforms: reactNativeSvgAppIcon.Platform[];
   force: boolean;
   androidOutputPath: string;
   iosOutputPath?: string;
 };
-
-/**
- * Supported platforms for generating icons.
- */
-export type Platform = "android" | "ios";
 
 /**
  * Custom extension of RN / Expo app.json for file based configuration.
@@ -32,13 +27,15 @@ type AppJson = Partial<{
   svgAppIcon: Partial<CliConfig>;
 }>;
 
+const supportedPlatforms: reactNativeSvgAppIcon.Platform[] = ["android", "ios"];
+
 /**
  * Default values for CLI configuration. Custom values are merged on top.
  */
 const defaultConfig: CliConfig = {
   backgroundPath: "./icon-background.svg",
   foregroundPath: "./icon.svg",
-  platforms: ["android", "ios"],
+  platforms: supportedPlatforms,
   force: false,
   androidOutputPath: "./android/app/src/main/res"
 };
@@ -49,12 +46,24 @@ async function main(args: string[] = []): Promise<void> {
   const cliConfig: CliConfig = {
     ...defaultConfig,
     ...(await readFileConfig()),
-    ...(await readArgsConfig(args))
+    ...readArgsConfig(args)
   };
 
-  cliConfig.platforms = cliConfig.platforms.map(
-    (platform) => platform.toLowerCase() as Platform
-  );
+  if (!(await fse.pathExists(cliConfig.foregroundPath))) {
+    throw Error(
+      `Icon is required, but not found at ${cliConfig.foregroundPath}`
+    );
+  }
+
+  cliConfig.platforms = cliConfig.platforms
+    .map((platform) => platform.toLowerCase())
+    .filter((platform): platform is reactNativeSvgAppIcon.Platform => {
+      if ((supportedPlatforms as string[]).includes(platform)) {
+        return true;
+      } else {
+        throw Error(`Unsupported platform ${platform}`);
+      }
+    });
 
   const generatedFiles = reactNativeSvgAppIcon.generate({
     icon: {
@@ -84,58 +93,30 @@ async function readFileConfig(): Promise<Partial<CliConfig>> {
   }
 }
 
-async function readArgsConfig(args: string[]): Promise<Partial<CliConfig>> {
-  return new Promise((resolve) =>
-    coa
-      .Cmd()
-      .name("react-native-svg-app-icon")
-      .helpful()
-      // --background-path
-      .opt()
-      .name("backgroundPath")
-      .title("Background path")
-      .long("background-path")
-      .end()
-      // --foreground-path
-      .opt()
-      .name("foregroundPath")
-      .title("Foreground path")
-      .long("foreground-path")
-      .end()
-      // --platform
-      .opt()
-      .name("platforms")
-      .title("Platform")
-      .long("platform")
-      .arr()
-      .end()
-      // --force
-      .opt()
-      .name("force")
-      .title("Force")
-      .long("force")
-      .short("f")
-      .flag()
-      .end()
-      // --android-output-path
-      .opt()
-      .name("androidOutputPath")
-      .title("Android Output Path")
-      .long("android-output-path")
-      .end()
-      // --ios-output-path
-      .opt()
-      .name("iosOutputPath")
-      .title("iOS Output Path")
-      .long("ios-output-path")
-      .end()
-      .act(resolve)
-      .run(args.slice(2))
-  );
+function readArgsConfig(args: string[]): Partial<CliConfig> {
+  const program = new commander.Command();
+
+  program
+    .name("react-native-svg-app-icon")
+    .option("--background-path <path>", "background icon path")
+    .option("--foreground-path <path>", "foreground icon path")
+    .option(
+      "--platforms <platforms...>",
+      "platforms for which to generate icons"
+    )
+    .option("-f, --force", "overwrite existing newer files")
+    .option("--android-output-path <path>", "android output path")
+    .option("--ios-output-path <path>", "ios output path")
+    .parse(args);
+
+  return program.opts();
 }
 
 if (require.main === module) {
-  void main(process.argv);
+  main(process.argv).catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 }
 
 export default main;
