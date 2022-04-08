@@ -297,8 +297,9 @@ async function* generateAdaptiveIconLayerVd(
   const imageData = await imageInput.read();
   const vdData = await svg2vectordrawable(
     imageData.image.data.toString("utf-8"),
-    undefined,
-    true
+    {
+      strict: true
+    }
   );
   yield* output.ensureFileContents(
     getIconPath(
