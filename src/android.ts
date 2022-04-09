@@ -298,7 +298,10 @@ async function* generateAdaptiveIconLayerVd(
   const vdData = await svg2vectordrawable(
     imageData.image.data.toString("utf-8"),
     {
-      strict: true
+      // Fail on unsupported elements, so that we fall back to PNG rendering
+      strict: true,
+      // Use same default fill behaviour as in SVG spec
+      fillBlack: true
     }
   );
   yield* output.ensureFileContents(
