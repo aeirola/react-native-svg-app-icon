@@ -14,12 +14,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        node_version: [12, 14, 16]
+        node_version: [20, 22, 24]
     name: Test ${{ matrix.os }} node${{ matrix.node_version }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node_version }}
           cache: npm
@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 16
+          node-version: 24
           registry-url: https://registry.npmjs.org/
           cache: npm
       - run: npm ci
