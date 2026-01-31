@@ -2,8 +2,8 @@ import * as path from "node:path";
 import * as fse from "fs-extra";
 
 import * as input from "./input";
+import type { Optional } from "./optional";
 import * as output from "./output";
-import type { Optional } from "./types";
 
 const iosIcons = [
 	{ idiom: "iphone", scale: 2, size: 20 },
