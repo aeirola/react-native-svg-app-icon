@@ -1,76 +1,71 @@
 {
-  "name": "react-native-svg-app-icon",
-  "version": "0.6.1",
-  "description": "App icon generator for React Native projects",
-  "keywords": [
-    "react-native",
-    "svg",
-    "app-icon"
-  ],
-  "homepage": "https://github.com/aeirola/react-native-svg-app-icon",
-  "bugs": {
-    "url": "https://github.com/aeirola/react-native-svg-app-icon/issues"
-  },
-  "files": [
-    "assets/",
-    "lib/"
-  ],
-  "bin": {
-    "react-native-svg-app-icon": "lib/cli.js"
-  },
-  "main": "lib/index.js",
-  "scripts": {
-    "lint": "npm run lint:eslint && npm run lint:typescript",
-    "lint:eslint": "eslint 'src/**/*.ts'",
-    "lint:typescript": "tsc --noEmit",
-    "jest": "jest --runInBand src/",
-    "test": "npm run lint && npm run jest && npm run test:example",
-    "test:example": "cd example && npm test",
-    "build": "babel src/ -d lib/ -x .ts",
-    "prepare": "npm run build"
-  },
-  "author": "Axel Havukangas <axel@havukangas.fi>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aeirola/react-native-svg-app-icon.git"
-  },
-  "dependencies": {
-    "commander": "^14.0.3",
-    "fs-extra": ">=3.0.0",
-    "sharp": ">=0.23.0",
-    "svg2vectordrawable": "2.9.1"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.28.6",
-    "@babel/core": "^7.28.6",
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/preset-env": "^7.28.6",
-    "@babel/preset-typescript": "^7.28.5",
-    "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.2",
-    "@types/fs-extra": "^11.0.4",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^25.1.0",
-    "@types/pixelmatch": "^5.2.6",
-    "@types/tmp": "^0.2.6",
-    "@typescript-eslint/eslint-plugin": "^8.54.0",
-    "@typescript-eslint/parser": "^8.54.0",
-    "babel-jest": "^30.2.0",
-    "babel-plugin-dynamic-import-node": "^2.3.3",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "glob": "^13.0.0",
-    "jest": "^30.2.0",
-    "pixelmatch": "^5.3.0",
-    "prettier": "^3.8.1",
-    "tmp": "^0.2.5",
-    "typescript": "^5.9.3"
-  },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "jest": {
-    "testTimeout": 10000
-  }
+	"name": "react-native-svg-app-icon",
+	"version": "0.6.1",
+	"description": "App icon generator for React Native projects",
+	"keywords": [
+		"react-native",
+		"svg",
+		"app-icon"
+	],
+	"homepage": "https://github.com/aeirola/react-native-svg-app-icon",
+	"bugs": {
+		"url": "https://github.com/aeirola/react-native-svg-app-icon/issues"
+	},
+	"files": [
+		"assets/",
+		"lib/"
+	],
+	"bin": {
+		"react-native-svg-app-icon": "lib/cli.js"
+	},
+	"main": "lib/index.js",
+	"scripts": {
+		"lint": "npm run lint:biome && npm run lint:typescript",
+		"lint:biome": "biome check",
+		"lint:typescript": "tsc --noEmit",
+		"format": "biome check --write",
+		"jest": "jest --runInBand src/",
+		"test": "npm run lint && npm run jest && npm run test:example",
+		"test:example": "cd example && npm test",
+		"build": "babel src/ -d lib/ -x .ts",
+		"prepare": "npm run build"
+	},
+	"author": "Axel Havukangas <axel@havukangas.fi>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aeirola/react-native-svg-app-icon.git"
+	},
+	"dependencies": {
+		"commander": "^14.0.3",
+		"fs-extra": ">=3.0.0",
+		"sharp": ">=0.23.0",
+		"svg2vectordrawable": "2.9.1"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.28.6",
+		"@babel/core": "^7.28.6",
+		"@babel/plugin-syntax-dynamic-import": "^7.8.3",
+		"@babel/preset-env": "^7.28.6",
+		"@babel/preset-typescript": "^7.28.5",
+		"@biomejs/biome": "^2.3.13",
+		"@types/fs-extra": "^11.0.4",
+		"@types/jest": "^30.0.0",
+		"@types/node": "^25.1.0",
+		"@types/pixelmatch": "^5.2.6",
+		"@types/tmp": "^0.2.6",
+		"babel-jest": "^30.2.0",
+		"babel-plugin-dynamic-import-node": "^2.3.3",
+		"glob": "^13.0.0",
+		"jest": "^30.2.0",
+		"pixelmatch": "^5.3.0",
+		"tmp": "^0.2.5",
+		"typescript": "^5.9.3"
+	},
+	"engines": {
+		"node": ">=12.0.0"
+	},
+	"jest": {
+		"testTimeout": 10000
+	}
 }
