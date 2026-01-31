@@ -1,5 +1,5 @@
 import * as fse from "fs-extra";
-import glob from "glob-promise";
+import { glob } from "glob";
 import * as path from "path";
 import pixelmatch from "pixelmatch";
 import sharp from "sharp";
@@ -8,6 +8,7 @@ import * as tmp from "tmp";
 import * as index from "../index";
 
 describe("index", () => {
+  const originalCwd = process.cwd();
   const fixturesPath = path.join(__dirname, "fixtures");
   const defaultConfig: index.Config = {
     icon: {
@@ -26,6 +27,7 @@ describe("index", () => {
     process.chdir(tmpDir.name);
   });
   afterEach(() => {
+    process.chdir(originalCwd);
     tmpDir.removeCallback();
   });
 
