@@ -2,6 +2,7 @@ import * as path from "node:path";
 import * as fse from "fs-extra";
 
 import * as input from "./input";
+import type { Optional } from "./optional";
 import * as output from "./output";
 
 const iosIcons = [
@@ -29,7 +30,7 @@ export interface Config extends output.OutputConfig {
 	iosOutputPath: string;
 }
 export async function* generate(
-	config: Partial<Config>,
+	config: Optional<Config>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
 	const fullConfig = await getConfig(config);
@@ -38,7 +39,7 @@ export async function* generate(
 	yield* generateManifest(fullConfig);
 }
 
-async function getConfig(config: Partial<Config>): Promise<Config> {
+async function getConfig(config: Optional<Config>): Promise<Config> {
 	return {
 		iosOutputPath: config.iosOutputPath || (await getIconsetDir()),
 		force: config.force || false,

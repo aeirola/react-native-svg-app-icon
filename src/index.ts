@@ -1,14 +1,15 @@
 import * as android from "./android";
 import * as input from "./input";
 import * as ios from "./ios";
+import type { Optional } from "./optional";
 
 /**
  * Supported platforms for generating icons.
  */
 export type Platform = "android" | "ios";
 
-export interface Config extends Partial<android.Config>, Partial<ios.Config> {
-	icon: Partial<input.Config>;
+export interface Config extends Optional<android.Config>, Optional<ios.Config> {
+	icon: Optional<input.Config>;
 	platforms: Platform[];
 }
 

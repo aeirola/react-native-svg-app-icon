@@ -3,6 +3,7 @@ import * as fse from "fs-extra";
 
 // sharp library is slow to load, only import types here, and import when needed
 import type * as SharpType from "sharp";
+import type { Optional } from "./optional";
 
 const defaultBackgroundPath = path.join(
 	__dirname,
@@ -58,7 +59,7 @@ interface BackgroundImageData extends ImageData {
 	stats: OpaqueImageStats;
 }
 
-export async function readIcon(config: Partial<Config>): Promise<FileInput> {
+export async function readIcon(config: Optional<Config>): Promise<FileInput> {
 	if (config.backgroundPath) {
 		console.debug("Reading background file", config.backgroundPath);
 	}
@@ -73,7 +74,7 @@ export async function readIcon(config: Partial<Config>): Promise<FileInput> {
 	};
 }
 
-function getConfig(config: Partial<Config>): Config {
+function getConfig(config: Optional<Config>): Config {
 	return {
 		backgroundPath: config.backgroundPath || defaultBackgroundPath,
 		foregroundPath: config.foregroundPath || "./icon.svg",

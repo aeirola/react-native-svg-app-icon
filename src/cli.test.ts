@@ -1,17 +1,18 @@
 import * as path from "node:path";
 import * as fse from "fs-extra";
 import * as tmp from "tmp";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import main from "../cli";
+import main from "./cli";
 
 describe("cli", () => {
 	const originalCwd = process.cwd();
-	const fixturesPath = path.join(__dirname, "fixtures");
+	const fixturesPath = path.join(__dirname, "..", "test_fixtures");
 
 	let tmpDir: tmp.DirResult;
 	beforeEach(() => {
-		jest.spyOn(global.console, "log").mockImplementation();
-		jest.spyOn(global.console, "debug").mockImplementation();
+		vi.spyOn(global.console, "log").mockImplementation(() => {});
+		vi.spyOn(global.console, "debug").mockImplementation(() => {});
 
 		tmpDir = tmp.dirSync({
 			unsafeCleanup: true,
@@ -21,6 +22,7 @@ describe("cli", () => {
 	afterEach(() => {
 		process.chdir(originalCwd);
 		tmpDir.removeCallback();
+		vi.restoreAllMocks();
 	});
 
 	it("fails on missing file", async () => {
