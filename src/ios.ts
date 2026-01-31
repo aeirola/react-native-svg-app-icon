@@ -3,6 +3,7 @@ import * as fse from "fs-extra";
 
 import * as input from "./input";
 import * as output from "./output";
+import type { Optional } from "./types";
 
 const iosIcons = [
 	{ idiom: "iphone", scale: 2, size: 20 },
@@ -29,7 +30,7 @@ export interface Config extends output.OutputConfig {
 	iosOutputPath: string;
 }
 export async function* generate(
-	config: Partial<Config>,
+	config: Optional<Config>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
 	const fullConfig = await getConfig(config);
@@ -38,7 +39,7 @@ export async function* generate(
 	yield* generateManifest(fullConfig);
 }
 
-async function getConfig(config: Partial<Config>): Promise<Config> {
+async function getConfig(config: Optional<Config>): Promise<Config> {
 	return {
 		iosOutputPath: config.iosOutputPath || (await getIconsetDir()),
 		force: config.force || false,

@@ -2,6 +2,7 @@ import * as path from "node:path";
 import svg2vectordrawable from "svg2vectordrawable";
 
 import * as input from "./input";
+import type { Optional } from "./optional";
 import * as output from "./output";
 
 const adaptiveIconMinSdk = 26;
@@ -144,7 +145,7 @@ export interface Config extends output.OutputConfig {
 }
 
 export async function* generate(
-	config: Partial<Config>,
+	config: Optional<Config>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
 	const fullConfig = getConfig(config);
@@ -153,7 +154,7 @@ export async function* generate(
 	yield* generateAdaptiveIcon(fileInput, fullConfig);
 }
 
-function getConfig(config: Partial<Config>): Config {
+function getConfig(config: Optional<Config>): Config {
 	return {
 		androidOutputPath: config.androidOutputPath || "./android/app/src/main/res",
 		force: config.force || false,

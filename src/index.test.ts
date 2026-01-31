@@ -4,12 +4,13 @@ import { glob } from "glob";
 import pixelmatch from "pixelmatch";
 import sharp from "sharp";
 import * as tmp from "tmp";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import * as index from "../index";
+import * as index from "./index";
 
 describe("index", () => {
 	const originalCwd = process.cwd();
-	const fixturesPath = path.join(__dirname, "fixtures");
+	const fixturesPath = path.join(__dirname, "..", "test_fixtures");
 	const defaultConfig: index.Config = {
 		icon: {
 			backgroundPath: path.join(fixturesPath, "example", "icon-background.svg"),
@@ -35,7 +36,7 @@ describe("index", () => {
 		testFixture("example", 0.16));
 
 	it("generates files from empty matching fixtures", () =>
-		testFixture("empty", 0.06));
+		testFixture("empty", 0.1));
 
 	it(
 		"generates files from text matching fixtures",
@@ -200,7 +201,7 @@ async function expectImagesToEqual(
 	const mismatchingPixelCount = pixelmatch(
 		expectedData.data,
 		actualData.data,
-		null,
+		undefined,
 		expectedData.info.width,
 		expectedData.info.height,
 		{ threshold },

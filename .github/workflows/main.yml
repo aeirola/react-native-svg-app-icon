@@ -28,4 +28,6 @@ jobs:
             example/package-lock.json
       - run: npm ci
       - run: npm test
+      - working-directory: ./example
+        run: npm test
       - run: npm pack --dry-run

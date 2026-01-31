@@ -1,17 +1,11 @@
 {
+	"include": ["src/**/*.ts"],
+	"extends": [
+		"@tsconfig/strictest/tsconfig.json",
+		"@tsconfig/node20/tsconfig.json",
+	],
+
 	"compilerOptions": {
-		"target": "ESNext",
-		"module": "commonjs",
-		"outDir": "./lib/",
-		"rootDir": "./src/",
-
-		"strict": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-
-		"moduleResolution": "node",
-		"esModuleInterop": true,
+		"noEmit": true,
 	},
 }
