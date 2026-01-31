@@ -8,7 +8,7 @@ import type { Optional } from "./optional";
  */
 export type Platform = "android" | "ios";
 
-export interface Config extends Partial<android.Config>, Optional<ios.Config> {
+export interface Config extends Optional<android.Config>, Optional<ios.Config> {
 	icon: Optional<input.Config>;
 	platforms: Platform[];
 }
