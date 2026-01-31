@@ -5,6 +5,7 @@ import * as tmp from "tmp";
 import main from "../cli";
 
 describe("cli", () => {
+  const originalCwd = process.cwd();
   const fixturesPath = path.join(__dirname, "fixtures");
 
   let tmpDir: tmp.DirResult;
@@ -18,6 +19,7 @@ describe("cli", () => {
     process.chdir(tmpDir.name);
   });
   afterEach(() => {
+    process.chdir(originalCwd);
     tmpDir.removeCallback();
   });
 
