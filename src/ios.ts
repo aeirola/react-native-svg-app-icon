@@ -50,7 +50,7 @@ async function getIconsetDir(): Promise<string> {
     const testPath = path.join("ios", fileName, "Images.xcassets");
     if (
       (await fse.pathExists(testPath)) &&
-      (await fse.stat(testPath)).isDirectory
+      (await fse.stat(testPath)).isDirectory()
     ) {
       return path.join(testPath, "AppIcon.appiconset");
     }

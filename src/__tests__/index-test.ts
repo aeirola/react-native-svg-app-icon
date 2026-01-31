@@ -1,5 +1,5 @@
 import * as fse from "fs-extra";
-import glob from "glob-promise";
+import { glob } from "glob";
 import * as path from "path";
 import pixelmatch from "pixelmatch";
 import sharp from "sharp";

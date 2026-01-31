@@ -88,7 +88,7 @@ async function readFileConfig(): Promise<Partial<CliConfig>> {
   try {
     const appJson = (await fse.readJson("./app.json")) as AppJson;
     return appJson.svgAppIcon || {};
-  } catch (error) {
+  } catch {
     return {};
   }
 }
