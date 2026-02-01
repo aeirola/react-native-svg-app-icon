@@ -25,9 +25,17 @@ jobs:
           cache: npm
           cache-dependency-path: |
             package-lock.json
-            example/package-lock.json
       - run: npm ci
       - run: npm test
-      - working-directory: ./example
-        run: npm test
       - run: npm pack --dry-run
+      # React native example
+      - working-directory: ./example-rn
+        run: npm run icon
+      - uses: actions/upload-artifact@v6
+        with:
+          name: example-rn-android-${{ matrix.os }}-node${{ matrix.node_version }}
+          path: example-rn/android/app/src/main/res/
+      - uses: actions/upload-artifact@v6
+        with:
+          name: example-rn-ios-${{ matrix.os }}-node${{ matrix.node_version }}
+          path: example-rn/ios/SvgAppIconExample/Images.xcassets/AppIcon.appiconset/
