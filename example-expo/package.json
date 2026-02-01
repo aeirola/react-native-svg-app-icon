@@ -1,0 +1,27 @@
+{
+	"name": "svg-app-icon-expo-example",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"postinstall": "install-local",
+		"prepare": "expo prebuild && react-native-svg-app-icon",
+		"start": "expo start",
+		"android": "expo run:android",
+		"ios": "expo run:ios",
+		"icon": "npx install-local && react-native-svg-app-icon"
+	},
+	"dependencies": {
+		"expo": "~54.0.33",
+		"expo-dev-client": "~6.0.20",
+		"expo-status-bar": "~3.0.9",
+		"react": "19.1.0",
+		"react-native": "0.81.5"
+	},
+	"localDependencies": {
+		"react-native-svg-app-icon": ".."
+	},
+	"private": true,
+	"devDependencies": {
+		"install-local": "^4.1.0"
+	}
+}
