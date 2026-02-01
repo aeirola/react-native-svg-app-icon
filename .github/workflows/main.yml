@@ -25,6 +25,7 @@ jobs:
           cache: npm
           cache-dependency-path: |
             package-lock.json
+            example-expo/package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm pack --dry-run
