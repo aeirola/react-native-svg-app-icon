@@ -25,6 +25,7 @@ jobs:
           cache: npm
           cache-dependency-path: |
             package-lock.json
+            example-expo/package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm pack --dry-run
@@ -39,3 +40,16 @@ jobs:
         with:
           name: example-rn-ios-${{ matrix.os }}-node${{ matrix.node_version }}
           path: example-rn/ios/SvgAppIconExample/Images.xcassets/AppIcon.appiconset/
+      # expo example
+      - working-directory: ./example-expo
+        run: npm ci
+        # Skip windows builds for now as we don't identify conditional ios platform yet
+        if: matrix.os != 'windows-latest'
+      - uses: actions/upload-artifact@v6
+        with:
+          name: example-expo-android-${{ matrix.os }}-node${{ matrix.node_version }}
+          path: example-expo/android/app/src/main/res/
+      - uses: actions/upload-artifact@v6
+        with:
+          name: example-expo-ios-${{ matrix.os }}-node${{ matrix.node_version }}
+          path: example-expo/ios/svgappiconexpoexample/Images.xcassets/AppIcon.appiconset/

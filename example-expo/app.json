@@ -1,0 +1,21 @@
+{
+	"expo": {
+		"name": "svg-app-icon-expo-example",
+		"slug": "svg-app-icon-expo-example",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"newArchEnabled": true,
+		"ios": {
+			"supportsTablet": true,
+			"bundleIdentifier": "com.anonymous.svg-app-icon-expo-example"
+		},
+		"android": {
+			"edgeToEdgeEnabled": true,
+			"package": "com.anonymous.svgappiconexpoexample"
+		}
+	},
+	"svgAppIcon": {
+		"foregroundPath": "./assets/icon.svg",
+		"backgroundPath": "./assets/icon-background.svg"
+	}
+}
