@@ -51,7 +51,13 @@ describe("index", () => {
 		const generatedFiles = await readIterable(generator);
 
 		expect(generatedFiles).toContain(
-			"ios/project/Images.xcassets/AppIcon.appiconset/iphone-40@3x.png",
+			path.join(
+				"ios",
+				"project",
+				"Images.xcassets",
+				"AppIcon.appiconset",
+				"iphone-40@3x.png",
+			),
 		);
 	});
 
