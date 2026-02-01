@@ -3,7 +3,6 @@
 		"name": "svg-app-icon-expo-example",
 		"slug": "svg-app-icon-expo-example",
 		"version": "1.0.0",
-		"platforms": ["ios", "android"],
 		"orientation": "portrait",
 		"newArchEnabled": true,
 		"ios": {

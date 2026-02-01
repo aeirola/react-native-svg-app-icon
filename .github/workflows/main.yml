@@ -43,6 +43,8 @@ jobs:
       # expo example
       - working-directory: ./example-expo
         run: npm ci
+        # Skip windows builds for now as we don't identify conditional ios platform yet
+        if: matrix.os != 'windows-latest'
       - uses: actions/upload-artifact@v6
         with:
           name: example-expo-android-${{ matrix.os }}-node${{ matrix.node_version }}
