@@ -65,7 +65,7 @@ npm run test:unit     # Run vitest tests only
 - **commander**: CLI argument parsing
 - **fs-extra**: Enhanced file system operations
 
-Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
+Always use Context7 MCP when library/API documentation, code generation, setup, or configuration steps are needed, without requiring an explicit request.
 
 ## Android Icon Specifics
 
