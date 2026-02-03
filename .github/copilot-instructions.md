@@ -60,7 +60,7 @@ npm run test:unit     # Run vitest tests only
 
 ## Key Dependencies
 
-- **sharp**: SVG → PNG rasterization (handles density/DPI scaling). Use context7 library documentation `/lovell/sharp` for API and docs.
+- **sharp**: SVG → PNG rasterization (handles density/DPI scaling). Use Context7 library documentation `/lovell/sharp` for API and docs.
 - **svg2vectordrawable**: SVG → Android vector drawable XML conversion
 - **commander**: CLI argument parsing
 - **fs-extra**: Enhanced file system operations
