@@ -8,6 +8,7 @@ import type { Optional } from "./optional";
 const defaultBackgroundPath = path.join(
 	__dirname,
 	"..",
+	"..",
 	"assets",
 	"default-icon-background.svg",
 );

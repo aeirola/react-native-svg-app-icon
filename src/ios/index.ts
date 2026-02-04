@@ -1,9 +1,8 @@
 import * as path from "node:path";
-import * as fse from "fs-extra";
-
-import * as input from "./input";
-import type { Optional } from "./optional";
-import * as output from "./output";
+import * as input from "../util/input";
+import type { Optional } from "../util/optional";
+import * as output from "../util/output";
+import { type Config, getConfig } from "./config";
 
 const iosIcons = [
 	{ idiom: "iphone", scale: 2, size: 20 },
@@ -26,38 +25,16 @@ const iosIcons = [
 	{ idiom: "ios-marketing", scale: 1, size: 1024, flattenAlpha: true },
 ];
 
-export interface Config extends output.OutputConfig {
-	iosOutputPath: string;
-}
+export type { Config };
+
 export async function* generate(
 	config: Optional<Config>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
-	const fullConfig = await getConfig(config);
+	const fullConfig = await getConfig(config.iosOutputPath, config.force);
 
 	yield* generateImages(fullConfig, fileInput);
 	yield* generateManifest(fullConfig);
-}
-
-async function getConfig(config: Optional<Config>): Promise<Config> {
-	return {
-		iosOutputPath: config.iosOutputPath || (await getIconsetDir()),
-		force: config.force || false,
-	};
-}
-
-async function getIconsetDir(): Promise<string> {
-	for (const fileName of await fse.readdir("ios")) {
-		const testPath = path.join("ios", fileName, "Images.xcassets");
-		if (
-			(await fse.pathExists(testPath)) &&
-			(await fse.stat(testPath)).isDirectory()
-		) {
-			return path.join(testPath, "AppIcon.appiconset");
-		}
-	}
-
-	throw new Error("No Images.xcassets found under ios/ subdirectories");
 }
 
 async function* generateImages(

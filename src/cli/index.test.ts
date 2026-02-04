@@ -3,11 +3,11 @@ import * as fse from "fs-extra";
 import * as tmp from "tmp";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import main from "./cli";
+import main from "./index";
 
 describe("cli", () => {
 	const originalCwd = process.cwd();
-	const fixturesPath = path.join(__dirname, "..", "test_fixtures");
+	const fixturesPath = path.join(__dirname, "..", "..", "test_fixtures");
 
 	let tmpDir: tmp.DirResult;
 	beforeEach(() => {
