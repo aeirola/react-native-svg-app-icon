@@ -1,7 +1,7 @@
 import * as android from "./android";
-import * as input from "./input";
 import * as ios from "./ios";
-import type { Optional } from "./optional";
+import * as input from "./util/input";
+import type { Optional } from "./util/optional";
 
 /**
  * Supported platforms for generating icons.

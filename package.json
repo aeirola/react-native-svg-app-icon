@@ -16,7 +16,7 @@
 		"lib/"
 	],
 	"bin": {
-		"react-native-svg-app-icon": "lib/cli.js"
+		"react-native-svg-app-icon": "lib/cli/index.js"
 	},
 	"main": "lib/index.js",
 	"type": "commonjs",
