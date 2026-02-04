@@ -1,3 +1,5 @@
+import * as path from "node:path";
+
 export type ResourceType = "mipmap" | "drawable";
 
 export type ResourceDensity =
@@ -39,9 +41,5 @@ export function getIconPath(
 	if (qualifier.minApiLevel) {
 		directoryName = [...directoryName, `v${qualifier.minApiLevel}`];
 	}
-	return require("node:path").join(
-		config.androidOutputPath,
-		directoryName.join("-"),
-		fileName,
-	);
+	return path.join(config.androidOutputPath, directoryName.join("-"), fileName);
 }
