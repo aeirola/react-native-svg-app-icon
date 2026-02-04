@@ -26,7 +26,6 @@ const iosIcons = [
 ];
 
 export type { Config };
-export { getConfig };
 
 export async function* generate(
 	config: Optional<Config>,
