@@ -24,8 +24,8 @@ describe("integration tests", () => {
 
 	it(
 		"generates files from complex matching fixtures",
+		{ timeout: 20 * 1000 }, // Font loading might take some time
 		() => testFixture("complex", 0.1),
-		20 * 1000,
 	);
 
 	it("handles caching correctly", async () => {
