@@ -1,0 +1,9 @@
+{
+	"name": "complex",
+	"svgAppIcon": {
+		"foregroundPath": "./icon/beta.svg",
+		"backgroundPath": "./icon/background.svg",
+		"androidOutputPath": "./android/app/src/main/res",
+		"iosOutputPath": "./ios/complex/Images.xcassets/AppIcon.appiconset"
+	}
+}

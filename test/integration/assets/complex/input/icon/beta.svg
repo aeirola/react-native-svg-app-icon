@@ -1,0 +1,16 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 108 108"
+    width="108" height="108">
+    <g>
+        <rect x="31" y="31" width="47" height="47" fill="white" rx="6" opacity="0.9" />
+        <circle cx="45" cy="45" r="6" fill="#4A90E2" />
+        <circle cx="53" cy="65" r="6" fill="#4A90E2" />
+        <circle cx="63" cy="53" r="6" fill="#4A90E2" />
+    </g>
+
+    <!-- Beta banner -->
+    <g>
+        <rect x="31" y="31" width="40" height="12" fill="#FF6B35" />
+        <text x="51" y="40" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">BETA</text>
+    </g>    
+</svg>

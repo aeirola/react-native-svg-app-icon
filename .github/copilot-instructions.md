@@ -41,10 +41,50 @@ npm run test:unit     # Run vitest tests only
 
 ### Testing
 
-- Tests use Vitest with fixture-based comparison in [test_fixtures/](../test_fixtures/)
-- Tests create temp directories, `process.chdir()` into them, then compare generated output against fixtures
-- PNG comparison uses `pixelmatch` with configurable thresholds (0.1-0.16)
-- Add new fixtures by creating a directory with `icon.svg`, `app.json`, and expected output structure
+Tests use **Vitest** and are organized into two categories:
+
+- **Unit tests** (`src/**/*.test.ts`): Co-located with source files, test individual modules. Fixture assets live in adjacent `*.test.assets/` directories (e.g., `adaptive-icons.test.assets/`).
+- **Integration tests** (`test/integration/`): End-to-end CLI tests that run the full generation pipeline via `runCli()` helper.
+
+**Test utilities** in `test/utils/`:
+- `file-comparison.ts` — `verifyGeneratedFiles(baseDir, options)` auto-discovers files in `expected/` and compares against `output/` using appropriate strategy per file type (PNG pixel comparison via `pixelmatch`, parsed JSON comparison, or exact text match). Generates visual diffs in `diff/` for PNG mismatches.
+- `tmp-dir.ts` — Vitest fixture that creates a temp directory, `process.chdir()` into it, and cleans up after the test.
+- `cli-runner.ts` — Spawns CLI as a separate Node process for integration tests.
+- `cleanup.ts` — `cleanupTestOutputs(basePath, testCases)` and `cleanupTestOutput(basePath)` to remove `output/` and `diff/` directories before test runs.
+
+**Fixture directory convention**: Each test case directory contains:
+- `input/` — Source files (SVG icons, `app.json`)
+- `expected/` — Reference output files to compare against
+- `output/` — Generated during tests (cleaned up by `beforeAll`)
+- `diff/` — Visual diff images for PNG comparison (auto-generated)
+
+Shared test SVG inputs are in `test/assets/`.
+
+**tmpDir fixture pattern** for tests needing a working directory:
+```typescript
+import { it as base } from "vitest";
+import { tmpDir } from "../../test/utils/tmp-dir";
+
+const it = base.extend({ tmpDir });
+
+it("my test", async ({ tmpDir: _tmpDir }) => {
+  // cwd is now a temp directory, cleaned up after test
+});
+```
+
+**Output verification pattern** for fixture-based tests:
+```typescript
+beforeAll(async () => {
+  await cleanupTestOutputs(assetsPath, ["test-case-1", "test-case-2"]);
+});
+
+it("generates expected output", async () => {
+  // ... run generation into baseDir/output/ ...
+  await verifyGeneratedFiles(baseDir, { imageThreshold: 0.1 });
+});
+```
+
+PNG comparison thresholds range from 0 (default, exact match) to 0.16 depending on test tolerance needs.
 
 ### Build Artifacts
 

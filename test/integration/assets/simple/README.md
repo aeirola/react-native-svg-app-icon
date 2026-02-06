@@ -1,0 +1,1 @@
+Simple project setup without any custom configuration, just a single icon file.
