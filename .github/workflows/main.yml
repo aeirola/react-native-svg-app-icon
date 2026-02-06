@@ -27,19 +27,28 @@ jobs:
             package-lock.json
             example-expo/package-lock.json
       - run: npm ci
-      - run: npm test
+      - run: npx biome ci
+      - run: npx tsc
+      - run: npx vitest run
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: test-outputs-${{ matrix.os }}-node${{ matrix.node_version }}
+          path: |
+            src/**/output/
+            src/**/diff/
+            test/integration/assets/*/output/
+            test/integration/assets/*/diff/
       - run: npm pack --dry-run
       # React native example
       - working-directory: ./example-rn
         run: npm run icon
       - uses: actions/upload-artifact@v6
         with:
-          name: example-rn-android-${{ matrix.os }}-node${{ matrix.node_version }}
-          path: example-rn/android/app/src/main/res/
-      - uses: actions/upload-artifact@v6
-        with:
-          name: example-rn-ios-${{ matrix.os }}-node${{ matrix.node_version }}
-          path: example-rn/ios/SvgAppIconExample/Images.xcassets/AppIcon.appiconset/
+          name: example-rn-${{ matrix.os }}-node${{ matrix.node_version }}
+          path: |
+            example-rn/android/app/src/main/res/
+            example-rn/ios/SvgAppIconExample/Images.xcassets/AppIcon.appiconset/
       # expo example
       - working-directory: ./example-expo
         run: npm ci
@@ -47,9 +56,7 @@ jobs:
         if: matrix.os != 'windows-latest'
       - uses: actions/upload-artifact@v6
         with:
-          name: example-expo-android-${{ matrix.os }}-node${{ matrix.node_version }}
-          path: example-expo/android/app/src/main/res/
-      - uses: actions/upload-artifact@v6
-        with:
-          name: example-expo-ios-${{ matrix.os }}-node${{ matrix.node_version }}
-          path: example-expo/ios/svgappiconexpoexample/Images.xcassets/AppIcon.appiconset/
+          name: example-expo-${{ matrix.os }}-node${{ matrix.node_version }}
+          path: |
+            example-expo/android/app/src/main/res/
+            example-expo/ios/svgappiconexpoexample/Images.xcassets/AppIcon.appiconset/

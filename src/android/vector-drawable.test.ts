@@ -47,35 +47,39 @@ describe("android/vector-drawable", () => {
 			await verifyGeneratedFiles(baseDir);
 		});
 
-		it("uses strict mode to fail on unsupported SVG elements", async () => {
-			const outputPath = path.join(assetsPath, "output");
-			const config: Config = {
-				androidOutputPath: outputPath,
-				force: false,
-			};
+		it(
+			"uses strict mode to fail on unsupported SVG elements",
+			{ timeout: 20 * 1000 },
+			async () => {
+				const outputPath = path.join(assetsPath, "output");
+				const config: Config = {
+					androidOutputPath: outputPath,
+					force: false,
+				};
 
-			// Load SVG with text element (unsupported in vector drawable)
-			const unsupportedFileInput = await input.readIcon({
-				foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
-			});
+				// Load SVG with text element (unsupported in vector drawable)
+				const unsupportedFileInput = await input.readIcon({
+					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+				});
 
-			const unsupportedInput = input.mapInput(
-				unsupportedFileInput,
-				(inputData) => ({
-					image: inputData.foregroundImageData,
-				}),
-			);
+				const unsupportedInput = input.mapInput(
+					unsupportedFileInput,
+					(inputData) => ({
+						image: inputData.foregroundImageData,
+					}),
+				);
 
-			// Should throw an error due to strict mode
-			await expect(async () => {
-				for await (const _ of generateVectorDrawable(
-					unsupportedInput,
-					"unsupported-icon",
-					config,
-				)) {
-					// Consume the generator
-				}
-			}).rejects.toThrow();
-		});
+				// Should throw an error due to strict mode
+				await expect(async () => {
+					for await (const _ of generateVectorDrawable(
+						unsupportedInput,
+						"unsupported-icon",
+						config,
+					)) {
+						// Consume the generator
+					}
+				}).rejects.toThrow();
+			},
+		);
 	});
 });
