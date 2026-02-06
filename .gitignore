@@ -1,2 +1,8 @@
 node_modules/
 lib/
+
+# Test output and diff directories
+**/*.test.assets/**/output/
+**/*.test.assets/**/diff/
+test/integration/assets/**/output/
+test/integration/assets/**/diff/

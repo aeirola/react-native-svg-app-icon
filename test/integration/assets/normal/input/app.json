@@ -1,0 +1,7 @@
+{
+	"name": "normal",
+	"svgAppIcon": {
+		"foregroundPath": "./icon/foreground.svg",
+		"backgroundPath": "./icon/background.svg"
+	}
+}

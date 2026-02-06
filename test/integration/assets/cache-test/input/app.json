@@ -1,0 +1,9 @@
+{
+	"name": "cache-test",
+	"svgAppIcon": {
+		"foregroundPath": "./icon.svg",
+		"backgroundPath": "./icon-background.svg",
+		"androidOutputPath": "./android/app/src/main/res",
+		"iosOutputPath": "./ios/project/Images.xcassets/AppIcon.appiconset"
+	}
+}
