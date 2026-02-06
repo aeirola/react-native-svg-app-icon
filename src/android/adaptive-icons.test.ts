@@ -40,33 +40,37 @@ describe("android/adaptive-icons", () => {
 			await verifyGeneratedFiles(baseDir);
 		});
 
-		it("falls back to PNG when vector drawable conversion fails", async () => {
-			const baseDir = path.join(assetsPath, "png-fallback");
-			const outputPath = path.join(baseDir, "output");
-			const config: Config = {
-				androidOutputPath: outputPath,
-				force: false,
-			};
+		it(
+			"falls back to PNG when vector drawable conversion fails",
+			{ timeout: 20 * 1000 }, // Font loading might take some time
+			async () => {
+				const baseDir = path.join(assetsPath, "png-fallback");
+				const outputPath = path.join(baseDir, "output");
+				const config: Config = {
+					androidOutputPath: outputPath,
+					force: false,
+				};
 
-			// Load SVG with unsupported elements (text) that will force PNG fallback
-			const unsupportedFileInput = await input.readIcon({
-				foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
-			});
+				// Load SVG with unsupported elements (text) that will force PNG fallback
+				const unsupportedFileInput = await input.readIcon({
+					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+				});
 
-			// Generate adaptive icons
-			for await (const _file of generateAdaptiveIcons(
-				unsupportedFileInput,
-				config,
-			)) {
-				// Files are generated and written to disk
-			}
+				// Generate adaptive icons
+				for await (const _file of generateAdaptiveIcons(
+					unsupportedFileInput,
+					config,
+				)) {
+					// Files are generated and written to disk
+				}
 
-			// Verify all generated files against expected
-			// The expected directory contains both XML (for background vector drawable + manifests)
-			// and PNG files (for foreground that failed vector conversion)
-			await verifyGeneratedFiles(baseDir, {
-				imageThreshold: 0.1,
-			});
-		});
+				// Verify all generated files against expected
+				// The expected directory contains both XML (for background vector drawable + manifests)
+				// and PNG files (for foreground that failed vector conversion)
+				await verifyGeneratedFiles(baseDir, {
+					imageThreshold: 0.1,
+				});
+			},
+		);
 	});
 });

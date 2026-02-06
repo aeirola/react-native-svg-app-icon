@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { getConfig } from "./config";
@@ -14,9 +15,10 @@ describe("android/config", () => {
 		});
 
 		it("uses provided androidOutputPath", () => {
-			const config = getConfig("/custom/path");
+			const customPath = path.join("/custom", "path");
+			const config = getConfig(customPath);
 
-			expect(config.androidOutputPath).toBe("/custom/path");
+			expect(config.androidOutputPath).toBe(customPath);
 			expect(config.force).toBe(false);
 		});
 
@@ -28,10 +30,11 @@ describe("android/config", () => {
 		});
 
 		it("uses both provided parameters", () => {
-			const config = getConfig("/custom/path", true);
+			const customPath = path.join("/custom", "path");
+			const config = getConfig(customPath, true);
 
 			expect(config).toEqual({
-				androidOutputPath: "/custom/path",
+				androidOutputPath: customPath,
 				force: true,
 			});
 		});

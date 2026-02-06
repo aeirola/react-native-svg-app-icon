@@ -80,7 +80,7 @@ export async function verifyGeneratedFiles(
 
 /**
  * Lists all files in a directory by recursively scanning it.
- * Returns relative paths from the base directory.
+ * Returns relative paths from the base directory with forward slashes (cross-platform).
  *
  * @param directory - Directory to scan for files
  * @returns Array of relative file paths (e.g., ["mipmap-hdpi/ic_launcher.png"])
@@ -100,7 +100,8 @@ async function listDirectoryFiles(directory: string): Promise<string[]> {
 			if (stat.isDirectory()) {
 				await scanDirectory(entryRelativePath);
 			} else {
-				files.push(entryRelativePath);
+				// Normalize to forward slashes for cross-platform consistency
+				files.push(entryRelativePath.split(path.sep).join("/"));
 			}
 		}
 	}

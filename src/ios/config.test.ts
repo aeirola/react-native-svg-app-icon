@@ -10,9 +10,10 @@ const it = base.extend({ tmpDir });
 describe("ios/config", () => {
 	describe("getConfig", () => {
 		it("uses provided iosOutputPath", async ({ tmpDir: _tmpDir }) => {
-			const config = await getConfig("/custom/path");
+			const customPath = path.join("/custom", "path");
+			const config = await getConfig(customPath);
 
-			expect(config.iosOutputPath).toBe("/custom/path");
+			expect(config.iosOutputPath).toBe(customPath);
 			expect(config.force).toBe(false);
 		});
 
