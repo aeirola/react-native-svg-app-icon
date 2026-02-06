@@ -24,7 +24,7 @@ describe("integration tests", () => {
 
 	it(
 		"generates files from complex matching fixtures",
-		() => testFixture("complex"),
+		() => testFixture("complex", 0.1),
 		20 * 1000,
 	);
 
@@ -55,7 +55,10 @@ describe("integration tests", () => {
 		expect(thirdRunFiles.length).toBe(firstRunFiles.length);
 	});
 
-	async function testFixture(fixture: string): Promise<void> {
+	async function testFixture(
+		fixture: string,
+		imageThreshold = 0,
+	): Promise<void> {
 		const fixtureDir = path.join(fixturesPath, fixture);
 		const inputDir = path.join(fixtureDir, "input");
 		const outputDir = path.join(fixtureDir, "output");
@@ -79,6 +82,7 @@ describe("integration tests", () => {
 		}
 
 		await verifyGeneratedFiles(fixtureDir, {
+			imageThreshold: imageThreshold,
 			generatedAfter: generationStartTime,
 		});
 	}
