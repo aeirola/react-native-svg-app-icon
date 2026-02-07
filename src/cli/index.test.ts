@@ -11,7 +11,9 @@ describe("cli", () => {
 	const testAssetsPath = path.join(__dirname, "..", "..", "test", "assets");
 
 	it("fails on missing file", async ({ tmpDir: _tmpDir }) => {
-		await expect(main()).rejects.toThrow("Icon is required");
+		await expect(
+			main(["/usr/local/bin/node", "cli.js", "--log-level=error"]),
+		).rejects.toThrow("Icon is required");
 	});
 
 	it("does not fail for existing file", async ({ tmpDir: _tmpDir }) => {
@@ -20,6 +22,7 @@ describe("cli", () => {
 			svgAppIcon: {
 				backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
 				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+				logLevel: "error",
 			},
 		});
 
@@ -34,6 +37,7 @@ describe("cli", () => {
 				"/usr/local/bin/node",
 				"cli.js",
 				`--foreground-path=${path.join(testAssetsPath, "react-icon.svg")}`,
+				"--log-level=error",
 			]),
 		).resolves.toBeUndefined();
 	});

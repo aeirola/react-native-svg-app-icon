@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { cleanupTestOutput } from "../../test/utils/cleanup";
 import { verifyGeneratedFiles } from "../../test/utils/file-comparison";
 import * as input from "../util/input";
+import { createLogger } from "../util/logger";
 import type { Config } from "./config";
 import { generateVectorDrawable } from "./vector-drawable";
 
@@ -21,6 +22,7 @@ describe("android/vector-drawable", () => {
 			// Load test icon
 			const fileInput = await input.readIcon({
 				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+				logger: createLogger("error"),
 			});
 
 			const baseDir = assetsPath;
@@ -60,6 +62,7 @@ describe("android/vector-drawable", () => {
 				// Load SVG with text element (unsupported in vector drawable)
 				const unsupportedFileInput = await input.readIcon({
 					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+					logger: createLogger("error"),
 				});
 
 				const unsupportedInput = input.mapInput(

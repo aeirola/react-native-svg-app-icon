@@ -1,6 +1,7 @@
 import * as commander from "commander";
 import * as fse from "fs-extra";
 import type * as reactNativeSvgAppIcon from "../index";
+import type { LogLevel } from "../util/logger";
 
 /**
  * Configuration values for CLI.
@@ -14,6 +15,7 @@ export type CliConfig = {
 	force: boolean;
 	androidOutputPath: string;
 	iosOutputPath?: string;
+	logLevel: LogLevel;
 };
 
 /**
@@ -34,6 +36,7 @@ export const defaultConfig: CliConfig = {
 	platforms: ["android", "ios"],
 	force: false,
 	androidOutputPath: "./android/app/src/main/res",
+	logLevel: "info",
 };
 
 export async function readFileConfig(): Promise<Partial<CliConfig>> {
@@ -59,6 +62,15 @@ export function readArgsConfig(args: string[]): Partial<CliConfig> {
 		.option("-f, --force", "overwrite existing newer files")
 		.option("--android-output-path <path>", "android output path")
 		.option("--ios-output-path <path>", "ios output path")
+		.addOption(
+			new commander.Option("--log-level <level>", "log level").choices([
+				"silent",
+				"error",
+				"warn",
+				"info",
+				"debug",
+			]),
+		)
 		.parse(args);
 
 	return program.opts();

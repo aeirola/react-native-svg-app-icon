@@ -3,6 +3,7 @@ import * as fse from "fs-extra";
 
 // sharp library is slow to load, only import types here, and import when needed
 import type * as SharpType from "sharp";
+import type { Logger } from "./logger";
 import type { Optional } from "./optional";
 
 const defaultBackgroundPath = path.join(
@@ -19,6 +20,7 @@ export const inputContentSize = 72;
 export interface Config {
 	backgroundPath: string;
 	foregroundPath: string;
+	logger: Logger | undefined;
 }
 
 type FileModificationTime = fse.Stats["mtimeMs"];
@@ -61,12 +63,6 @@ interface BackgroundImageData extends ImageData {
 }
 
 export async function readIcon(config: Optional<Config>): Promise<FileInput> {
-	if (config.backgroundPath) {
-		console.debug("Reading background file", config.backgroundPath);
-	}
-	if (config.foregroundPath) {
-		console.debug("Reading file", config.foregroundPath);
-	}
 	const fullConfig = getConfig(config);
 
 	return {
@@ -79,6 +75,7 @@ function getConfig(config: Optional<Config>): Config {
 	return {
 		backgroundPath: config.backgroundPath || defaultBackgroundPath,
 		foregroundPath: config.foregroundPath || "./icon.svg",
+		logger: config.logger,
 	};
 }
 
@@ -106,6 +103,13 @@ function lazyLoadProvider(config: Config): () => Promise<LoadedInput> {
 }
 
 async function loadData(config: Config): Promise<Loaded<InputData>> {
+	if (config.backgroundPath) {
+		config.logger?.info("Reading background file", config.backgroundPath);
+	}
+	if (config.foregroundPath) {
+		config.logger?.info("Reading file", config.foregroundPath);
+	}
+
 	const sharpImport = await import("sharp");
 	const warmedSharpInstance = await warmupSharp(sharpImport.default);
 	const [backgroundImageData, foregroundImageData] = await Promise.all([
