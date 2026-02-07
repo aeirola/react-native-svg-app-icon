@@ -20,7 +20,12 @@ async function getIconsetDir(appName?: string): Promise<string> {
 	// Prefer the directory matching the app name from app.json, to avoid
 	// picking a wrong subdirectory when multiple matches exist (e.g. "My"
 	// vs "My App").
-	if (appName) {
+	if (
+		appName &&
+		!appName.includes(path.sep) &&
+		appName !== ".." &&
+		appName !== "."
+	) {
 		const preferredPath = path.join("ios", appName, "Images.xcassets");
 		if (
 			(await fse.pathExists(preferredPath)) &&
