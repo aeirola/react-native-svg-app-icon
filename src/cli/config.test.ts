@@ -16,7 +16,7 @@ describe("cli/config", () => {
 			expect(config).toEqual({});
 		});
 
-		it("returns empty object when app.json exists but has no svgAppIcon", async ({
+		it("reads app name from app.json when no svgAppIcon config exists", async ({
 			tmpDir: _tmpDir,
 		}) => {
 			await fse.writeJson("app.json", {
