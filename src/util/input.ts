@@ -26,7 +26,6 @@ export interface Config {
 type FileModificationTime = fse.Stats["mtimeMs"];
 
 export type FileInput = Input<InputData>;
-type LoadedInput = Loaded<InputData>;
 type InputData = {
 	backgroundImageData: BackgroundImageData;
 	foregroundImageData: ImageData;
@@ -34,12 +33,8 @@ type InputData = {
 
 export interface Input<Data extends Record<string, unknown>> {
 	lastModified: FileModificationTime;
-	read: () => Promise<Loaded<Data>>;
+	read: () => Promise<Data>;
 }
-
-type Loaded<Data extends Record<string, unknown>> = Data & {
-	sharp: typeof SharpType.default;
-};
 
 interface ValidMetadata extends SharpType.Metadata {
 	format: "svg";
@@ -90,10 +85,10 @@ async function getLastModifiedTime(
 	return Math.max(...fileModifiedTimes);
 }
 
-function lazyLoadProvider(config: Config): () => Promise<LoadedInput> {
-	let lazyLoadedData: Promise<LoadedInput> | undefined;
+function lazyLoadProvider(config: Config): () => Promise<InputData> {
+	let lazyLoadedData: Promise<InputData> | undefined;
 
-	return (): Promise<LoadedInput> => {
+	return (): Promise<InputData> => {
 		if (lazyLoadedData === undefined) {
 			lazyLoadedData = loadData(config);
 		}
@@ -102,7 +97,7 @@ function lazyLoadProvider(config: Config): () => Promise<LoadedInput> {
 	};
 }
 
-async function loadData(config: Config): Promise<Loaded<InputData>> {
+async function loadData(config: Config): Promise<InputData> {
 	if (config.backgroundPath) {
 		config.logger?.info("Reading background file", config.backgroundPath);
 	}
@@ -110,47 +105,23 @@ async function loadData(config: Config): Promise<Loaded<InputData>> {
 		config.logger?.info("Reading file", config.foregroundPath);
 	}
 
-	const sharpImport = await import("sharp");
-	const warmedSharpInstance = await warmupSharp(sharpImport.default);
 	const [backgroundImageData, foregroundImageData] = await Promise.all([
-		readImage(warmedSharpInstance, config.backgroundPath),
-		readImage(warmedSharpInstance, config.foregroundPath),
+		readImage(config.backgroundPath),
+		readImage(config.foregroundPath),
 	]);
 
 	const validBackgroundImage = validateBackgroundImage(backgroundImageData);
 
 	return {
-		sharp: warmedSharpInstance,
 		backgroundImageData: validBackgroundImage,
 		foregroundImageData: foregroundImageData,
 	};
 }
 
-// First run might cause a xmllib error, run safe warmup
-// See https://github.com/lovell/sharp/issues/1593
-async function warmupSharp(
-	sharp: typeof SharpType.default,
-): Promise<typeof SharpType.default> {
-	try {
-		await sharp(
-			Buffer.from(
-				`<svg xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1" /></svg>`,
-				"utf-8",
-			),
-		).metadata();
-	} catch {
-		// Error only occurs once, so now safe to use sharp
-	}
-
-	return sharp;
-}
-
-async function readImage(
-	sharp: typeof SharpType.default,
-	filePath: string,
-): Promise<ImageData> {
+async function readImage(filePath: string): Promise<ImageData> {
 	const fileData = await fse.readFile(filePath);
 
+	const sharp = (await import("sharp")).default;
 	const sharpInstance = sharp(fileData);
 	const [metadata, stats] = await Promise.all([
 		sharpInstance.metadata(),
@@ -219,12 +190,9 @@ export function mapInput<
 ): Input<MappedData> {
 	return {
 		...fileInput,
-		read: async (): Promise<Loaded<MappedData>> => {
+		read: async (): Promise<MappedData> => {
 			const data = await fileInput.read();
-			return {
-				sharp: data.sharp,
-				...mapFunction(data),
-			};
+			return mapFunction(data);
 		},
 	};
 }
