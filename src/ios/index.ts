@@ -31,7 +31,7 @@ export async function* generate(
 	config: Optional<Config>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
-	const fullConfig = await getConfig(config.iosOutputPath, config.force);
+	const fullConfig = await getConfig(config);
 
 	yield* generateImages(fullConfig, fileInput);
 	yield* generateManifest(fullConfig);

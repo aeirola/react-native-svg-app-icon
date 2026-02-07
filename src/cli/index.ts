@@ -40,7 +40,7 @@ export async function main(args: string[] = []): Promise<void> {
 			}
 		});
 
-	const generatedFiles = reactNativeSvgAppIcon.generate({
+	const config: reactNativeSvgAppIcon.Config = {
 		icon: {
 			backgroundPath: (await fse.pathExists(cliConfig.backgroundPath))
 				? cliConfig.backgroundPath
@@ -51,8 +51,11 @@ export async function main(args: string[] = []): Promise<void> {
 		force: cliConfig.force,
 		androidOutputPath: cliConfig.androidOutputPath,
 		iosOutputPath: cliConfig.iosOutputPath,
+		appName: cliConfig.appName,
 		logger,
-	});
+	};
+
+	const generatedFiles = reactNativeSvgAppIcon.generate(config);
 
 	for await (const file of generatedFiles) {
 		logger.info(`Wrote ${file}`);

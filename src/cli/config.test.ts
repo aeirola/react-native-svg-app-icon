@@ -26,7 +26,9 @@ describe("cli/config", () => {
 
 			const config = await readFileConfig();
 
-			expect(config).toEqual({});
+			expect(config).toEqual({
+				appName: "TestApp",
+			});
 		});
 
 		it("reads svgAppIcon config from app.json", async ({ tmpDir: _tmpDir }) => {
@@ -43,6 +45,7 @@ describe("cli/config", () => {
 			const config = await readFileConfig();
 
 			expect(config).toEqual({
+				appName: "TestApp",
 				backgroundPath: "./custom-background.svg",
 				foregroundPath: "./custom-icon.svg",
 				platforms: ["android"],

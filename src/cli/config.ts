@@ -15,6 +15,7 @@ export type CliConfig = {
 	force: boolean;
 	androidOutputPath: string;
 	iosOutputPath?: string;
+	appName?: string;
 	logLevel: LogLevel;
 };
 
@@ -42,7 +43,10 @@ export const defaultConfig: CliConfig = {
 export async function readFileConfig(): Promise<Partial<CliConfig>> {
 	try {
 		const appJson = (await fse.readJson("./app.json")) as AppJson;
-		return appJson.svgAppIcon || {};
+		return {
+			...(appJson.name ? { appName: appJson.name } : {}),
+			...appJson.svgAppIcon,
+		};
 	} catch {
 		return {};
 	}
