@@ -177,6 +177,19 @@ describe("cli/config", () => {
 			});
 		});
 
+		it("reads log-level argument", () => {
+			const config = readArgsConfig([
+				"node",
+				"script.js",
+				"--log-level",
+				"debug",
+			]);
+
+			expect(config).toEqual({
+				logLevel: "debug",
+			});
+		});
+
 		it("reads multiple arguments together", () => {
 			const config = readArgsConfig([
 				"node",

@@ -68,7 +68,8 @@ Behaviour can be configured in the `app.json` under the `svgAppIcon` field. For 
     "platforms": ["ios"],
     "force": false,
     "androidOutputPath": "./android/app/src/main/res",
-    "iosOutputPath": "./ios/MyAppName/Images.xcassets/AppIcon.appiconset"
+    "iosOutputPath": "./ios/MyAppName/Images.xcassets/AppIcon.appiconset",
+    "logLevel": "info"
   }
 }
 ```
@@ -83,6 +84,7 @@ Supported configuration values are
 | `force`             | `false`                                              | When `true`, output files will always be written even if they are newer than the input files.                                                                   |
 | `androidOutputPath` | `./android/app/src/main/res`                         | Where to place generated Android icons, can be used for flavor-specific icon generation                                                                         |
 | `iosOutputPath`     | `./ios/*/Images.xcassets/AppIcon.appiconset`         | Where to place generated iOS icons, defaults to `AppIcon.appiconset` in first `Images.xcassets` found as a sub-sub-directory in `./ios`                         |
+| `logLevel`          | `"info"`                                              | Controls the verbosity of logging output. Possible values are `silent`, `error`, `warn`, `info`, and `debug`.                                                    |
 
 Alternatively, the configuration parameters can also be set as CLI flags. See `react-native-svg-app-icon --help` for details.
 

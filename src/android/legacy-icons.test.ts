@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, it } from "vitest";
 import { cleanupTestOutputs } from "../../test/utils/cleanup";
 import { verifyGeneratedFiles } from "../../test/utils/file-comparison";
 import * as input from "../util/input";
+import { createLogger } from "../util/logger";
 import type { Config } from "./config";
 import {
 	generateLegacyRoundIcons,
@@ -26,6 +27,7 @@ describe("android/legacy-icons", () => {
 		fileInput = await input.readIcon({
 			backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
 			foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+			logger: createLogger("silent"),
 		});
 	});
 

@@ -4,6 +4,7 @@ import { beforeAll, describe, it } from "vitest";
 import { cleanupTestOutputs } from "../../test/utils/cleanup";
 import { verifyGeneratedFiles } from "../../test/utils/file-comparison";
 import * as input from "../util/input";
+import { createLogger } from "../util/logger";
 import { generateAdaptiveIcons } from "./adaptive-icons";
 import type { Config } from "./config";
 
@@ -29,6 +30,7 @@ describe("android/adaptive-icons", () => {
 			const fileInput = await input.readIcon({
 				backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
 				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+				logger: createLogger("error"),
 			});
 
 			// Generate adaptive icons
@@ -54,6 +56,7 @@ describe("android/adaptive-icons", () => {
 				// Load SVG with unsupported elements (text) that will force PNG fallback
 				const unsupportedFileInput = await input.readIcon({
 					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+					logger: createLogger("error"),
 				});
 
 				// Generate adaptive icons
