@@ -46,7 +46,8 @@ async function* genaratePng(
 		return;
 	}
 
-	const { sharp, baseImage, operations = [] } = await fileInput.read();
+	const sharp = (await import("sharp")).default;
+	const { baseImage, operations = [] } = await fileInput.read();
 	const metadata = baseImage.metadata;
 
 	await fse.ensureDir(path.dirname(output.filePath));
