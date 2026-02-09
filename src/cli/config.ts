@@ -1,81 +1,147 @@
+import { type } from "arktype";
 import * as commander from "commander";
 import * as fse from "fs-extra";
-import type * as reactNativeSvgAppIcon from "../index";
-import type { LogLevel } from "../util/logger";
 
-/**
- * Configuration values for CLI.
- *
- * Note that these are different from the internal configuration object.
- */
-export type CliConfig = {
-	backgroundPath: string;
-	foregroundPath: string;
-	platforms: reactNativeSvgAppIcon.Platform[];
-	force: boolean;
-	androidOutputPath: string;
-	iosOutputPath?: string;
-	appName?: string;
-	logLevel: LogLevel;
-};
-
-/**
- * Custom extension of RN / Expo app.json for file based configuration.
- */
-type AppJson = Partial<{
-	name: string;
-	displayName: string;
-	svgAppIcon: Partial<CliConfig>;
-}>;
-
-/**
- * Default values for CLI configuration. Custom values are merged on top.
- */
-export const defaultConfig: CliConfig = {
-	backgroundPath: "./icon-background.svg",
-	foregroundPath: "./icon.svg",
-	platforms: ["android", "ios"],
-	force: false,
-	androidOutputPath: "./android/app/src/main/res",
-	logLevel: "info",
-};
-
-export async function readFileConfig(): Promise<Partial<CliConfig>> {
-	try {
-		const appJson = (await fse.readJson("./app.json")) as AppJson;
-		return {
-			...(appJson.name ? { appName: appJson.name } : {}),
-			...appJson.svgAppIcon,
+// Enable defining commandline options directly in ArkType schema metadata
+declare global {
+	interface ArkEnv {
+		meta(): {
+			cli?: ConstructorParameters<typeof commander.Option>;
 		};
-	} catch {
-		return {};
 	}
 }
 
-export function readArgsConfig(args: string[]): Partial<CliConfig> {
+/**
+ * Schema for configuration properties.
+ *
+ * CLI option metadata is embedded via ArkType `.configure()` for each property,
+ * enabling automatic Commander.js option generation from the same schema.
+ */
+const configSchema = type({
+	backgroundPath: type("string")
+		.configure({
+			cli: ["--background-path <path>", "background icon path"],
+		})
+		.default("./icon-background.svg"),
+	foregroundPath: type("string")
+		.configure({
+			cli: ["--foreground-path <path>", "foreground icon path"],
+		})
+		.default("./icon.svg"),
+	platforms: type("('android'|'ios')[]")
+		.configure({
+			cli: [
+				"--platforms <platforms...>",
+				"platforms for which to generate icons",
+			],
+		})
+		.default(() => ["android", "ios"]),
+	force: type("boolean")
+		.configure({
+			cli: ["-f, --force", "overwrite existing newer files"],
+		})
+		.default(false),
+	androidOutputPath: type("string")
+		.configure({
+			cli: ["--android-output-path <path>", "android output path"],
+		})
+		.default("./android/app/src/main/res"),
+	"iosOutputPath?": type("string").configure({
+		cli: ["--ios-output-path <path>", "ios output path"],
+	}),
+	logLevel: type("'silent'|'error'|'warn'|'info'|'debug'")
+		.configure({
+			cli: ["--log-level <level>", "log level"],
+		})
+		.default("info"),
+});
+
+/**
+ * Fully resolved configuration, merged from defaults, app.json, and CLI arguments.
+ */
+export type ResolvedConfig = typeof configSchema.infer & {
+	appName?: typeof appJsonSchema.infer.name;
+};
+
+/**
+ * Read and merge configuration from all sources:
+ * defaults → app.json → command-line arguments
+ */
+export async function readConfig(args: string[] = []): Promise<ResolvedConfig> {
+	return {
+		...(await readAppJsonConfig()),
+		// TODO: Omit default values
+		...readCliArgs(args),
+	};
+}
+
+/**
+ * ArkType schema for app.json structure
+ */
+const appJsonSchema = type({
+	"name?": "string",
+	"displayName?": "string",
+	svgAppIcon: configSchema.default(() => ({})),
+});
+
+async function readAppJsonConfig(): Promise<ResolvedConfig> {
+	let rawAppJson: unknown;
+	try {
+		rawAppJson = await fse.readJson("./app.json");
+	} catch {
+		// Fall back to default on file errors (e.g., file not found, invalid JSON)
+		rawAppJson = {};
+	}
+
+	// Validate the app.json structure
+	const result = appJsonSchema(rawAppJson);
+
+	if (result instanceof type.errors) {
+		throw new Error(`Invalid app.json: ${result.summary}`);
+	}
+
+	return {
+		...(result.name ? { appName: result.name } : {}),
+		...result.svgAppIcon,
+	};
+}
+
+function readCliArgs(args: string[]): Partial<ResolvedConfig> {
 	const program = new commander.Command();
 
-	program
-		.name("react-native-svg-app-icon")
-		.option("--background-path <path>", "background icon path")
-		.option("--foreground-path <path>", "foreground icon path")
-		.option(
-			"--platforms <platforms...>",
-			"platforms for which to generate icons",
-		)
-		.option("-f, --force", "overwrite existing newer files")
-		.option("--android-output-path <path>", "android output path")
-		.option("--ios-output-path <path>", "ios output path")
-		.addOption(
-			new commander.Option("--log-level <level>", "log level").choices([
-				"silent",
-				"error",
-				"warn",
-				"info",
-				"debug",
-			]),
-		)
-		.parse(args);
+	program.name("react-native-svg-app-icon");
 
-	return program.opts();
+	for (const opt of configSchema.props) {
+		const optMeta = opt.value.meta;
+		if (!optMeta?.cli) continue; // Skip properties without CLI flag configuration
+
+		const cliOption = new commander.Option(...optMeta.cli);
+
+		if (optMeta.default !== undefined) {
+			cliOption.default(optMeta.default);
+		}
+
+		// Not the most straightforward way to extract argument choices
+		// but works for our use cases
+		const stringChoices = opt.value
+			.select("unit")
+			.map(({ unit }) => unit)
+			.filter((unit) => typeof unit === "string");
+		if (stringChoices.length) {
+			cliOption.choices(stringChoices);
+		}
+
+		program.addOption(cliOption);
+	}
+
+	program.parse(args);
+
+	// Strip default values so that they don't override config file values
+	const userDefinedOptions = Object.fromEntries(
+		Object.entries(program.opts()).filter(
+			([key]) => program.getOptionValueSource(key) !== "default",
+		),
+	);
+
+	return userDefinedOptions;
 }

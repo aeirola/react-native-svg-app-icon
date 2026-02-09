@@ -34,7 +34,8 @@
 		"url": "git+https://github.com/aeirola/react-native-svg-app-icon.git"
 	},
 	"dependencies": {
-		"commander": "^14.0.3",
+		"arktype": ">=2.0.0",
+		"commander": ">=8.3.0",
 		"fs-extra": ">=3.0.0",
 		"sharp": ">=0.26.0",
 		"svg2vectordrawable": "2.9.1"
