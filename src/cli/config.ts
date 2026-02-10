@@ -70,7 +70,6 @@ export type ResolvedConfig = typeof configSchema.infer & {
 export async function readConfig(args: string[] = []): Promise<ResolvedConfig> {
 	return {
 		...(await readAppJsonConfig()),
-		// TODO: Omit default values
 		...readCliArgs(args),
 	};
 }
@@ -88,9 +87,13 @@ async function readAppJsonConfig(): Promise<ResolvedConfig> {
 	let rawAppJson: unknown;
 	try {
 		rawAppJson = await fse.readJson("./app.json");
-	} catch {
-		// Fall back to default on file errors (e.g., file not found, invalid JSON)
-		rawAppJson = {};
+	} catch (error) {
+		// Only fall back to default if file not found
+		if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+			rawAppJson = {};
+		} else {
+			throw error;
+		}
 	}
 
 	// Validate the app.json structure
