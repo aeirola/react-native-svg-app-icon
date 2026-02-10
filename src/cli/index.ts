@@ -3,34 +3,25 @@ import * as fse from "fs-extra";
 
 import * as reactNativeSvgAppIcon from "../index";
 import { createLogger } from "../util/logger";
-import {
-	type CliConfig,
-	defaultConfig,
-	readArgsConfig,
-	readFileConfig,
-} from "./config";
+import { readConfig } from "./config";
 
 const supportedPlatforms: reactNativeSvgAppIcon.Platform[] = ["android", "ios"];
 
 export async function main(args: string[] = []): Promise<void> {
-	const cliConfig: CliConfig = {
-		...defaultConfig,
-		...(await readFileConfig()),
-		...readArgsConfig(args),
-	};
+	const resolvedConfig = await readConfig(args);
 
 	// Create logger from config
-	const logger = createLogger(cliConfig.logLevel);
+	const logger = createLogger(resolvedConfig.logLevel);
 
 	logger.info("Running react-native-svg-app-icon");
 
-	if (!(await fse.pathExists(cliConfig.foregroundPath))) {
+	if (!(await fse.pathExists(resolvedConfig.foregroundPath))) {
 		throw Error(
-			`Icon is required, but not found at ${cliConfig.foregroundPath}`,
+			`Icon is required, but not found at ${resolvedConfig.foregroundPath}`,
 		);
 	}
 
-	cliConfig.platforms = cliConfig.platforms
+	resolvedConfig.platforms = resolvedConfig.platforms
 		.map((platform) => platform.toLowerCase())
 		.filter((platform): platform is reactNativeSvgAppIcon.Platform => {
 			if ((supportedPlatforms as string[]).includes(platform)) {
@@ -42,16 +33,16 @@ export async function main(args: string[] = []): Promise<void> {
 
 	const config: reactNativeSvgAppIcon.Config = {
 		icon: {
-			backgroundPath: (await fse.pathExists(cliConfig.backgroundPath))
-				? cliConfig.backgroundPath
+			backgroundPath: (await fse.pathExists(resolvedConfig.backgroundPath))
+				? resolvedConfig.backgroundPath
 				: undefined,
-			foregroundPath: cliConfig.foregroundPath,
+			foregroundPath: resolvedConfig.foregroundPath,
 		},
-		platforms: cliConfig.platforms,
-		force: cliConfig.force,
-		androidOutputPath: cliConfig.androidOutputPath,
-		iosOutputPath: cliConfig.iosOutputPath,
-		appName: cliConfig.appName,
+		platforms: resolvedConfig.platforms,
+		force: resolvedConfig.force,
+		androidOutputPath: resolvedConfig.androidOutputPath,
+		iosOutputPath: resolvedConfig.iosOutputPath,
+		appName: resolvedConfig.appName,
 		logger,
 	};
 
