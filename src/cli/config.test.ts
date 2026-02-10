@@ -150,21 +150,12 @@ describe("cli/config", () => {
 			);
 		});
 
-		it("handles invalid JSON in app.json gracefully", async ({
+		it("throws error for invalid JSON in app.json", async ({
 			tmpDir: _tmpDir,
 		}) => {
 			await fse.writeFile("app.json", "invalid json {");
 
-			const resolvedConfig = await readConfig(["node", "script.js"]);
-
-			expect(resolvedConfig).toEqual({
-				backgroundPath: "./icon-background.svg",
-				foregroundPath: "./icon.svg",
-				platforms: ["android", "ios"],
-				force: false,
-				androidOutputPath: "./android/app/src/main/res",
-				logLevel: "info",
-			});
+			await expect(readConfig(["node", "script.js"])).rejects.toThrow();
 		});
 
 		it("reads background-path from CLI arguments", async ({
