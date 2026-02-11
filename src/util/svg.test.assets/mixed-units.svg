@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
+  <!-- Background using absolute pixels -->
+  <rect fill="#FFFFFF" width="108" height="108"/>
+  
+  <!-- Outer square using percentage width/height -->
+  <rect fill="#E0E0E0" x="9" y="9" width="83.33%" height="83.33%"/>
+  
+  <!-- Blue rect using absolute position and size -->
+  <rect fill="#0000FF" x="18" y="18" width="72" height="72"/>
+  
+  <!-- Green rect using percentage position (50% = center) and absolute size -->
+  <rect fill="#00FF00" x="25%" y="25%" width="54" height="54"/>
+  
+  <!-- Red circle using percentage radius -->
+  <circle fill="#FF0000" cx="54" cy="54" r="16.67%"/>
+  
+  <!-- Yellow circle using absolute position and radius -->
+  <circle fill="#FFFF00" cx="54" cy="54" r="10"/>
+  
+  <!-- Orange rect with mixed units: percentage x, absolute y -->
+  <rect fill="#FFA500" x="46.3%" y="50" width="8" height="8"/>
+  
+  <!-- Purple line using percentage coordinates -->
+  <line stroke="#800080" stroke-width="2" x1="27.78%" y1="27.78%" x2="72.22%" y2="27.78%"/>
+  <line stroke="#800080" stroke-width="2" x1="27.78%" y1="72.22%" x2="72.22%" y2="72.22%"/>
+  <line stroke="#800080" stroke-width="2" x1="27.78%" y1="27.78%" x2="27.78%" y2="72.22%"/>
+  <line stroke="#800080" stroke-width="2" x1="72.22%" y1="27.78%" x2="72.22%" y2="72.22%"/>
+  
+  <!-- Cyan polyline with mixed absolute and percentage points -->
+  <polyline fill="none" stroke="#00FFFF" stroke-width="1" 
+            points="50%,9 90%,25% 90%,75% 50%,99 10%,75% 10%,25%"/>
+  
+  <!-- Viewport units: vw (viewport width) and vh (viewport height) -->
+  <!-- 10vw = 10.8px when viewport is 108px -->
+  <rect fill="#FF69B4" x="40vw" y="40vh" width="20vw" height="20vh"/>
+  
+  <!-- Physical units: inches and centimeters -->
+  <!-- At 96 DPI: 1in = 96px, 1cm = 37.795px -->
+  <!-- 0.1in ≈ 9.6px, 0.25cm ≈ 9.45px -->
+  <circle fill="#8B4513" cx="0.5625in" cy="0.5625in" r="0.1in"/>
+  <circle fill="#2E8B57" cx="1.429cm" cy="1.429cm" r="0.25cm"/>
+  
+  <!-- Font-relative units: em and rem -->
+  <!-- Default font-size is usually 16px, so 1em = 16px -->
+  <!-- 3em = 48px (center), 0.5em = 8px (radius) -->
+  <circle fill="#4169E1" cx="3em" cy="3em" r="0.5em"/>
+  <rect fill="#DC143C" x="3.5rem" y="3.5rem" width="1rem" height="1rem"/>
+</svg>

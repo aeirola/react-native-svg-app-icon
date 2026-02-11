@@ -41,9 +41,7 @@ describe("ios/index", () => {
 				// Files are generated and written to disk
 			}
 
-			await verifyGeneratedFiles(baseDir, {
-				imageThreshold: 0.1,
-			});
+			await verifyGeneratedFiles(baseDir);
 		});
 	});
 });
