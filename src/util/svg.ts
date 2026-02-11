@@ -21,9 +21,14 @@ export function cropSvg(
 	const originalSvg = svgBuffer.toString("utf-8");
 
 	// Strip XML declaration and DOCTYPE which cannot appear in nested content
-	const { data: strippedSvg } = optimize(originalSvg, {
+	const svgoResult = optimize(originalSvg, {
 		plugins: ["removeDoctype", "removeXMLProcInst"],
 	});
+
+	if (!("data" in svgoResult)) {
+		throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
+	}
+	const strippedSvg = svgoResult.data;
 
 	// Create outer SVG with cropped viewBox - the nested SVG will be clipped
 	// to show only the center region defined by the viewBox
