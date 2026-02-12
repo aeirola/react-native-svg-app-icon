@@ -1,49 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
-  <!-- Background using absolute pixels -->
-  <rect fill="#FFFFFF" width="108" height="108"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108" font-size="16">
+  <!-- Background -->
+  <rect fill="#F5F5F5" width="108" height="108"/>
   
-  <!-- Outer square using percentage width/height -->
-  <rect fill="#E0E0E0" x="9" y="9" width="83.33%" height="83.33%"/>
+  <!-- 4x4 Grid of squares, each using different units for position and size -->
+  <!-- Each square is approximately 24x24 with 3px spacing -->
   
-  <!-- Blue rect using absolute position and size -->
-  <rect fill="#0000FF" x="18" y="18" width="72" height="72"/>
+  <!-- Row 1 -->
+  <!-- Square 1: px (pixels) - absolute units -->
+  <rect fill="#FF6B6B" x="3px" y="3px" width="24px" height="24px"/>
   
-  <!-- Green rect using percentage position (50% = center) and absolute size -->
-  <rect fill="#00FF00" x="25%" y="25%" width="54" height="54"/>
+  <!-- Square 2: percentage (%) -->
+  <rect fill="#4ECDC4" x="27.78%" y="2.78%" width="22.22%" height="22.22%"/>
   
-  <!-- Red circle using percentage radius -->
-  <circle fill="#FF0000" cx="54" cy="54" r="16.67%"/>
+  <!-- Square 3: em (font-relative, 16px default) -->
+  <!-- 3.5625em = 57px, 1.5em = 24px -->
+  <rect fill="#95E1D3" x="3.5625em" y="0.1875em" width="1.5em" height="1.5em"/>
   
-  <!-- Yellow circle using absolute position and radius -->
-  <circle fill="#FFFF00" cx="54" cy="54" r="10"/>
+  <!-- Square 4: rem (root em) -->
+  <rect fill="#F38181" x="5.25rem" y="0.1875rem" width="1.5rem" height="1.5rem"/>
   
-  <!-- Orange rect with mixed units: percentage x, absolute y -->
-  <rect fill="#FFA500" x="46.3%" y="50" width="8" height="8"/>
+  <!-- Row 2 -->
+  <!-- Square 5: pt (points - 1/72 inch, at 96 DPI: 1pt = 1.333px) -->
+  <!-- 2.25pt ≈ 3px, 18pt ≈ 24px -->
+  <rect fill="#AA96DA" x="2.25pt" y="22.5pt" width="18pt" height="18pt"/>
   
-  <!-- Purple line using percentage coordinates -->
-  <line stroke="#800080" stroke-width="2" x1="27.78%" y1="27.78%" x2="72.22%" y2="27.78%"/>
-  <line stroke="#800080" stroke-width="2" x1="27.78%" y1="72.22%" x2="72.22%" y2="72.22%"/>
-  <line stroke="#800080" stroke-width="2" x1="27.78%" y1="27.78%" x2="27.78%" y2="72.22%"/>
-  <line stroke="#800080" stroke-width="2" x1="72.22%" y1="27.78%" x2="72.22%" y2="72.22%"/>
+  <!-- Square 6: pc (picas - 1/6 inch, at 96 DPI: 1pc = 16px) -->
+  <!-- 1.875pc = 30px, 1.5pc = 24px -->
+  <rect fill="#FCBAD3" x="1.875pc" y="1.875pc" width="1.5pc" height="1.5pc"/>
   
-  <!-- Cyan polyline with mixed absolute and percentage points -->
-  <polyline fill="none" stroke="#00FFFF" stroke-width="1" 
-            points="50%,9 90%,25% 90%,75% 50%,99 10%,75% 10%,25%"/>
+  <!-- Square 7: mm (millimeters, at 96 DPI: 1mm ≈ 3.78px) -->
+  <!-- 15.08mm = 57px, 6.35mm ≈ 24px -->
+  <rect fill="#FFFFD2" x="15.08mm" y="7.94mm" width="6.35mm" height="6.35mm"/>
   
-  <!-- Viewport units: vw (viewport width) and vh (viewport height) -->
-  <!-- 10vw = 10.8px when viewport is 108px -->
-  <rect fill="#FF69B4" x="40vw" y="40vh" width="20vw" height="20vh"/>
+  <!-- Square 8: cm (centimeters, at 96 DPI: 1cm ≈ 37.8px) -->
+  <!-- 2.222cm = 84px, 0.794cm ≈ 30px, 0.635cm ≈ 24px -->
+  <rect fill="#A8D8EA" x="2.222cm" y="0.794cm" width="0.635cm" height="0.635cm"/>
   
-  <!-- Physical units: inches and centimeters -->
-  <!-- At 96 DPI: 1in = 96px, 1cm = 37.795px -->
-  <!-- 0.1in ≈ 9.6px, 0.25cm ≈ 9.45px -->
-  <circle fill="#8B4513" cx="0.5625in" cy="0.5625in" r="0.1in"/>
-  <circle fill="#2E8B57" cx="1.429cm" cy="1.429cm" r="0.25cm"/>
+  <!-- Row 3 -->
+  <!-- Square 9: in (inches, at 96 DPI: 1in = 96px) -->
+  <!-- 0.03125in = 3px, 0.59375in = 57px, 0.25in = 24px -->
+  <rect fill="#FFCCCC" x="0.03125in" y="0.59375in" width="0.25in" height="0.25in"/>
   
-  <!-- Font-relative units: em and rem -->
-  <!-- Default font-size is usually 16px, so 1em = 16px -->
-  <!-- 3em = 48px (center), 0.5em = 8px (radius) -->
-  <circle fill="#4169E1" cx="3em" cy="3em" r="0.5em"/>
-  <rect fill="#DC143C" x="3.5rem" y="3.5rem" width="1rem" height="1rem"/>
+  <!-- Square 10: vw (viewport width %) -->
+  <!-- 27.78vw ≈ 30px, 52.78vh = 57px, 22.22vw ≈ 24px -->
+  <rect fill="#C7CEEA" x="27.78vw" y="52.78vh" width="22.22vw" height="22.22vh"/>
+  
+  <!-- Square 11: vh (viewport height %) -->
+  <rect fill="#B5EAD7" x="52.78vh" y="52.78vw" width="22.22vh" height="22.22vw"/>
+  
+  <!-- Square 12: Mixed units - x in %, y in px, width in em, height in rem -->
+  <rect fill="#FFB6B9" x="77.78%" y="57px" width="1.5em" height="1.5rem"/>
+  
+  <!-- Row 4 -->
+  <!-- Square 13: ex (x-height of font, typically 0.5em) -->
+  <rect fill="#FEC8D8" x="0.37ex" y="11.7ex" width="3.4ex" height="3.4ex"/>
+  
+  <!-- Square 14: ch (width of "0" character, typically 0.5em) -->
+  <!-- 3.75ch = 30px, 10.5ch = 84px, 3ch ≈ 24px -->
+  <rect fill="#957DAD" x="3.75ch" y="10.5ch" width="3ch" height="3ch"/>
+  
+  <!-- Square 15: Mixed percentages for x/y, absolute for size -->
+  <rect fill="#D291BC" x="52.78%" y="77.78%" width="24" height="24"/>
+  
+  <!-- Square 16: All different units mixed -->
+  <!-- x in vw, y in %, width in pt, height in mm -->
+  <rect fill="#E8A0BF" x="77.78vw" y="77.78%" width="18pt" height="6.35mm"/>
+  
+  <!-- Grid lines for visual separation (optional) -->
+  <line stroke="#CCCCCC" stroke-width="0.5" x1="0" y1="27" x2="108" y2="27"/>
+  <line stroke="#CCCCCC" stroke-width="0.5" x1="0" y1="54" x2="108" y2="54"/>
+  <line stroke="#CCCCCC" stroke-width="0.5" x1="0" y1="81" x2="108" y2="81"/>
+  <line stroke="#CCCCCC" stroke-width="0.5" x1="27" y1="0" x2="27" y2="108"/>
+  <line stroke="#CCCCCC" stroke-width="0.5" x1="54" y1="0" x2="54" y2="108"/>
+  <line stroke="#CCCCCC" stroke-width="0.5" x1="81" y1="0" x2="81" y2="108"/>
 </svg>

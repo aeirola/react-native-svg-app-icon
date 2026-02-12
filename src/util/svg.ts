@@ -25,17 +25,21 @@ export function cropSvg(
 		plugins: ["removeDoctype", "removeXMLProcInst"],
 	});
 
-	if (!("data" in svgoResult)) {
+	if (svgoResult.error !== undefined) {
 		throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
 	}
 	const strippedSvg = svgoResult.data;
 
 	// Create outer SVG with cropped viewBox - the nested SVG will be clipped
 	// to show only the center region defined by the viewBox
-	const wrappedSvg = `<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="${cropSize}" height="${cropSize}" viewBox="${offset} ${offset} ${cropSize} ${cropSize}">
+	const wrappedSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${cropSize}" height="${cropSize}" viewBox="${offset} ${offset} ${cropSize} ${cropSize}">
   ${strippedSvg}
 </svg>`;
+
+	/* Note: One might consider implementing the cropping by altering the viewBox
+	 * of the original SVG directly, but that will change the relative size of
+	 * any properties ussing viewport units (e.g., stroke-width="1vw") and thus
+	 * alter the visual appearance of the SVG. */
 
 	return Buffer.from(wrappedSvg, "utf-8");
 }
