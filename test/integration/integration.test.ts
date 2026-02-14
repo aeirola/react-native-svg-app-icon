@@ -22,11 +22,8 @@ describe("integration tests", () => {
 
 	it("generates files in normal project", () => testFixture("normal"));
 
-	it(
-		"generates files from complex matching fixtures",
-		{ timeout: 20 * 1000 }, // Font loading might take some time
-		() => testFixture("complex", 0.1),
-	);
+	it("generates files from complex matching fixtures", () =>
+		testFixture("complex", 0.1));
 
 	it("handles caching correctly", async () => {
 		const cacheFixture = path.join(fixturesPath, "cache-test");
