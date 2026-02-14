@@ -15,6 +15,7 @@ describe("integration tests", () => {
 			"normal",
 			"complex",
 			"cache-test",
+			"scaling-pattern",
 		]);
 	});
 
@@ -51,6 +52,9 @@ describe("integration tests", () => {
 		const thirdRunFiles = thirdRun.stdout.match(/Wrote .+/g) || [];
 		expect(thirdRunFiles.length).toBe(firstRunFiles.length);
 	});
+
+	it("generates with appropriate scaling pattern", () =>
+		testFixture("scaling-pattern"));
 
 	async function testFixture(
 		fixture: string,
