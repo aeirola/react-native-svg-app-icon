@@ -86,12 +86,16 @@ export async function verifyGeneratedFiles(
  * @returns Array of relative file paths (e.g., ["mipmap-hdpi/ic_launcher.png"])
  */
 async function listDirectoryFiles(directory: string): Promise<string[]> {
-	const entries = await fse.readdir(directory, { recursive: true });
-
-	return entries.map(String).filter((entry) => {
-		const fullPath = path.join(directory, entry);
-		return fse.statSync(fullPath).isFile();
+	const entries = await fse.readdir(directory, {
+		withFileTypes: true,
+		recursive: true,
 	});
+
+	return entries
+		.filter((entry) => entry.isFile())
+		.map((entry) =>
+			path.join(path.relative(directory, entry.parentPath), entry.name),
+		);
 }
 
 /**
