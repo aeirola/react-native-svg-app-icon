@@ -3,6 +3,7 @@ import * as fse from "fs-extra";
 import type * as SharpType from "sharp";
 
 import * as input from "./input";
+import { cropSvg } from "./svg";
 
 export interface OutputConfig {
 	/** Write output files even if they are newer than input files. */
@@ -52,13 +53,18 @@ async function* genaratePng(
 
 	await fse.ensureDir(path.dirname(output.filePath));
 
-	const scale =
+	// Apply SVG cropping if needed - wraps the SVG with an outer viewport that
+	// crops to the desired region, avoiding pixel-level rounding issues
+	const croppedBaseImage =
 		fileInput.cropSize === undefined
-			? 1
-			: input.inputImageSize / fileInput.cropSize;
-	const targetDensity =
-		(output.outputSize / metadata.width) * metadata.density * scale;
-	let image = sharp(baseImage.data, { density: targetDensity });
+			? baseImage.data
+			: cropSvg(baseImage.data, input.inputImageSize, fileInput.cropSize);
+
+	// When cropped, the SVG's effective size is cropSize, otherwise full size
+	const effectiveSize = fileInput.cropSize ?? metadata.width;
+	const targetDensity = (output.outputSize / effectiveSize) * metadata.density;
+
+	let image = sharp(croppedBaseImage, { density: targetDensity });
 
 	for (const operation of operations) {
 		switch (operation.type) {
@@ -75,11 +81,17 @@ async function* genaratePng(
 						blend = "over";
 				}
 
+				// Apply same crop to composite overlay/mask files
+				const croppedOperationFile =
+					fileInput.cropSize === undefined
+						? operation.file
+						: cropSvg(operation.file, input.inputImageSize, fileInput.cropSize);
+
 				image = sharp(
 					await image
 						.composite([
 							{
-								input: await sharp(operation.file, {
+								input: await sharp(croppedOperationFile, {
 									density: targetDensity,
 								}).toBuffer(),
 								blend: blend,
@@ -95,13 +107,6 @@ async function* genaratePng(
 		}
 	}
 
-	const extractRegion = getExtractRegion(
-		targetDensity,
-		metadata,
-		output.outputSize,
-	);
-	image = image.extract(extractRegion);
-
 	await image
 		.png({
 			adaptiveFiltering: false,
@@ -110,23 +115,6 @@ async function* genaratePng(
 		.toFile(output.filePath);
 
 	yield output.filePath;
-}
-
-function getExtractRegion(
-	targetDensity: number,
-	metadata: input.ImageData["metadata"],
-	outputSize: number,
-): SharpType.Region {
-	const imageMargin = Math.floor(
-		((targetDensity / metadata.density) * metadata.width - outputSize) / 2,
-	);
-
-	return {
-		top: imageMargin,
-		left: imageMargin,
-		width: outputSize,
-		height: outputSize,
-	};
 }
 
 async function hasChanged(
