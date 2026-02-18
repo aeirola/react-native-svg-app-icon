@@ -4,9 +4,59 @@ import pixelmatch from "pixelmatch";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
-import { cropSvg } from "./svg";
+import { cropSvg, stripSvgXmlHeaders } from "./svg";
 
 describe("util/svg", () => {
+	describe("stripSvgXmlHeaders", () => {
+		it("removes XML declaration and DOCTYPE from SVG", () => {
+			const input = Buffer.from(
+				`<?xml version="1.0" encoding="utf-8"?>
+				<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+				<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
+					<rect fill="#FFFFFF" width="108" height="108"/>
+				</svg>`,
+				"utf-8",
+			);
+
+			const result = stripSvgXmlHeaders(input);
+
+			expect(result).toBe(
+				'<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108"><rect fill="#FFFFFF" width="108" height="108"/></svg>',
+			);
+		});
+
+		it("returns normalized SVG when no declarations are present", () => {
+			const input = Buffer.from(
+				`<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108">
+					<circle cx="54" cy="54" r="36"/>
+				</svg>`,
+				"utf-8",
+			);
+
+			const result = stripSvgXmlHeaders(input);
+
+			expect(result).toBe(
+				'<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108"><circle cx="54" cy="54" r="36"/></svg>',
+			);
+		});
+
+		it("removes only XML declaration when DOCTYPE is absent", () => {
+			const input = Buffer.from(
+				`<?xml version="1.0"?>
+				<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108">
+				  <rect width="108" height="108"/>
+				</svg>`,
+				"utf-8",
+			);
+
+			const result = stripSvgXmlHeaders(input);
+
+			expect(result).toBe(
+				'<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108"><rect width="108" height="108"/></svg>',
+			);
+		});
+	});
+
 	describe("cropSvg", () => {
 		const svgFiles = [
 			"centered-squares.svg",
