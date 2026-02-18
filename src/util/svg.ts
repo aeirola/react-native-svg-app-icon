@@ -1,6 +1,26 @@
 import { optimize } from "svgo";
 
 /**
+ * Strips XML declaration and DOCTYPE from an SVG buffer, returning the cleaned SVG string.
+ * This is necessary when embedding SVG content inside another SVG element, since XML
+ * processing instructions and DOCTYPE declarations cannot appear in nested content.
+ *
+ * @param svgBuffer The original SVG content
+ * @returns SVG string with XML headers removed
+ */
+export function stripSvgXmlHeaders(svgBuffer: Buffer): string {
+	const svgoResult = optimize(svgBuffer.toString("utf-8"), {
+		plugins: ["removeDoctype", "removeXMLProcInst"],
+	});
+
+	if (svgoResult.error !== undefined) {
+		throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
+	}
+
+	return svgoResult.data;
+}
+
+/**
  * Crops an SVG to a centered region.
  *
  * Implementation: Wraps the SVG with an outer SVG element that uses viewport/viewBox
@@ -18,17 +38,7 @@ export function cropSvg(
 	cropSize: number,
 ): Buffer {
 	const offset = (fullSize - cropSize) / 2;
-	const originalSvg = svgBuffer.toString("utf-8");
-
-	// Strip XML declaration and DOCTYPE which cannot appear in nested content
-	const svgoResult = optimize(originalSvg, {
-		plugins: ["removeDoctype", "removeXMLProcInst"],
-	});
-
-	if (svgoResult.error !== undefined) {
-		throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
-	}
-	const strippedSvg = svgoResult.data;
+	const strippedSvg = stripSvgXmlHeaders(svgBuffer);
 
 	// Create outer SVG with cropped viewBox - the nested SVG will be clipped
 	// to show only the center region defined by the viewBox
