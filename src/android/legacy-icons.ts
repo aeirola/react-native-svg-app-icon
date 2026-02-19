@@ -1,6 +1,6 @@
+import { optimize } from "svgo";
 import * as input from "../util/input";
 import * as output from "../util/output";
-import { stripSvgXmlHeaders } from "../util/svg";
 import type { Config } from "./config";
 import {
 	densities,
@@ -30,7 +30,7 @@ const legacyIconBaseSize = 48;
 // https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/resources/images/launcher_stencil/
 // https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/src/com/android/tools/idea/npw/assetstudio/LauncherLegacyIconGenerator.java
 const legacyLightningFilter = `
-	<filter id="legacyLightningFilter">
+  <filter id="legacyLightningFilter">
     <!-- Drop shadow -->
     <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" />
     <feOffset dx="0" dy="2.25" />
@@ -51,9 +51,8 @@ const legacyLightningFilter = `
     />
 
     <feMerge>
-			<feMergeNode in="SourceGraphic" />
-			<feMergeNode in="shadow" />
-			<feMergeNode in="edge" />
+      <feMergeNode in="shadow" />
+      <feMergeNode in="edge" />
     </feMerge>
   </filter>`;
 
@@ -83,25 +82,29 @@ function buildSquareLegacyIconSvg(
 ): Buffer {
 	return Buffer.from(
 		`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-	viewBox="${viewBox}"
+  viewBox="${viewBox}"
   width="${input.inputImageSize}" height="${input.inputImageSize}">
-  <defs>
-    <clipPath id="shape">
-			<rect
-				x="${squareIconMargin}" y="${squareIconMargin}"
-				width="${input.inputContentSize}" height="${input.inputContentSize}"
-				rx="${legacySquareIconBorderRadius * squareIconScalingRatio}" ry="${legacySquareIconBorderRadius * squareIconScalingRatio}"
-			/>
-    </clipPath>
-    ${legacyLightningFilter}
-  </defs>
+  <clipPath id="shape">
+    <rect
+      x="${squareIconMargin}" y="${squareIconMargin}"
+      width="${input.inputContentSize}" height="${input.inputContentSize}"
+      rx="${legacySquareIconBorderRadius * squareIconScalingRatio}" ry="${legacySquareIconBorderRadius * squareIconScalingRatio}"
+    />
+  </clipPath>
+  ${legacyLightningFilter}
 
-	<g filter="url(#legacyLightningFilter)">
-		<g clip-path="url(#shape)">
-			${stripSvgXmlHeaders(background)}
-			${stripSvgXmlHeaders(foreground)}
-		</g>
-	</g>
+  <g clip-path="url(#shape)">
+    ${prepareForInlining(background, "background")}
+    ${prepareForInlining(foreground, "foreground")}
+  </g>
+
+  <g filter="url(#legacyLightningFilter)">
+    <rect
+      x="${squareIconMargin}" y="${squareIconMargin}"
+      width="${input.inputContentSize}" height="${input.inputContentSize}"
+      rx="${legacySquareIconBorderRadius * squareIconScalingRatio}" ry="${legacySquareIconBorderRadius * squareIconScalingRatio}"
+    />
+  </g>
 </svg>`,
 		"utf-8",
 	);
@@ -129,26 +132,55 @@ function buildRoundLegacyIconSvg(
 	return Buffer.from(
 		`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
   viewBox="${viewBox}"
-	width="${input.inputImageSize}" height="${input.inputImageSize}">
-  <defs>
-		${legacyLightningFilter}
+  width="${input.inputImageSize}" height="${input.inputImageSize}">
+    ${legacyLightningFilter}
     <clipPath id="shape">
-			<circle
-				cx="${input.inputImageSize / 2}" cy="${input.inputImageSize / 2}"
-				r="${input.inputContentSize / 2}"
-			/>
+      <circle
+        cx="${input.inputImageSize / 2}" cy="${input.inputImageSize / 2}"
+        r="${input.inputContentSize / 2}"
+      />
     </clipPath>
-  </defs>
+  <g clip-path="url(#shape)">
+    ${prepareForInlining(background, "background")}
+    ${prepareForInlining(foreground, "foreground")}
+  </g>
 
-	<g filter="url(#legacyLightningFilter)">
-		<g clip-path="url(#shape)">
-			${stripSvgXmlHeaders(background)}
-			${stripSvgXmlHeaders(foreground)}
-	  </g>
+  <g filter="url(#legacyLightningFilter)">
+    <circle
+      cx="${input.inputImageSize / 2}" cy="${input.inputImageSize / 2}"
+      r="${input.inputContentSize / 2}"
+    />
   </g>
 </svg>`,
 		"utf-8",
 	);
+}
+
+/**
+ * Prepares an SVG buffer for inlining by stripping XML headers and prefixing
+ * IDs to avoid collisions when multiple SVGs are inlined together.
+ *
+ * @param svgBuffer The SVG buffer to prepare.
+ * @param idPrefix The prefix to use for IDs within the SVG.
+ * @returns The inlinable SVG as a string.
+ */
+function prepareForInlining(svgBuffer: Buffer, idPrefix: string): string {
+	const svgoResult = optimize(svgBuffer.toString("utf-8"), {
+		plugins: [
+			"removeDoctype",
+			"removeXMLProcInst",
+			{
+				name: "prefixIds",
+				params: { prefix: idPrefix },
+			},
+		],
+	});
+
+	if (svgoResult.error !== undefined) {
+		throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
+	}
+
+	return svgoResult.data;
 }
 
 export async function* generateLegacySquareIcons(

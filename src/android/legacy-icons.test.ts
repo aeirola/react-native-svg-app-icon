@@ -66,7 +66,7 @@ describe("android/legacy-icons", () => {
 			}
 
 			await verifyGeneratedFiles(baseDir, {
-				imageThreshold: 0.075,
+				imageThreshold: 0.07,
 			});
 		});
 	});
