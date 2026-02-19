@@ -1,3 +1,4 @@
+import { optimize } from "svgo";
 import * as input from "../util/input";
 import * as output from "../util/output";
 import type { Config } from "./config";
@@ -8,8 +9,22 @@ import {
 	roundIconName,
 } from "./resources";
 
+/**
+ * ViewBox for final SVG image. This is the same as the input foreground and
+ * background images.
+ *
+ * Images, masks and lightning effects are composed in the 108x108 scale so
+ * that the source images can be used as is. Legacy icon sizing needs to be
+ * scaled to this sizing.
+ */
+const viewBox = [0, 0, input.inputImageSize, input.inputImageSize].join(" ");
+
+/**
+ * Size of the legacy icon content area in legacy icon sizing units (dp).
+ *
+ * @see https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/src/com/android/tools/idea/npw/assetstudio/LauncherLegacyIconGenerator.java#55
+ */
 const legacyIconBaseSize = 48;
-const inputIconContentRatio = input.inputContentSize / input.inputImageSize;
 
 // Based on images from image asset studio at
 // https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/resources/images/launcher_stencil/
@@ -17,8 +32,8 @@ const inputIconContentRatio = input.inputContentSize / input.inputImageSize;
 const legacyLightningFilter = `
   <filter id="legacyLightningFilter">
     <!-- Drop shadow -->
-    <feGaussianBlur in="SourceAlpha" stdDeviation="0.4" />
-    <feOffset dx="0" dy="1.125" />
+    <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" />
+    <feOffset dx="0" dy="2.25" />
     <feComponentTransfer>
       <feFuncA type="linear" slope="0.2"/>
     </feComponentTransfer>
@@ -30,7 +45,7 @@ const legacyLightningFilter = `
     <feComponentTransfer in="SourceAlpha" result="opaque-alpha">
       <feFuncA type="linear" slope="0.2"/>
     </feComponentTransfer>
-    <feOffset dx="-0.2" dy="-0.2" in="SourceAlpha" result="offset-alpha" />
+    <feOffset dx="-0.4" dy="-0.4" in="SourceAlpha" result="offset-alpha" />
     <feComposite in="opaque-alpha" in2="offset-alpha" operator="out"
       result="edge"
     />
@@ -41,79 +56,132 @@ const legacyLightningFilter = `
     </feMerge>
   </filter>`;
 
-/** Legacy Square Icon **/
+// Legacy Square Icon
+
+/**
+ * Size of the square icon content within `legacyIconBaseSize`.
+ *
+ * @see https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/src/com/android/tools/idea/npw/assetstudio/LauncherLegacyIconGenerator.java#294
+ */
 const legacySquareIconContentSize = 38;
 const legacySquareIconBorderRadius = 3;
-const legacySquareIconMargin =
-	(legacyIconBaseSize - legacySquareIconContentSize) / 2;
 const legacySquareIconContentRatio =
 	legacySquareIconContentSize / legacyIconBaseSize;
 
-function getViewBox(input: number): string {
-	const size = input / inputIconContentRatio;
-	const margin = (size - legacyIconBaseSize) / 2;
-	const viewBox = [-margin, -margin, size, size];
-	return viewBox.join(" ");
+const squareIconScalingRatio =
+	input.inputContentSize / legacySquareIconContentSize;
+const squareIconMargin = (input.inputImageSize - input.inputContentSize) / 2;
+
+/**
+ * Builds a wrapper SVG that composites background and foreground into a legacy
+ * square icon.
+ */
+function buildSquareLegacyIconSvg(
+	background: Buffer,
+	foreground: Buffer,
+): Buffer {
+	return Buffer.from(
+		`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+  viewBox="${viewBox}"
+  width="${input.inputImageSize}" height="${input.inputImageSize}">
+  <clipPath id="shape">
+    <rect
+      x="${squareIconMargin}" y="${squareIconMargin}"
+      width="${input.inputContentSize}" height="${input.inputContentSize}"
+      rx="${legacySquareIconBorderRadius * squareIconScalingRatio}" ry="${legacySquareIconBorderRadius * squareIconScalingRatio}"
+    />
+  </clipPath>
+  ${legacyLightningFilter}
+
+  <g clip-path="url(#shape)">
+    ${prepareForInlining(background, "background")}
+    ${prepareForInlining(foreground, "foreground")}
+  </g>
+
+  <g filter="url(#legacyLightningFilter)">
+    <rect
+      x="${squareIconMargin}" y="${squareIconMargin}"
+      width="${input.inputContentSize}" height="${input.inputContentSize}"
+      rx="${legacySquareIconBorderRadius * squareIconScalingRatio}" ry="${legacySquareIconBorderRadius * squareIconScalingRatio}"
+    />
+  </g>
+</svg>`,
+		"utf-8",
+	);
 }
 
-const legacySquareIconMask = Buffer.from(
-	`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-  viewBox="${getViewBox(legacySquareIconContentSize)}"
-  width="${input.inputImageSize}" height="${input.inputImageSize}">
-    <rect
-      x="${legacySquareIconMargin}" y="${legacySquareIconMargin}"
-      width="${legacySquareIconContentSize}" height="${legacySquareIconContentSize}"
-      rx="${legacySquareIconBorderRadius}" ry="${legacySquareIconBorderRadius}"
-    />
-</svg>`,
-	"utf-8",
-);
+// Legacy Round Icon
 
-const legacySquareIconOverlay = Buffer.from(
-	`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-  viewBox="${getViewBox(legacySquareIconContentSize)}"
-  width="${input.inputImageSize}" height="${input.inputImageSize}">
-    ${legacyLightningFilter}
-    <rect
-      x="${legacySquareIconMargin}" y="${legacySquareIconMargin}"
-      width="${legacySquareIconContentSize}" height="${legacySquareIconContentSize}"
-      rx="${legacySquareIconBorderRadius}" ry="${legacySquareIconBorderRadius}"
-      filter="url(#legacyLightningFilter)"
-    />
-</svg>`,
-	"utf-8",
-);
-
-/** Legacy Round Icon **/
+/**
+ * Size of the round icon content within `legacyIconBaseSize`.
+ *
+ * @see https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/src/com/android/tools/idea/npw/assetstudio/LauncherLegacyIconGenerator.java#289
+ */
 const legacyRoundIconContentSize = 44;
 const legacyRoundIconContentRatio =
 	legacyRoundIconContentSize / legacyIconBaseSize;
 
-const roundIconMask = Buffer.from(
-	`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-  viewBox="${getViewBox(legacyRoundIconContentSize)}"
-  width="${input.inputImageSize}" height="${input.inputImageSize}">
-    <circle
-      cx="${legacyIconBaseSize / 2}" cy="${legacyIconBaseSize / 2}"
-      r="${legacyRoundIconContentSize / 2}"
-    />
-</svg>`,
-	"utf-8",
-);
-
-const roundIconOverlay = Buffer.from(
-	`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-  viewBox="${getViewBox(legacyRoundIconContentSize)}"
+/**
+ * Builds a wrapper SVG that composites background and foreground into a legacy
+ * round icon.
+ */
+function buildRoundLegacyIconSvg(
+	background: Buffer,
+	foreground: Buffer,
+): Buffer {
+	return Buffer.from(
+		`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+  viewBox="${viewBox}"
   width="${input.inputImageSize}" height="${input.inputImageSize}">
     ${legacyLightningFilter}
+    <clipPath id="shape">
+      <circle
+        cx="${input.inputImageSize / 2}" cy="${input.inputImageSize / 2}"
+        r="${input.inputContentSize / 2}"
+      />
+    </clipPath>
+  <g clip-path="url(#shape)">
+    ${prepareForInlining(background, "background")}
+    ${prepareForInlining(foreground, "foreground")}
+  </g>
+
+  <g filter="url(#legacyLightningFilter)">
     <circle
-      cx="${legacyIconBaseSize / 2}" cy="${legacyIconBaseSize / 2}"
-      r="${legacyRoundIconContentSize / 2}"
-      filter="url(#legacyLightningFilter)"
+      cx="${input.inputImageSize / 2}" cy="${input.inputImageSize / 2}"
+      r="${input.inputContentSize / 2}"
     />
+  </g>
 </svg>`,
-	"utf-8",
-);
+		"utf-8",
+	);
+}
+
+/**
+ * Prepares an SVG buffer for inlining by stripping XML headers and prefixing
+ * IDs to avoid collisions when multiple SVGs are inlined together.
+ *
+ * @param svgBuffer The SVG buffer to prepare.
+ * @param idPrefix The prefix to use for IDs within the SVG.
+ * @returns The inlinable SVG as a string.
+ */
+function prepareForInlining(svgBuffer: Buffer, idPrefix: string): string {
+	const svgoResult = optimize(svgBuffer.toString("utf-8"), {
+		plugins: [
+			"removeDoctype",
+			"removeXMLProcInst",
+			{
+				name: "prefixIds",
+				params: { prefix: idPrefix },
+			},
+		],
+	});
+
+	if (svgoResult.error !== undefined) {
+		throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
+	}
+
+	return svgoResult.data;
+}
 
 export async function* generateLegacySquareIcons(
 	fileInput: input.FileInput,
@@ -122,12 +190,13 @@ export async function* generateLegacySquareIcons(
 	yield* output.genaratePngs(
 		{
 			...input.mapInput(fileInput, (inputData) => ({
-				baseImage: inputData.backgroundImageData,
-				operations: [
-					{ type: "composite", file: inputData.foregroundImageData.data },
-					{ type: "composite", blend: "mask", file: legacySquareIconMask },
-					{ type: "composite", file: legacySquareIconOverlay },
-				],
+				baseImage: {
+					...inputData.backgroundImageData,
+					data: buildSquareLegacyIconSvg(
+						inputData.backgroundImageData.data,
+						inputData.foregroundImageData.data,
+					),
+				},
 			})),
 			cropSize: input.inputContentSize / legacySquareIconContentRatio,
 		},
@@ -151,12 +220,13 @@ export async function* generateLegacyRoundIcons(
 	yield* output.genaratePngs(
 		{
 			...input.mapInput(fileInput, (inputData) => ({
-				baseImage: inputData.backgroundImageData,
-				operations: [
-					{ type: "composite", file: inputData.foregroundImageData.data },
-					{ type: "composite", blend: "mask", file: roundIconMask },
-					{ type: "composite", file: roundIconOverlay },
-				],
+				baseImage: {
+					...inputData.backgroundImageData,
+					data: buildRoundLegacyIconSvg(
+						inputData.backgroundImageData.data,
+						inputData.foregroundImageData.data,
+					),
+				},
 			})),
 			cropSize: input.inputContentSize / legacyRoundIconContentRatio,
 		},
