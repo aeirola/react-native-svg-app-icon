@@ -23,7 +23,7 @@ const iosIcons = [
 	{ idiom: "ipad", scale: 1, size: 76 },
 	{ idiom: "ipad", scale: 2, size: 76 },
 	{ idiom: "ipad", scale: 2, size: 83.5 },
-	{ idiom: "ios-marketing", scale: 1, size: 1024, flattenAlpha: true },
+	{ idiom: "ios-marketing", scale: 1, size: 1024 },
 ];
 
 export type { Config };

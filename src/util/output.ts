@@ -39,8 +39,8 @@ async function* genaratePng(
 	}
 
 	const sharp = (await import("sharp")).default;
-	const image = await fileInput.image.read();
-	const metadata = image.metadata;
+	const inputImage = await fileInput.image.read();
+	const metadata = inputImage.metadata;
 
 	await fse.ensureDir(path.dirname(output.filePath));
 
@@ -48,20 +48,20 @@ async function* genaratePng(
 	// crops to the desired region, avoiding pixel-level rounding issues
 	const croppedImage =
 		fileInput.cropSize === undefined
-			? image.data
-			: cropSvg(image.data, input.inputImageSize, fileInput.cropSize);
+			? inputImage.data
+			: cropSvg(inputImage.data, input.inputImageSize, fileInput.cropSize);
 
 	// When cropped, the SVG's effective size is cropSize, otherwise full size
 	const effectiveSize = fileInput.cropSize ?? metadata.width;
 	const targetDensity = (output.outputSize / effectiveSize) * metadata.density;
 
-	let sharpImage = sharp(croppedImage, { density: targetDensity });
+	let image = sharp(croppedImage, { density: targetDensity });
 
 	if (fileInput.removeAlpha) {
-		sharpImage = sharpImage.removeAlpha();
+		image = image.removeAlpha();
 	}
 
-	await sharpImage
+	await image
 		.png({
 			adaptiveFiltering: false,
 			compressionLevel: 9,
