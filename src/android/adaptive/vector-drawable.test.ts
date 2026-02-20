@@ -1,16 +1,23 @@
 import * as path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { cleanupTestOutput } from "../../test/utils/cleanup";
-import { verifyGeneratedFiles } from "../../test/utils/file-comparison";
-import * as input from "../util/input";
-import { createLogger } from "../util/logger";
-import type { Config } from "./config";
+import { cleanupTestOutput } from "../../../test/utils/cleanup";
+import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
+import * as input from "../../util/input";
+import { createLogger } from "../../util/logger";
+import type { Config } from "../config";
 import { generateVectorDrawable } from "./vector-drawable";
 
 describe("android/vector-drawable", () => {
 	const assetsPath = path.join(__dirname, "vector-drawable.test.assets");
-	const testAssetsPath = path.join(__dirname, "..", "..", "test", "assets");
+	const testAssetsPath = path.join(
+		__dirname,
+		"..",
+		"..",
+		"..",
+		"test",
+		"assets",
+	);
 
 	beforeAll(async () => {
 		// Clean up output directories from previous test runs

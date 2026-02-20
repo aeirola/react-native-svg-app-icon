@@ -1,8 +1,8 @@
 import svg2vectordrawable from "svg2vectordrawable";
-import type * as input from "../util/input";
-import * as output from "../util/output";
-import type { Config } from "./config";
-import { getIconPath } from "./resources";
+import type * as input from "../../util/input";
+import * as output from "../../util/output";
+import type { Config } from "../config";
+import { getIconPath } from "../resources";
 
 const adaptiveIconMinSdk = 26;
 

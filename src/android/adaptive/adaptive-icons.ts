@@ -1,6 +1,6 @@
-import * as input from "../util/input";
-import * as output from "../util/output";
-import type { Config } from "./config";
+import * as input from "../../util/input";
+import * as output from "../../util/output";
+import type { Config } from "../config";
 import {
 	densities,
 	getIconPath,
@@ -9,7 +9,7 @@ import {
 	launcherName,
 	type ResourceType,
 	roundIconName,
-} from "./resources";
+} from "../resources";
 import { generateVectorDrawable } from "./vector-drawable";
 
 const adaptiveIconMinSdk = 26;

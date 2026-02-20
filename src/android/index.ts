@@ -1,11 +1,9 @@
 import type * as input from "../util/input";
 import type { Optional } from "../util/optional";
-import { generateAdaptiveIcons } from "./adaptive-icons";
+import { generateAdaptiveIcons } from "./adaptive/adaptive-icons";
 import { type Config, getConfig } from "./config";
-import {
-	generateLegacyRoundIcons,
-	generateLegacySquareIcons,
-} from "./legacy-icons";
+import { generateLegacyRoundIcons } from "./legacy/round-icons";
+import { generateLegacySquareIcons } from "./legacy/square-icons";
 
 export type { Config } from "./config";
 
