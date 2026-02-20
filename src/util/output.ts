@@ -1,8 +1,7 @@
 import * as path from "node:path";
 import * as fse from "fs-extra";
 
-import * as input from "./input";
-import { cropSvg } from "./svg";
+import type * as input from "./input";
 
 export interface OutputConfig {
 	/** Write output files even if they are newer than input files. */
@@ -13,7 +12,6 @@ interface GenerateInput {
 	image: input.Input<input.ImageData>;
 	/** Remove alpha channel from the output image. */
 	removeAlpha?: boolean;
-	cropSize?: number;
 }
 
 interface GenerateConfig extends OutputConfig {
@@ -44,18 +42,9 @@ async function* genaratePng(
 
 	await fse.ensureDir(path.dirname(output.filePath));
 
-	// Apply SVG cropping if needed - wraps the SVG with an outer viewport that
-	// crops to the desired region, avoiding pixel-level rounding issues
-	const croppedImage =
-		fileInput.cropSize === undefined
-			? inputImage.data
-			: cropSvg(inputImage.data, input.inputImageSize, fileInput.cropSize);
+	const targetDensity = (output.outputSize / metadata.width) * metadata.density;
 
-	// When cropped, the SVG's effective size is cropSize, otherwise full size
-	const effectiveSize = fileInput.cropSize ?? metadata.width;
-	const targetDensity = (output.outputSize / effectiveSize) * metadata.density;
-
-	let image = sharp(croppedImage, { density: targetDensity });
+	let image = sharp(inputImage.data, { density: targetDensity });
 
 	if (fileInput.removeAlpha) {
 		image = image.removeAlpha();

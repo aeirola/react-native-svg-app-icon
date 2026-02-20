@@ -4,7 +4,7 @@ import { prepareForInlining } from "../../util/svg";
 import type { Config } from "../config";
 import { densities, getIconPath, roundIconName } from "../resources";
 import { legacyLightningFilter } from "./lightning-filter";
-import { legacyIconBaseSize, viewBox } from "./sizes";
+import { legacyIconBaseSize } from "./sizes";
 
 /**
  * Size of the round icon content within `legacyIconBaseSize`.
@@ -14,6 +14,10 @@ import { legacyIconBaseSize, viewBox } from "./sizes";
 const legacyRoundIconContentSize = 44;
 const legacyRoundIconContentRatio =
 	legacyRoundIconContentSize / legacyIconBaseSize;
+
+/** Full icon size in input SVG coordinates (108px space), matching the legacy round icon total area. */
+const roundIconSvgSize = input.inputContentSize / legacyRoundIconContentRatio;
+const roundIconSvgOffset = (input.inputImageSize - roundIconSvgSize) / 2;
 
 /**
  * Builds a wrapper SVG that composites background and foreground into a legacy
@@ -25,8 +29,13 @@ function buildRoundLegacyIconSvg(
 ): Buffer {
 	return Buffer.from(
 		`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-  viewBox="${viewBox}"
-  width="${input.inputImageSize}" height="${input.inputImageSize}">
+  viewBox="${[
+		roundIconSvgOffset,
+		roundIconSvgOffset,
+		roundIconSvgSize,
+		roundIconSvgSize,
+	].join(" ")}"
+  width="${roundIconSvgSize}" height="${roundIconSvgSize}">
     ${legacyLightningFilter}
     <clipPath id="shape">
       <circle
@@ -62,8 +71,12 @@ export async function* generateLegacyRoundIcons(
 					inputData.backgroundImageData.data,
 					inputData.foregroundImageData.data,
 				),
+				metadata: {
+					...inputData.backgroundImageData.metadata,
+					width: roundIconSvgSize,
+					height: roundIconSvgSize,
+				},
 			})),
-			cropSize: input.inputContentSize / legacyRoundIconContentRatio,
 		},
 		densities.map((density) => ({
 			filePath: getIconPath(

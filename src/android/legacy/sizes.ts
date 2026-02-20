@@ -1,5 +1,3 @@
-export { viewBox } from "../../util/svg";
-
 /**
  * Size of the legacy icon content area in legacy icon sizing units (dp).
  *
