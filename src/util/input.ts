@@ -62,7 +62,7 @@ export async function readIcon(config: Optional<Config>): Promise<FileInput> {
 
 	return {
 		lastModified: await getLastModifiedTime(fullConfig),
-		read: lazyLoadProvider(fullConfig),
+		read: memoize(() => loadData(fullConfig)),
 	};
 }
 
@@ -83,18 +83,6 @@ async function getLastModifiedTime(
 	]);
 
 	return Math.max(...fileModifiedTimes);
-}
-
-function lazyLoadProvider(config: Config): () => Promise<InputData> {
-	let lazyLoadedData: Promise<InputData> | undefined;
-
-	return (): Promise<InputData> => {
-		if (lazyLoadedData === undefined) {
-			lazyLoadedData = loadData(config);
-		}
-
-		return lazyLoadedData;
-	};
 }
 
 async function loadData(config: Config): Promise<InputData> {
@@ -190,9 +178,16 @@ export function mapInput<
 ): Input<MappedData> {
 	return {
 		...fileInput,
-		read: async (): Promise<MappedData> => {
-			const data = await fileInput.read();
-			return mapFunction(data);
-		},
+		read: memoize(() => fileInput.read().then(mapFunction)),
+	};
+}
+
+function memoize<T>(fn: () => Promise<T>): () => Promise<T> {
+	let cached: Promise<T> | undefined;
+	return (): Promise<T> => {
+		if (cached === undefined) {
+			cached = fn();
+		}
+		return cached;
 	};
 }
