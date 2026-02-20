@@ -85,16 +85,6 @@ async function getLastModifiedTime(
 	return Math.max(...fileModifiedTimes);
 }
 
-function memoize<T>(fn: () => Promise<T>): () => Promise<T> {
-	let cached: Promise<T> | undefined;
-	return (): Promise<T> => {
-		if (cached === undefined) {
-			cached = fn();
-		}
-		return cached;
-	};
-}
-
 async function loadData(config: Config): Promise<InputData> {
 	if (config.backgroundPath) {
 		config.logger?.info("Reading background file", config.backgroundPath);
@@ -189,5 +179,15 @@ export function mapInput<
 	return {
 		...fileInput,
 		read: memoize(() => fileInput.read().then(mapFunction)),
+	};
+}
+
+function memoize<T>(fn: () => Promise<T>): () => Promise<T> {
+	let cached: Promise<T> | undefined;
+	return (): Promise<T> => {
+		if (cached === undefined) {
+			cached = fn();
+		}
+		return cached;
 	};
 }
