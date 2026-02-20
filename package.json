@@ -25,7 +25,8 @@
 		"test": "concurrently 'npm:test:*'",
 		"test:lint:style": "biome check",
 		"test:lint:types": "tsc",
-		"test:unit": "vitest run"
+		"test:unit": "vitest run src/",
+		"test:integration": "npm run prepare && vitest run test/integration/"
 	},
 	"author": "Axel Havukangas <axel@havukangas.fi>",
 	"license": "MIT",
