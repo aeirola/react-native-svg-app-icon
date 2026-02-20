@@ -40,9 +40,10 @@ describe("android/vector-drawable", () => {
 			};
 
 			// Map the file input to the expected format
-			const imageInput = input.mapInput(fileInput, (inputData) => ({
-				image: inputData.foregroundImageData,
-			}));
+			const imageInput = input.mapInput(
+				fileInput,
+				(inputData) => inputData.foregroundImageData,
+			);
 
 			// Generate vector drawable
 			for await (const _file of generateVectorDrawable(
@@ -71,9 +72,7 @@ describe("android/vector-drawable", () => {
 
 			const unsupportedInput = input.mapInput(
 				unsupportedFileInput,
-				(inputData) => ({
-					image: inputData.foregroundImageData,
-				}),
+				(inputData) => inputData.foregroundImageData,
 			);
 
 			// Should throw an error due to strict mode

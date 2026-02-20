@@ -1,6 +1,5 @@
 import * as path from "node:path";
 import * as fse from "fs-extra";
-import type * as SharpType from "sharp";
 
 import * as input from "./input";
 import { cropSvg } from "./svg";
@@ -10,18 +9,10 @@ export interface OutputConfig {
 	force: boolean;
 }
 
-interface GenerateInput
-	extends input.Input<{
-		baseImage: input.ImageData;
-		operations?: Array<
-			| {
-					type: "composite";
-					blend?: "overlay" | "mask";
-					file: Buffer;
-			  }
-			| { type: "remove-alpha" }
-		>;
-	}> {
+interface GenerateInput {
+	image: input.Input<input.ImageData>;
+	/** Remove alpha channel from the output image. */
+	removeAlpha?: boolean;
 	cropSize?: number;
 }
 
@@ -43,71 +34,34 @@ async function* genaratePng(
 	fileInput: GenerateInput,
 	output: GenerateConfig,
 ): AsyncIterable<string> {
-	if (!(output.force || (await hasChanged(fileInput, output)))) {
+	if (!(output.force || (await hasChanged(fileInput.image, output)))) {
 		return;
 	}
 
 	const sharp = (await import("sharp")).default;
-	const { baseImage, operations = [] } = await fileInput.read();
-	const metadata = baseImage.metadata;
+	const image = await fileInput.image.read();
+	const metadata = image.metadata;
 
 	await fse.ensureDir(path.dirname(output.filePath));
 
 	// Apply SVG cropping if needed - wraps the SVG with an outer viewport that
 	// crops to the desired region, avoiding pixel-level rounding issues
-	const croppedBaseImage =
+	const croppedImage =
 		fileInput.cropSize === undefined
-			? baseImage.data
-			: cropSvg(baseImage.data, input.inputImageSize, fileInput.cropSize);
+			? image.data
+			: cropSvg(image.data, input.inputImageSize, fileInput.cropSize);
 
 	// When cropped, the SVG's effective size is cropSize, otherwise full size
 	const effectiveSize = fileInput.cropSize ?? metadata.width;
 	const targetDensity = (output.outputSize / effectiveSize) * metadata.density;
 
-	let image = sharp(croppedBaseImage, { density: targetDensity });
+	let sharpImage = sharp(croppedImage, { density: targetDensity });
 
-	for (const operation of operations) {
-		switch (operation.type) {
-			case "composite": {
-				let blend: SharpType.Blend;
-				switch (operation.blend) {
-					case "overlay":
-						blend = "over";
-						break;
-					case "mask":
-						blend = "dest-in";
-						break;
-					default:
-						blend = "over";
-				}
-
-				// Apply same crop to composite overlay/mask files
-				const croppedOperationFile =
-					fileInput.cropSize === undefined
-						? operation.file
-						: cropSvg(operation.file, input.inputImageSize, fileInput.cropSize);
-
-				image = sharp(
-					await image
-						.composite([
-							{
-								input: await sharp(croppedOperationFile, {
-									density: targetDensity,
-								}).toBuffer(),
-								blend: blend,
-							},
-						])
-						.toBuffer(),
-				);
-				break;
-			}
-			case "remove-alpha":
-				image = image.removeAlpha();
-				break;
-		}
+	if (fileInput.removeAlpha) {
+		sharpImage = sharpImage.removeAlpha();
 	}
 
-	await image
+	await sharpImage
 		.png({
 			adaptiveFiltering: false,
 			compressionLevel: 9,
@@ -118,7 +72,7 @@ async function* genaratePng(
 }
 
 async function hasChanged(
-	input: input.Input<Record<string, unknown>>,
+	input: input.Input<unknown>,
 	output: GenerateConfig,
 ): Promise<boolean> {
 	let outputStat: fse.Stats | null;

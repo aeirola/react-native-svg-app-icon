@@ -1,8 +1,8 @@
 import * as input from "../../util/input";
 import * as output from "../../util/output";
+import { prepareForInlining } from "../../util/svg";
 import type { Config } from "../config";
 import { densities, getIconPath, launcherName } from "../resources";
-import { prepareForInlining } from "./inline-svg";
 import { legacyLightningFilter } from "./lightning-filter";
 import { legacyIconBaseSize, viewBox } from "./sizes";
 
@@ -64,14 +64,12 @@ export async function* generateLegacySquareIcons(
 ): AsyncIterable<string> {
 	yield* output.genaratePngs(
 		{
-			...input.mapInput(fileInput, (inputData) => ({
-				baseImage: {
-					...inputData.backgroundImageData,
-					data: buildSquareLegacyIconSvg(
-						inputData.backgroundImageData.data,
-						inputData.foregroundImageData.data,
-					),
-				},
+			image: input.mapInput(fileInput, (inputData) => ({
+				...inputData.backgroundImageData,
+				data: buildSquareLegacyIconSvg(
+					inputData.backgroundImageData.data,
+					inputData.foregroundImageData.data,
+				),
 			})),
 			cropSize: input.inputContentSize / legacySquareIconContentRatio,
 		},

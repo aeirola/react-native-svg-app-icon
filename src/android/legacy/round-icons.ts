@@ -1,8 +1,8 @@
 import * as input from "../../util/input";
 import * as output from "../../util/output";
+import { prepareForInlining } from "../../util/svg";
 import type { Config } from "../config";
 import { densities, getIconPath, roundIconName } from "../resources";
-import { prepareForInlining } from "./inline-svg";
 import { legacyLightningFilter } from "./lightning-filter";
 import { legacyIconBaseSize, viewBox } from "./sizes";
 
@@ -56,14 +56,12 @@ export async function* generateLegacyRoundIcons(
 ): AsyncIterable<string> {
 	yield* output.genaratePngs(
 		{
-			...input.mapInput(fileInput, (inputData) => ({
-				baseImage: {
-					...inputData.backgroundImageData,
-					data: buildRoundLegacyIconSvg(
-						inputData.backgroundImageData.data,
-						inputData.foregroundImageData.data,
-					),
-				},
+			image: input.mapInput(fileInput, (inputData) => ({
+				...inputData.backgroundImageData,
+				data: buildRoundLegacyIconSvg(
+					inputData.backgroundImageData.data,
+					inputData.foregroundImageData.data,
+				),
 			})),
 			cropSize: input.inputContentSize / legacyRoundIconContentRatio,
 		},

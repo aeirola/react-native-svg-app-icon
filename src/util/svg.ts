@@ -1,4 +1,46 @@
 import { optimize } from "svgo";
+import * as input from "./input";
+
+/**
+ * ViewBox for final SVG image. This is the same as the input foreground and
+ * background images.
+ *
+ * Images, masks and effects are composed in the 108x108 scale so that the
+ * source images can be used as is.
+ */
+export const viewBox = [0, 0, input.inputImageSize, input.inputImageSize].join(
+	" ",
+);
+
+/**
+ * Prepares an SVG buffer for inlining by stripping XML headers and prefixing
+ * IDs to avoid collisions when multiple SVGs are inlined together.
+ *
+ * @param svgBuffer The SVG buffer to prepare.
+ * @param idPrefix The prefix to use for IDs within the SVG.
+ * @returns The inlinable SVG as a string.
+ */
+export function prepareForInlining(
+	svgBuffer: Buffer,
+	idPrefix: string,
+): string {
+	const svgoResult = optimize(svgBuffer.toString("utf-8"), {
+		plugins: [
+			"removeDoctype",
+			"removeXMLProcInst",
+			{
+				name: "prefixIds",
+				params: { prefix: idPrefix },
+			},
+		],
+	});
+
+	if (svgoResult.error !== undefined) {
+		throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
+	}
+
+	return svgoResult.data;
+}
 
 /**
  * Crops an SVG to a centered region.
