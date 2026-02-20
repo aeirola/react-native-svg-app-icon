@@ -2,7 +2,7 @@ import * as path from "node:path";
 import * as input from "../util/input";
 import type { Optional } from "../util/optional";
 import * as output from "../util/output";
-import { prepareForInlining, viewBox } from "../util/svg";
+import { prepareForInlining } from "../util/svg";
 import { type Config, getConfig } from "./config";
 
 const iosIcons = [
@@ -45,8 +45,13 @@ export async function* generate(
 function buildIosIconSvg(background: Buffer, foreground: Buffer): Buffer {
 	return Buffer.from(
 		`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-  viewBox="${viewBox}"
-  width="${input.inputImageSize}" height="${input.inputImageSize}">
+  viewBox="${[
+		input.inputImageMargin,
+		input.inputImageMargin,
+		input.inputContentSize,
+		input.inputContentSize,
+	].join(" ")}"
+  width="${input.inputContentSize}" height="${input.inputContentSize}">
   ${prepareForInlining(background, "background")}
   ${prepareForInlining(foreground, "foreground")}
 </svg>`,
@@ -66,9 +71,13 @@ async function* generateImages(
 					inputData.backgroundImageData.data,
 					inputData.foregroundImageData.data,
 				),
+				metadata: {
+					...inputData.backgroundImageData.metadata,
+					width: input.inputContentSize,
+					height: input.inputContentSize,
+				},
 			})),
 			removeAlpha: true,
-			cropSize: input.inputContentSize,
 		},
 		iosIcons.map((icon) => ({
 			filePath: path.join(config.iosOutputPath, getIconFilename(icon)),

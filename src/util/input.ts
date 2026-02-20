@@ -14,8 +14,12 @@ const defaultBackgroundPath = path.join(
 	"default-icon-background.svg",
 );
 
+/** Size of the full input SVG image. */
 export const inputImageSize = 108;
+/** Normally visible part of the input SVG image. */
 export const inputContentSize = 72;
+/** Margin around the input SVG content within the full image. */
+export const inputImageMargin = (inputImageSize - inputContentSize) / 2;
 
 export interface Config {
 	backgroundPath: string;

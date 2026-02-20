@@ -4,7 +4,7 @@ import { prepareForInlining } from "../../util/svg";
 import type { Config } from "../config";
 import { densities, getIconPath, launcherName } from "../resources";
 import { legacyLightningFilter } from "./lightning-filter";
-import { legacyIconBaseSize, viewBox } from "./sizes";
+import { legacyIconBaseSize } from "./sizes";
 
 /**
  * Size of the square icon content within `legacyIconBaseSize`.
@@ -18,7 +18,10 @@ const legacySquareIconContentRatio =
 
 const squareIconScalingRatio =
 	input.inputContentSize / legacySquareIconContentSize;
-const squareIconMargin = (input.inputImageSize - input.inputContentSize) / 2;
+
+/** Full icon size in input SVG coordinates (108px space), matching the legacy icon total area. */
+const squareIconSvgSize = input.inputContentSize / legacySquareIconContentRatio;
+const squareIconSvgOffset = (input.inputImageSize - squareIconSvgSize) / 2;
 
 /**
  * Builds a wrapper SVG that composites background and foreground into a legacy
@@ -30,11 +33,16 @@ function buildSquareLegacyIconSvg(
 ): Buffer {
 	return Buffer.from(
 		`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-  viewBox="${viewBox}"
-  width="${input.inputImageSize}" height="${input.inputImageSize}">
+  viewBox="${[
+		squareIconSvgOffset,
+		squareIconSvgOffset,
+		squareIconSvgSize,
+		squareIconSvgSize,
+	].join(" ")}"
+  width="${squareIconSvgSize}" height="${squareIconSvgSize}">
   <clipPath id="shape">
     <rect
-      x="${squareIconMargin}" y="${squareIconMargin}"
+      x="${input.inputImageMargin}" y="${input.inputImageMargin}"
       width="${input.inputContentSize}" height="${input.inputContentSize}"
       rx="${legacySquareIconBorderRadius * squareIconScalingRatio}" ry="${legacySquareIconBorderRadius * squareIconScalingRatio}"
     />
@@ -48,7 +56,7 @@ function buildSquareLegacyIconSvg(
 
   <g filter="url(#legacyLightningFilter)">
     <rect
-      x="${squareIconMargin}" y="${squareIconMargin}"
+      x="${input.inputImageMargin}" y="${input.inputImageMargin}"
       width="${input.inputContentSize}" height="${input.inputContentSize}"
       rx="${legacySquareIconBorderRadius * squareIconScalingRatio}" ry="${legacySquareIconBorderRadius * squareIconScalingRatio}"
     />
@@ -70,8 +78,12 @@ export async function* generateLegacySquareIcons(
 					inputData.backgroundImageData.data,
 					inputData.foregroundImageData.data,
 				),
+				metadata: {
+					...inputData.backgroundImageData.metadata,
+					width: squareIconSvgSize,
+					height: squareIconSvgSize,
+				},
 			})),
-			cropSize: input.inputContentSize / legacySquareIconContentRatio,
 		},
 		densities.map((density) => ({
 			filePath: getIconPath(
