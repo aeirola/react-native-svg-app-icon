@@ -31,7 +31,7 @@ type InputData = {
 	foregroundImageData: ImageData;
 };
 
-export interface Input<Data extends Record<string, unknown>> {
+export interface Input<Data> {
 	lastModified: FileModificationTime;
 	read: () => Promise<Data>;
 }
@@ -169,10 +169,7 @@ function validateBackgroundImage(imageData: ImageData): BackgroundImageData {
 	}
 }
 
-export function mapInput<
-	OriginalData extends Record<string, unknown>,
-	MappedData extends Record<string, unknown>,
->(
+export function mapInput<OriginalData, MappedData>(
 	fileInput: Input<OriginalData>,
 	mapFunction: (data: OriginalData) => MappedData,
 ): Input<MappedData> {

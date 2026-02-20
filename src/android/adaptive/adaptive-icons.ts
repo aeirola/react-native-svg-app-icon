@@ -28,9 +28,10 @@ export async function* generateAdaptiveIcons(
 	fileInput: input.FileInput,
 	config: Config,
 ): AsyncIterable<string> {
-	const backgroundImageInput = input.mapInput(fileInput, (inputData) => ({
-		image: inputData.backgroundImageData,
-	}));
+	const backgroundImageInput = input.mapInput(
+		fileInput,
+		(inputData) => inputData.backgroundImageData,
+	);
 	let backgroundResourceType: ResourceType;
 	try {
 		yield* generateVectorDrawable(
@@ -48,9 +49,10 @@ export async function* generateAdaptiveIcons(
 		backgroundResourceType = "mipmap";
 	}
 
-	const foregroundImageInput = input.mapInput(fileInput, (inputData) => ({
-		image: inputData.foregroundImageData,
-	}));
+	const foregroundImageInput = input.mapInput(
+		fileInput,
+		(inputData) => inputData.foregroundImageData,
+	);
 	let foregroundResourceType: ResourceType;
 	try {
 		yield* generateVectorDrawable(
@@ -96,14 +98,12 @@ export async function* generateAdaptiveIcons(
 }
 
 async function* generateAdaptiveIconLayerPng(
-	imageInput: input.Input<{ image: input.ImageData }>,
+	imageInput: input.Input<input.ImageData>,
 	fileName: string,
 	config: Config,
 ): AsyncIterable<string> {
 	yield* output.genaratePngs(
-		input.mapInput(imageInput, (imageData) => ({
-			baseImage: imageData.image,
-		})),
+		{ image: imageInput },
 		densities.map((density) => ({
 			filePath: getIconPath(
 				config,

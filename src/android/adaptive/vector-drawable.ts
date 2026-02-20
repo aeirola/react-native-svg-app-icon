@@ -7,20 +7,17 @@ import { getIconPath } from "../resources";
 const adaptiveIconMinSdk = 26;
 
 export async function* generateVectorDrawable(
-	imageInput: input.Input<{ image: input.ImageData }>,
+	imageInput: input.Input<input.ImageData>,
 	fileName: string,
 	config: Config,
 ): AsyncIterable<string> {
 	const imageData = await imageInput.read();
-	const vdData = await svg2vectordrawable(
-		imageData.image.data.toString("utf-8"),
-		{
-			// Fail on unsupported elements, so that we fall back to PNG rendering
-			strict: true,
-			// Use same default fill behaviour as in SVG spec
-			fillBlack: true,
-		},
-	);
+	const vdData = await svg2vectordrawable(imageData.data.toString("utf-8"), {
+		// Fail on unsupported elements, so that we fall back to PNG rendering
+		strict: true,
+		// Use same default fill behaviour as in SVG spec
+		fillBlack: true,
+	});
 	yield* output.ensureFileContents(
 		getIconPath(
 			config,
