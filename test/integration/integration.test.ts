@@ -13,6 +13,7 @@ describe("integration tests", () => {
 		await cleanupTestOutputs(fixturesPath, [
 			"simple",
 			"normal",
+			"layered",
 			"complex",
 			"cache-test",
 			"scaling-pattern",
@@ -22,6 +23,8 @@ describe("integration tests", () => {
 	it("generates icons in simple project", () => testFixture("simple"));
 
 	it("generates files in normal project", () => testFixture("normal"));
+
+	it("generates files in layered icon project", () => testFixture("layered"));
 
 	it("generates files from complex matching fixtures", () =>
 		testFixture("complex", 0.1));
