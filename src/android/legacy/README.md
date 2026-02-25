@@ -1,6 +1,6 @@
 # Android Legacy Icons
 
-Originally Android App icons have been square images. In Android 7.1 there was a short idea about round images. Finally in Android 8.0 Adaptive Icons were introduced which is the current default. Modern apps should still support older versions of android, and provide compatibel icons for them.
+Originally Android App icons have been square images. In Android 7.1 there was a short idea about round images. Finally in Android 8.0 Adaptive Icons were introduced which is the current default. Modern apps should still support older versions of android, and provide compatible icons for them.
 
 There are many different guides and implementations for Android Legacy icons. For example Material Design 2 has guides for [Android Icons](https://m2.material.io/design/platform-guidance/android-icons.html) and [Product Icons](https://m2.material.io/design/iconography/product-icons.html) which specify sizing and lightning.
 
