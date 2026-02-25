@@ -27,27 +27,25 @@ describe("android/legacy/round-icons", () => {
 
 	beforeEach(async () => {
 		fileInput = await input.readIcon({
-			backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
-			foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+			backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
+			foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
 			logger: createLogger("silent"),
 		});
 	});
 
-	describe("generateLegacyRoundIcons", () => {
-		it("generates round icons matching reference images", async () => {
-			const outputPath = path.join(baseDir, "output");
-			const config: Config = {
-				androidOutputPath: outputPath,
-				force: false,
-			};
+	it("generates round icons matching reference images", async () => {
+		const outputPath = path.join(baseDir, "output");
+		const config: Config = {
+			androidOutputPath: outputPath,
+			force: false,
+		};
 
-			for await (const _file of generateLegacyRoundIcons(fileInput, config)) {
-				// Files are generated and written to disk
-			}
+		for await (const _file of generateLegacyRoundIcons(fileInput, config)) {
+			// Files are generated and written to disk
+		}
 
-			await verifyGeneratedFiles(baseDir, {
-				imageThreshold: 0.07,
-			});
+		await verifyGeneratedFiles(baseDir, {
+			imageThreshold: 0.03,
 		});
 	});
 });

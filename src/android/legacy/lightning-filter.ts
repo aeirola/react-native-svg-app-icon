@@ -1,29 +1,38 @@
-// Based on images from image asset studio at
-// https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/resources/images/launcher_stencil/
-// https://android.googlesource.com/platform/tools/adt/idea/+/refs/heads/mirror-goog-studio-master-dev/android/src/com/android/tools/idea/npw/assetstudio/LauncherLegacyIconGenerator.java
-export const legacyLightningFilter = `
-  <filter id="legacyLightningFilter">
-    <!-- Drop shadow -->
-    <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" />
-    <feOffset dx="0" dy="2.25" />
-    <feComponentTransfer>
-      <feFuncA type="linear" slope="0.2"/>
-    </feComponentTransfer>
-    <feComposite in2="SourceAlpha" operator="out"
-      result="shadow"
-    />
+/**
+ * Lightning effect SVG filters for android legacy icons.
+ *
+ * All dimensions are specified in the legacy 48x48dp coordinates.
+ *
+ * Based on reference images from image asset studio
+ */
 
-    <!-- Edge shade -->
-    <feComponentTransfer in="SourceAlpha" result="opaque-alpha">
-      <feFuncA type="linear" slope="0.2"/>
-    </feComponentTransfer>
-    <feOffset dx="-0.4" dy="-0.4" in="SourceAlpha" result="offset-alpha" />
-    <feComposite in="opaque-alpha" in2="offset-alpha" operator="out"
-      result="edge"
-    />
+/**
+ * SVG filter for the drop shadow effect.
+ */
+export const dropShadowFilter = `
+<filter id="dropShadowFilter">
+	<!-- Shift input image to shadow location -->
+	<feOffset dx="0" dy="1.1" />
+	<!-- Blur input to create shadow effect -->
+	<feGaussianBlur stdDeviation="0.7" result="blur" />
 
-    <feMerge>
-      <feMergeNode in="shadow" />
-      <feMergeNode in="edge" />
-    </feMerge>
-  </filter>`;
+	<!-- Apply shadow color and opacity -->
+	<feFlood result="floodFill" flood-color="#050505" flood-opacity="0.2" />
+	<feComposite in="blur" in2="floodFill" operator="in" />
+</filter>`;
+
+/**
+ * SVG filter for the shaded edge effect around the icons.
+ */
+export const shadedEdgeFilter = `
+<filter id="shadedEdgeFilter">
+	<!-- Blur input to create shaded edge effect -->
+	<feGaussianBlur stdDeviation="0.5" result="blur" />
+	<!-- Apply shaded edge opacity -->
+	<feFlood result="floodFill" flood-opacity="0.2" />
+
+	<!-- Cut out content area to produce edge shade effect -->
+	<feComposite in="blur" in2="floodFill" operator="in" result="opaque-alpha" />
+	<feOffset dx="-0.25" dy="-0.3" in="SourceAlpha" result="offset-alpha" />
+	<feComposite in="opaque-alpha" in2="offset-alpha" operator="out" />
+</filter>`;
