@@ -1,10 +1,13 @@
-// Based on reference images from image asset studio
+/**
+ * Lightning effect SVG filters for android legacy icons.
+ *
+ * All dimensions are specified in the legacy 48x48dp coordinates.
+ *
+ * Based on reference images from image asset studio
+ */
 
 /**
  * SVG filter for the drop shadow effect.
- *
- * @param scalingRatio
- * @returns
  */
 export const dropShadowFilter = `
 <filter id="dropShadowFilter">
@@ -20,9 +23,6 @@ export const dropShadowFilter = `
 
 /**
  * SVG filter for the shaded edge effect around the icons.
- *
- * @param scalingRatio
- * @returns
  */
 export const shadedEdgeFilter = `
 <filter id="shadedEdgeFilter">

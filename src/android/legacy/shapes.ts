@@ -1,7 +1,9 @@
 /**
- * Shapes for android legacy icons.
+ * SVG Shapes for android legacy icons.
  *
  * All dimensions are specified in the legacy 48x48dp coordinates.
+ *
+ * Based on reference images from image asset studio
  */
 
 //

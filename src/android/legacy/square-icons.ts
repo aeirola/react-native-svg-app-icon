@@ -42,8 +42,8 @@ function buildSquareLegacyIconSvg(
 		<mask id="shapeMask" mask-type="alpha">
 			<use href="#squareIconShape" />
 		</mask>
-			${dropShadowFilter}
-			${shadedEdgeFilter}
+		${dropShadowFilter}
+		${shadedEdgeFilter}
 	</defs>
 
 	<use href="#squareIconShape" filter="url(#dropShadowFilter)" />
