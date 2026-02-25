@@ -1,8 +1,7 @@
 import * as path from "node:path";
 import * as fse from "fs-extra";
-import pixelmatch from "pixelmatch";
-import sharp from "sharp";
 import { expect } from "vitest";
+import sharpmatch from "./sharpmatch";
 
 /**
  * Verifies that generated files match expected reference files.
@@ -113,40 +112,10 @@ async function compareImages(
 	diffPath: string,
 	threshold: number,
 ): Promise<void> {
-	const outputImage = sharp(outputPath);
-	const expectedImage = sharp(expectedPath);
-
-	const outputData = await outputImage
-		.ensureAlpha()
-		.raw()
-		.toBuffer({ resolveWithObject: true });
-	const expectedData = await expectedImage
-		.ensureAlpha()
-		.raw()
-		.toBuffer({ resolveWithObject: true });
-
-	expect(outputData.info).toEqual(expectedData.info);
-
-	const { width, height } = outputData.info;
-	const totalPixelCount = width * height;
-	const diffImage = Buffer.alloc(width * height * 4);
-
-	const mismatchingPixelCount = pixelmatch(
-		outputData.data,
-		expectedData.data,
-		diffImage,
-		width,
-		height,
-		{ threshold },
-	);
-
-	const mismatchRatio = mismatchingPixelCount / totalPixelCount;
-
-	// Write diff image to help visualize differences
-	await fse.ensureDir(path.dirname(diffPath));
-	await sharp(diffImage, { raw: { width, height, channels: 4 } })
-		.png()
-		.toFile(diffPath);
+	const { mismatchRatio } = await sharpmatch(outputPath, expectedPath, {
+		threshold,
+		diffOutputPath: diffPath,
+	});
 
 	expect(
 		mismatchRatio,
