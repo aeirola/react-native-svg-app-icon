@@ -1,9 +1,8 @@
 import * as path from "node:path";
 import * as input from "../util/input";
-import type { Optional } from "../util/optional";
 import * as output from "../util/output";
 import { prepareForInlining } from "../util/svg";
-import { type Config, getConfig } from "./config";
+import { getConfig, type PartialConfig, type ResolvedConfig } from "./config";
 
 const iosIcons = [
 	{ idiom: "iphone", scale: 2, size: 20 },
@@ -26,16 +25,16 @@ const iosIcons = [
 	{ idiom: "ios-marketing", scale: 1, size: 1024 },
 ];
 
-export type { Config };
+export type { PartialConfig };
 
 export async function* generate(
-	config: Optional<Config>,
+	config: PartialConfig,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
-	const fullConfig = await getConfig(config);
+	const resolvedConfig = await getConfig(config);
 
-	yield* generateImages(fullConfig, fileInput);
-	yield* generateManifest(fullConfig);
+	yield* generateImages(resolvedConfig, fileInput);
+	yield* generateManifest(resolvedConfig);
 }
 
 /**
@@ -60,10 +59,10 @@ function buildIosIconSvg(background: Buffer, foreground: Buffer): Buffer {
 }
 
 async function* generateImages(
-	config: Config,
+	config: ResolvedConfig,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
-	yield* output.genaratePngs(
+	yield* output.generatePngs(
 		{
 			image: input.mapInput(fileInput, (inputData) => ({
 				...inputData.backgroundImageData,
@@ -82,16 +81,18 @@ async function* generateImages(
 		iosIcons.map((icon) => ({
 			filePath: path.join(config.iosOutputPath, getIconFilename(icon)),
 			outputSize: icon.size * icon.scale,
-			force: config.force,
+			cache: config.cache,
 		})),
 	);
 }
 
-async function* generateManifest(config: Config): AsyncIterable<string> {
+async function* generateManifest(
+	config: ResolvedConfig,
+): AsyncIterable<string> {
 	const fileName = path.join(config.iosOutputPath, "Contents.json");
-	yield* output.ensureFileContents(
+	yield* output.generateFile(
 		fileName,
-		{
+		() => ({
 			images: iosIcons.map((icon) => ({
 				filename: getIconFilename(icon),
 				idiom: icon.idiom,
@@ -102,7 +103,7 @@ async function* generateManifest(config: Config): AsyncIterable<string> {
 				author: "react-native-svg-app-icon",
 				version: 1,
 			},
-		},
+		}),
 		config,
 	);
 }

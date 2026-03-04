@@ -1,42 +1,34 @@
 import * as path from "node:path";
 import { describe, expect, it } from "vitest";
 
+import { CacheSession } from "../cache";
 import { getConfig } from "./config";
+
+const makeCache = () =>
+	new CacheSession({
+		inputFileBuffers: {
+			foreground: Buffer.alloc(0),
+			background: Buffer.alloc(0),
+		},
+		force: false,
+	});
 
 describe("android/config", () => {
 	describe("getConfig", () => {
-		it("returns default config when no parameters provided", () => {
-			const config = getConfig();
+		it("returns default config when no path provided", () => {
+			const config = getConfig({ cache: makeCache() });
 
-			expect(config).toEqual({
-				androidOutputPath: "./android/app/src/main/res",
-				force: false,
-			});
+			expect(config.androidOutputPath).toBe("./android/app/src/main/res");
 		});
 
 		it("uses provided androidOutputPath", () => {
 			const customPath = path.join("/custom", "path");
-			const config = getConfig(customPath);
+			const config = getConfig({
+				androidOutputPath: customPath,
+				cache: makeCache(),
+			});
 
 			expect(config.androidOutputPath).toBe(customPath);
-			expect(config.force).toBe(false);
-		});
-
-		it("uses provided force flag", () => {
-			const config = getConfig(undefined, true);
-
-			expect(config.androidOutputPath).toBe("./android/app/src/main/res");
-			expect(config.force).toBe(true);
-		});
-
-		it("uses both provided parameters", () => {
-			const customPath = path.join("/custom", "path");
-			const config = getConfig(customPath, true);
-
-			expect(config).toEqual({
-				androidOutputPath: customPath,
-				force: true,
-			});
 		});
 	});
 });

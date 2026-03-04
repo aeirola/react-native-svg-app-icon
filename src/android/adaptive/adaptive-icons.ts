@@ -1,6 +1,6 @@
 import * as input from "../../util/input";
 import * as output from "../../util/output";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import {
 	densities,
 	getIconPath,
@@ -26,7 +26,7 @@ const adaptiveIconContent = (
 
 export async function* generateAdaptiveIcons(
 	fileInput: input.FileInput,
-	config: Config,
+	config: ResolvedConfig,
 ): AsyncIterable<string> {
 	const backgroundImageInput = input.mapInput(
 		fileInput,
@@ -71,28 +71,24 @@ export async function* generateAdaptiveIcons(
 	}
 
 	// Adaptive icon
-	const adaptiveIconXml = adaptiveIconContent(
-		backgroundResourceType,
-		foregroundResourceType,
-	);
-	yield* output.ensureFileContents(
+	yield* output.generateFile(
 		getIconPath(
 			config,
 			"mipmap",
 			{ density: "anydpi", minApiLevel: 26 },
 			`${launcherName}.xml`,
 		),
-		adaptiveIconXml,
+		() => adaptiveIconContent(backgroundResourceType, foregroundResourceType),
 		config,
 	);
-	yield* output.ensureFileContents(
+	yield* output.generateFile(
 		getIconPath(
 			config,
 			"mipmap",
 			{ density: "anydpi", minApiLevel: 26 },
 			`${roundIconName}.xml`,
 		),
-		adaptiveIconXml,
+		() => adaptiveIconContent(backgroundResourceType, foregroundResourceType),
 		config,
 	);
 }
@@ -100,9 +96,9 @@ export async function* generateAdaptiveIcons(
 async function* generateAdaptiveIconLayerPng(
 	imageInput: input.Input<input.ImageData>,
 	fileName: string,
-	config: Config,
+	config: ResolvedConfig,
 ): AsyncIterable<string> {
-	yield* output.genaratePngs(
+	yield* output.generatePngs(
 		{ image: imageInput },
 		densities.map((density) => ({
 			filePath: getIconPath(
@@ -112,7 +108,7 @@ async function* generateAdaptiveIconLayerPng(
 				`${fileName}.png`,
 			),
 			outputSize: adaptiveIconBaseSize * density.scale,
-			force: config.force,
+			cache: config.cache,
 		})),
 	);
 }

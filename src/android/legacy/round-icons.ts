@@ -1,7 +1,7 @@
 import * as input from "../../util/input";
 import * as output from "../../util/output";
 import { prepareForInlining } from "../../util/svg";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { densities, getIconPath, roundIconName } from "../resources";
 import { dropShadowFilter, shadedEdgeFilter } from "./lightning-filter";
 import {
@@ -64,9 +64,9 @@ function buildRoundLegacyIconSvg(
 
 export async function* generateLegacyRoundIcons(
 	fileInput: input.FileInput,
-	config: Config,
+	config: ResolvedConfig,
 ): AsyncIterable<string> {
-	yield* output.genaratePngs(
+	yield* output.generatePngs(
 		{
 			image: input.mapInput(fileInput, (inputData) => ({
 				...inputData.backgroundImageData,
@@ -89,7 +89,7 @@ export async function* generateLegacyRoundIcons(
 				`${roundIconName}.png`,
 			),
 			outputSize: legacyIconSize * density.scale,
-			force: config.force,
+			cache: config.cache,
 		})),
 	);
 }

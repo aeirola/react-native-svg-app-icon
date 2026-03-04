@@ -3,16 +3,21 @@ import * as fse from "fs-extra";
 import type { Optional } from "../util/optional";
 import type { OutputConfig } from "../util/output";
 
-export interface Config extends OutputConfig {
+interface PlatformConfig {
 	iosOutputPath: string;
-	appName?: string;
+	appName?: string | undefined;
 }
 
-export async function getConfig(config: Optional<Config>): Promise<Config> {
+export type PartialConfig = Optional<PlatformConfig> & OutputConfig;
+export type ResolvedConfig = PlatformConfig & OutputConfig;
+
+export async function getConfig(
+	config: PartialConfig,
+): Promise<ResolvedConfig> {
 	return {
+		...config,
 		iosOutputPath:
 			config.iosOutputPath || (await getIconsetDir(config.appName)),
-		force: config.force || false,
 	};
 }
 

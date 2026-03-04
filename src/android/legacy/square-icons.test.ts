@@ -3,9 +3,10 @@ import { beforeAll, beforeEach, describe, it } from "vitest";
 
 import { cleanupTestOutput } from "../../../test/utils/cleanup";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
+import { CacheSession } from "../../cache";
 import * as input from "../../util/input";
 import { createLogger } from "../../util/logger";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { generateLegacySquareIcons } from "./square-icons";
 
 describe("android/legacy/square-icons", () => {
@@ -35,9 +36,12 @@ describe("android/legacy/square-icons", () => {
 
 	it("generates square icons matching reference images", async () => {
 		const outputPath = path.join(baseDir, "output");
-		const config: Config = {
+		const config: ResolvedConfig = {
 			androidOutputPath: outputPath,
-			force: false,
+			cache: new CacheSession({
+				inputFileBuffers: fileInput.fileBuffers,
+				force: false,
+			}),
 		};
 
 		for await (const _file of generateLegacySquareIcons(fileInput, config)) {

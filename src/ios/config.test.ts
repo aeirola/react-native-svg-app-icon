@@ -3,18 +3,30 @@ import * as fse from "fs-extra";
 import { it as base, describe, expect } from "vitest";
 
 import { tmpDir } from "../../test/utils/tmp-dir";
+import { CacheSession } from "../cache";
 import { getConfig } from "./config";
 
 const it = base.extend({ tmpDir });
+
+const makeCache = () =>
+	new CacheSession({
+		inputFileBuffers: {
+			foreground: Buffer.alloc(0),
+			background: Buffer.alloc(0),
+		},
+		force: false,
+	});
 
 describe("ios/config", () => {
 	describe("getConfig", () => {
 		it("uses provided iosOutputPath", async ({ tmpDir: _tmpDir }) => {
 			const customPath = path.join("/custom", "path");
-			const config = await getConfig({ iosOutputPath: customPath });
+			const config = await getConfig({
+				iosOutputPath: customPath,
+				cache: makeCache(),
+			});
 
 			expect(config.iosOutputPath).toBe(customPath);
-			expect(config.force).toBe(false);
 		});
 
 		it("finds Images.xcassets directory and returns AppIcon.appiconset path", async ({
@@ -23,12 +35,11 @@ describe("ios/config", () => {
 			// Create Images.xcassets directory structure
 			await fse.ensureDir(path.join("ios", "MyProject", "Images.xcassets"));
 
-			const config = await getConfig({});
+			const config = await getConfig({ cache: makeCache() });
 
 			expect(config.iosOutputPath).toBe(
 				path.join("ios", "MyProject", "Images.xcassets", "AppIcon.appiconset"),
 			);
-			expect(config.force).toBe(false);
 		});
 
 		it("finds Images.xcassets for project with space in name", async ({
@@ -36,7 +47,7 @@ describe("ios/config", () => {
 		}) => {
 			await fse.ensureDir(path.join("ios", "My App", "Images.xcassets"));
 
-			const config = await getConfig({});
+			const config = await getConfig({ cache: makeCache() });
 
 			expect(config.iosOutputPath).toBe(
 				path.join("ios", "My App", "Images.xcassets", "AppIcon.appiconset"),
@@ -50,7 +61,7 @@ describe("ios/config", () => {
 			await fse.ensureDir(path.join("ios", "My", "Images.xcassets"));
 			await fse.ensureDir(path.join("ios", "My App", "Images.xcassets"));
 
-			const config = await getConfig({ appName: "My App" });
+			const config = await getConfig({ appName: "My App", cache: makeCache() });
 
 			expect(config.iosOutputPath).toBe(
 				path.join("ios", "My App", "Images.xcassets", "AppIcon.appiconset"),
@@ -62,7 +73,10 @@ describe("ios/config", () => {
 		}) => {
 			await fse.ensureDir(path.join("ios", "ActualProject", "Images.xcassets"));
 
-			const config = await getConfig({ appName: "DifferentName" });
+			const config = await getConfig({
+				appName: "DifferentName",
+				cache: makeCache(),
+			});
 
 			expect(config.iosOutputPath).toBe(
 				path.join(
@@ -80,7 +94,7 @@ describe("ios/config", () => {
 			// Create ios directory but no Images.xcassets
 			await fse.ensureDir(path.join("ios", "MyProject"));
 
-			await expect(getConfig({})).rejects.toThrow(
+			await expect(getConfig({ cache: makeCache() })).rejects.toThrow(
 				"No Images.xcassets found under ios/ subdirectories",
 			);
 		});
