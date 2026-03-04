@@ -3,9 +3,10 @@ import { beforeAll, describe, it } from "vitest";
 
 import { cleanupTestOutputs } from "../../../test/utils/cleanup";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
+import { CacheSession } from "../../cache";
 import * as input from "../../util/input";
 import { createLogger } from "../../util/logger";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { generateAdaptiveIcons } from "./adaptive-icons";
 
 describe("android/adaptive-icons", () => {
@@ -28,10 +29,6 @@ describe("android/adaptive-icons", () => {
 		it("generates vector drawable adaptive icons", async () => {
 			const baseDir = path.join(assetsPath, "vector-drawable");
 			const outputPath = path.join(baseDir, "output");
-			const config: Config = {
-				androidOutputPath: outputPath,
-				force: false,
-			};
 
 			// Load test icons
 			const fileInput = await input.readIcon({
@@ -39,6 +36,14 @@ describe("android/adaptive-icons", () => {
 				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
 				logger: createLogger("error"),
 			});
+
+			const config: ResolvedConfig = {
+				androidOutputPath: outputPath,
+				cache: new CacheSession({
+					inputFileBuffers: fileInput.fileBuffers,
+					force: true,
+				}),
+			};
 
 			// Generate adaptive icons
 			for await (const _file of generateAdaptiveIcons(fileInput, config)) {
@@ -52,16 +57,20 @@ describe("android/adaptive-icons", () => {
 		it("falls back to PNG when vector drawable conversion fails", async () => {
 			const baseDir = path.join(assetsPath, "png-fallback");
 			const outputPath = path.join(baseDir, "output");
-			const config: Config = {
-				androidOutputPath: outputPath,
-				force: false,
-			};
 
 			// Load SVG with unsupported elements (text) that will force PNG fallback
 			const unsupportedFileInput = await input.readIcon({
 				foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
 				logger: createLogger("error"),
 			});
+
+			const config: ResolvedConfig = {
+				androidOutputPath: outputPath,
+				cache: new CacheSession({
+					inputFileBuffers: unsupportedFileInput.fileBuffers,
+					force: true,
+				}),
+			};
 
 			// Generate adaptive icons
 			for await (const _file of generateAdaptiveIcons(

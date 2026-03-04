@@ -28,7 +28,7 @@ export async function* generate(config: Config): AsyncIterable<string> {
 
 **Lazy Loading**: Sharp library is loaded only when needed (expensive import). Type-only imports at top, dynamic import in `input.ts`.
 
-**Incremental Builds**: Output files are skipped if newer than input files (unless `force: true`).
+**Incremental Builds**: Output files are skipped if their cached content hash matches the current input file hash (unless `force: true`). Hashes are stored in a cache file and compared on each run.
 
 ## Development Workflow
 
@@ -97,6 +97,8 @@ PNG comparison thresholds range from 0 (default, exact match) to 0.16 depending 
 - **Biome** for linting/formatting (not ESLint/Prettier)
 - Run `npx biome check` or use IDE integration
 - Example directories (`example-rn/`, `example-expo/`) are excluded from linting
+- **Strict TypeScript**: Rely on precise, strict types throughout. Avoid `any` and `as` type assertions, prefer narrow types, and leverage TypeScript's type system fully.
+- **Input validation with arktype**: All external input (CLI args, `app.json` config, file contents) must be validated using [arktype](https://arktype.io). Use Context7 library documentation `/arktypeio/arktype` for API and docs.
 
 ## Key Dependencies
 

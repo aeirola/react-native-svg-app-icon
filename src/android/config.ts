@@ -1,12 +1,16 @@
+import type { Optional } from "../util/optional";
 import type { OutputConfig } from "../util/output";
 
-export interface Config extends OutputConfig {
+interface PlatformConfig {
 	androidOutputPath: string;
 }
 
-export function getConfig(androidOutputPath?: string, force?: boolean): Config {
+export type PartialConfig = Optional<PlatformConfig> & OutputConfig;
+export type ResolvedConfig = PlatformConfig & OutputConfig;
+
+export function getConfig(config: PartialConfig): ResolvedConfig {
 	return {
-		androidOutputPath: androidOutputPath || "./android/app/src/main/res",
-		force: force || false,
+		...config,
+		androidOutputPath: config.androidOutputPath || "./android/app/src/main/res",
 	};
 }

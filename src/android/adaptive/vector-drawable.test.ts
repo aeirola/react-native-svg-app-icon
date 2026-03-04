@@ -3,9 +3,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { cleanupTestOutput } from "../../../test/utils/cleanup";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
+import { CacheSession } from "../../cache";
 import * as input from "../../util/input";
 import { createLogger } from "../../util/logger";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { generateVectorDrawable } from "./vector-drawable";
 
 describe("android/vector-drawable", () => {
@@ -34,9 +35,12 @@ describe("android/vector-drawable", () => {
 
 			const baseDir = assetsPath;
 			const outputPath = path.join(baseDir, "output");
-			const config: Config = {
+			const config: ResolvedConfig = {
 				androidOutputPath: outputPath,
-				force: false,
+				cache: new CacheSession({
+					inputFileBuffers: fileInput.fileBuffers,
+					force: false,
+				}),
 			};
 
 			// Map the file input to the expected format
@@ -59,16 +63,20 @@ describe("android/vector-drawable", () => {
 
 		it("uses strict mode to fail on unsupported SVG elements", async () => {
 			const outputPath = path.join(assetsPath, "output");
-			const config: Config = {
-				androidOutputPath: outputPath,
-				force: false,
-			};
 
 			// Load SVG with text element (unsupported in vector drawable)
 			const unsupportedFileInput = await input.readIcon({
 				foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
 				logger: createLogger("error"),
 			});
+
+			const config: ResolvedConfig = {
+				androidOutputPath: outputPath,
+				cache: new CacheSession({
+					inputFileBuffers: unsupportedFileInput.fileBuffers,
+					force: false,
+				}),
+			};
 
 			const unsupportedInput = input.mapInput(
 				unsupportedFileInput,

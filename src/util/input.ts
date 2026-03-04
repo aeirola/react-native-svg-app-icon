@@ -4,6 +4,7 @@ import * as fse from "fs-extra";
 // sharp library is slow to load, only import types here, and import when needed
 import type * as SharpType from "sharp";
 import type { Logger } from "./logger";
+import { memoize } from "./memoize";
 import type { Optional } from "./optional";
 
 const defaultBackgroundPath = path.join(
@@ -27,8 +28,6 @@ export interface Config {
 	logger: Logger | undefined;
 }
 
-type FileModificationTime = fse.Stats["mtimeMs"];
-
 export type FileInput = Input<InputData>;
 type InputData = {
 	backgroundImageData: BackgroundImageData;
@@ -36,8 +35,14 @@ type InputData = {
 };
 
 export interface Input<Data> {
-	lastModified: FileModificationTime;
+	/** Eagerly loaded raw file buffers, used for caching and image generation. */
+	fileBuffers: InputFileBuffers;
 	read: () => Promise<Data>;
+}
+
+export interface InputFileBuffers {
+	foreground: Buffer;
+	background: Buffer;
 }
 
 interface ValidMetadata extends SharpType.Metadata {
@@ -64,9 +69,19 @@ interface BackgroundImageData extends ImageData {
 export async function readIcon(config: Optional<Config>): Promise<FileInput> {
 	const fullConfig = getConfig(config);
 
+	const [backgroundBuffer, foregroundBuffer] = await Promise.all([
+		fse.readFile(fullConfig.backgroundPath),
+		fse.readFile(fullConfig.foregroundPath),
+	]);
+
+	const fileBuffers: InputFileBuffers = {
+		background: backgroundBuffer,
+		foreground: foregroundBuffer,
+	};
+
 	return {
-		lastModified: await getLastModifiedTime(fullConfig),
-		read: memoize(() => loadData(fullConfig)),
+		fileBuffers,
+		read: memoize(() => loadData(fullConfig, fileBuffers)),
 	};
 }
 
@@ -78,18 +93,10 @@ function getConfig(config: Optional<Config>): Config {
 	};
 }
 
-async function getLastModifiedTime(
+async function loadData(
 	config: Config,
-): Promise<FileModificationTime> {
-	const fileModifiedTimes = await Promise.all([
-		fse.stat(config.backgroundPath).then((stat) => stat.mtimeMs),
-		fse.stat(config.foregroundPath).then((stat) => stat.mtimeMs),
-	]);
-
-	return Math.max(...fileModifiedTimes);
-}
-
-async function loadData(config: Config): Promise<InputData> {
+	buffers: InputFileBuffers,
+): Promise<InputData> {
 	if (config.backgroundPath) {
 		config.logger?.info("Reading background file", config.backgroundPath);
 	}
@@ -98,8 +105,8 @@ async function loadData(config: Config): Promise<InputData> {
 	}
 
 	const [backgroundImageData, foregroundImageData] = await Promise.all([
-		readImage(config.backgroundPath),
-		readImage(config.foregroundPath),
+		readImage(buffers.background),
+		readImage(buffers.foreground),
 	]);
 
 	const validBackgroundImage = validateBackgroundImage(backgroundImageData);
@@ -110,9 +117,7 @@ async function loadData(config: Config): Promise<InputData> {
 	};
 }
 
-async function readImage(filePath: string): Promise<ImageData> {
-	const fileData = await fse.readFile(filePath);
-
+async function readImage(fileData: Buffer): Promise<ImageData> {
 	const sharp = (await import("sharp")).default;
 	const sharpInstance = sharp(fileData);
 	const [metadata, stats] = await Promise.all([
@@ -180,15 +185,5 @@ export function mapInput<OriginalData, MappedData>(
 	return {
 		...fileInput,
 		read: memoize(() => fileInput.read().then(mapFunction)),
-	};
-}
-
-function memoize<T>(fn: () => Promise<T>): () => Promise<T> {
-	let cached: Promise<T> | undefined;
-	return (): Promise<T> => {
-		if (cached === undefined) {
-			cached = fn();
-		}
-		return cached;
 	};
 }
