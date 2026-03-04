@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import { beforeAll, beforeEach, describe, it } from "vitest";
+
 import { cleanupTestOutput } from "../../../test/utils/cleanup";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
 import { CacheSession } from "../../cache";
@@ -39,7 +40,7 @@ describe("android/legacy/square-icons", () => {
 			androidOutputPath: outputPath,
 			cache: new CacheSession({
 				inputFileBuffers: fileInput.fileBuffers,
-				force: true,
+				force: false,
 			}),
 		};
 

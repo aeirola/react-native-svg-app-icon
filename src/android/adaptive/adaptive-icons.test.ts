@@ -41,7 +41,7 @@ describe("android/adaptive-icons", () => {
 				androidOutputPath: outputPath,
 				cache: new CacheSession({
 					inputFileBuffers: fileInput.fileBuffers,
-					force: true,
+					force: false,
 				}),
 			};
 
@@ -68,7 +68,7 @@ describe("android/adaptive-icons", () => {
 				androidOutputPath: outputPath,
 				cache: new CacheSession({
 					inputFileBuffers: unsupportedFileInput.fileBuffers,
-					force: true,
+					force: false,
 				}),
 			};
 

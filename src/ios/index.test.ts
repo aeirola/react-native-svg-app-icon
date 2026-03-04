@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import { beforeAll, beforeEach, describe, it } from "vitest";
+
 import { cleanupTestOutputs } from "../../test/utils/cleanup";
 import { verifyGeneratedFiles } from "../../test/utils/file-comparison";
 import { CacheSession } from "../cache";
@@ -35,7 +36,7 @@ describe("ios/index", () => {
 				iosOutputPath: outputPath,
 				cache: new CacheSession({
 					inputFileBuffers: fileInput.fileBuffers,
-					force: true,
+					force: false,
 				}),
 			};
 
