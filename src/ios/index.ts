@@ -1,4 +1,5 @@
 import * as path from "node:path";
+import type { Context } from "../util/context";
 import * as input from "../util/input";
 import * as output from "../util/output";
 import { prepareForInlining } from "../util/svg";
@@ -28,13 +29,16 @@ const iosIcons = [
 export type { PartialConfig };
 
 export async function* generate(
-	config: PartialConfig,
+	context: Context<PartialConfig>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
-	const resolvedConfig = await getConfig(config);
+	const resolvedContext: Context<ResolvedConfig> = {
+		...context,
+		config: await getConfig(context.config),
+	};
 
-	yield* generateImages(resolvedConfig, fileInput);
-	yield* generateManifest(resolvedConfig);
+	yield* generateImages(resolvedContext, fileInput);
+	yield* generateManifest(resolvedContext);
 }
 
 /**
@@ -59,7 +63,7 @@ function buildIosIconSvg(background: Buffer, foreground: Buffer): Buffer {
 }
 
 async function* generateImages(
-	config: ResolvedConfig,
+	context: Context<ResolvedConfig>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
 	yield* output.generatePngs(
@@ -79,17 +83,17 @@ async function* generateImages(
 			removeAlpha: true,
 		},
 		iosIcons.map((icon) => ({
-			filePath: path.join(config.iosOutputPath, getIconFilename(icon)),
+			filePath: path.join(context.config.iosOutputPath, getIconFilename(icon)),
 			outputSize: icon.size * icon.scale,
-			cache: config.cache,
 		})),
+		context,
 	);
 }
 
 async function* generateManifest(
-	config: ResolvedConfig,
+	context: Context<ResolvedConfig>,
 ): AsyncIterable<string> {
-	const fileName = path.join(config.iosOutputPath, "Contents.json");
+	const fileName = path.join(context.config.iosOutputPath, "Contents.json");
 	yield* output.generateFile(
 		fileName,
 		() => ({
@@ -104,7 +108,7 @@ async function* generateManifest(
 				version: 1,
 			},
 		}),
-		config,
+		context,
 	);
 }
 

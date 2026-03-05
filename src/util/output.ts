@@ -1,12 +1,7 @@
 import * as fse from "fs-extra";
 
-import type { CacheSession } from "../cache";
+import type { Context } from "./context";
 import type * as input from "./input";
-
-export interface OutputConfig {
-	/** Cache session controlling skip logic and force behaviour. */
-	cache: CacheSession;
-}
 
 interface GenerateInput {
 	image: input.Input<input.ImageData>;
@@ -14,7 +9,7 @@ interface GenerateInput {
 	removeAlpha?: boolean;
 }
 
-interface GenerateConfig extends OutputConfig {
+interface GenerateConfig {
 	filePath: string;
 	outputSize: number;
 }
@@ -22,15 +17,17 @@ interface GenerateConfig extends OutputConfig {
 export async function* generatePngs(
 	fileInput: GenerateInput,
 	outputs: GenerateConfig[],
+	context: Context,
 ): AsyncIterable<string> {
 	for (const output of outputs) {
-		yield* generatePng(fileInput, output);
+		yield* generatePng(fileInput, output, context);
 	}
 }
 
 async function* generatePng(
 	fileInput: GenerateInput,
 	output: GenerateConfig,
+	context: Context,
 ): AsyncIterable<string> {
 	yield* generateFile(
 		output.filePath,
@@ -55,7 +52,7 @@ async function* generatePng(
 				})
 				.toBuffer();
 		},
-		output,
+		context,
 	);
 }
 
@@ -71,7 +68,7 @@ async function* generatePng(
  * @param contentProvider - Called to produce file contents when the file needs
  *   to be (re-)generated. Strings and objects are UTF-8 encoded (objects are
  *   JSON-serialised); Buffers are written as-is.
- * @param config - Output configuration supplying the cache session.
+ * @param context - Generation context supplying the cache session.
  * @yields The file path when the file was written; yields nothing if skipped.
  */
 export async function* generateFile(
@@ -79,9 +76,9 @@ export async function* generateFile(
 	contentProvider:
 		| (() => string | Record<string, unknown> | Buffer)
 		| (() => Promise<string | Record<string, unknown> | Buffer>),
-	config: OutputConfig,
+	{ cache }: Context,
 ): AsyncIterable<string> {
-	if (await config.cache.isUpToDate(path)) {
+	if (await cache.isUpToDate(path)) {
 		return;
 	}
 
@@ -105,6 +102,6 @@ export async function* generateFile(
 	}
 
 	await fse.outputFile(path, contentBuffer);
-	config.cache.recordBuffer(path, contentBuffer);
+	cache.recordBuffer(path, contentBuffer);
 	yield path;
 }

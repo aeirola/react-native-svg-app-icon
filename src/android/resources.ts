@@ -1,4 +1,5 @@
 import * as path from "node:path";
+import type { Config } from "./config";
 
 export type ResourceType = "mipmap" | "drawable";
 
@@ -25,7 +26,7 @@ export const launcherBackgroundName = "ic_launcher_background";
 export const launcherForegroundName = "ic_launcher_foreground";
 
 export function getIconPath(
-	config: { androidOutputPath: string },
+	config: Config,
 	resourceType: ResourceType,
 	qualifier: {
 		density: ResourceDensity;

@@ -2,11 +2,10 @@ import * as path from "node:path";
 import { beforeAll, describe, it } from "vitest";
 
 import { cleanupTestOutputs } from "../../../test/utils/cleanup";
+import { logger, makeContext } from "../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
-import { CacheSession } from "../../cache";
 import * as input from "../../util/input";
-import { createLogger } from "../../util/logger";
-import type { ResolvedConfig } from "../config";
+import type { Config } from "../config";
 import { generateAdaptiveIcons } from "./adaptive-icons";
 
 describe("android/adaptive-icons", () => {
@@ -31,22 +30,23 @@ describe("android/adaptive-icons", () => {
 			const outputPath = path.join(baseDir, "output");
 
 			// Load test icons
-			const fileInput = await input.readIcon({
-				backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
-				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
-				logger: createLogger("error"),
+			const fileInput = await input.readIcon(
+				{
+					backgroundPath: path.join(
+						testAssetsPath,
+						"react-icon-background.svg",
+					),
+					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+				},
+				logger,
+			);
+
+			const context = makeContext<Config>({
+				androidOutputPath: outputPath,
 			});
 
-			const config: ResolvedConfig = {
-				androidOutputPath: outputPath,
-				cache: new CacheSession({
-					inputFileBuffers: fileInput.fileBuffers,
-					force: false,
-				}),
-			};
-
 			// Generate adaptive icons
-			for await (const _file of generateAdaptiveIcons(fileInput, config)) {
+			for await (const _file of generateAdaptiveIcons(fileInput, context)) {
 				// Files are generated and written to disk
 			}
 
@@ -59,23 +59,19 @@ describe("android/adaptive-icons", () => {
 			const outputPath = path.join(baseDir, "output");
 
 			// Load SVG with unsupported elements (text) that will force PNG fallback
-			const unsupportedFileInput = await input.readIcon({
-				foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
-				logger: createLogger("error"),
-			});
+			const unsupportedFileInput = await input.readIcon(
+				{ foregroundPath: path.join(testAssetsPath, "text-icon.svg") },
+				logger,
+			);
 
-			const config: ResolvedConfig = {
+			const context = makeContext<Config>({
 				androidOutputPath: outputPath,
-				cache: new CacheSession({
-					inputFileBuffers: unsupportedFileInput.fileBuffers,
-					force: false,
-				}),
-			};
+			});
 
 			// Generate adaptive icons
 			for await (const _file of generateAdaptiveIcons(
 				unsupportedFileInput,
-				config,
+				context,
 			)) {
 				// Files are generated and written to disk
 			}

@@ -2,11 +2,10 @@ import * as path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { cleanupTestOutput } from "../../../test/utils/cleanup";
+import { logger, makeContext } from "../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
-import { CacheSession } from "../../cache";
 import * as input from "../../util/input";
-import { createLogger } from "../../util/logger";
-import type { ResolvedConfig } from "../config";
+import type { Config } from "../config";
 import { generateVectorDrawable } from "./vector-drawable";
 
 describe("android/vector-drawable", () => {
@@ -28,20 +27,16 @@ describe("android/vector-drawable", () => {
 	describe("generateVectorDrawable", () => {
 		it("generates vector drawable XML matching expected output", async () => {
 			// Load test icon
-			const fileInput = await input.readIcon({
-				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
-				logger: createLogger("error"),
-			});
+			const fileInput = await input.readIcon(
+				{ foregroundPath: path.join(testAssetsPath, "react-icon.svg") },
+				logger,
+			);
 
 			const baseDir = assetsPath;
 			const outputPath = path.join(baseDir, "output");
-			const config: ResolvedConfig = {
+			const context = makeContext<Config>({
 				androidOutputPath: outputPath,
-				cache: new CacheSession({
-					inputFileBuffers: fileInput.fileBuffers,
-					force: false,
-				}),
-			};
+			});
 
 			// Map the file input to the expected format
 			const imageInput = input.mapInput(
@@ -53,7 +48,7 @@ describe("android/vector-drawable", () => {
 			for await (const _file of generateVectorDrawable(
 				imageInput,
 				"icon",
-				config,
+				context,
 			)) {
 				// Files are generated and written to disk
 			}
@@ -65,18 +60,14 @@ describe("android/vector-drawable", () => {
 			const outputPath = path.join(assetsPath, "output");
 
 			// Load SVG with text element (unsupported in vector drawable)
-			const unsupportedFileInput = await input.readIcon({
-				foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
-				logger: createLogger("error"),
-			});
+			const unsupportedFileInput = await input.readIcon(
+				{ foregroundPath: path.join(testAssetsPath, "text-icon.svg") },
+				logger,
+			);
 
-			const config: ResolvedConfig = {
+			const context = makeContext<Config>({
 				androidOutputPath: outputPath,
-				cache: new CacheSession({
-					inputFileBuffers: unsupportedFileInput.fileBuffers,
-					force: false,
-				}),
-			};
+			});
 
 			const unsupportedInput = input.mapInput(
 				unsupportedFileInput,
@@ -88,7 +79,7 @@ describe("android/vector-drawable", () => {
 				for await (const _ of generateVectorDrawable(
 					unsupportedInput,
 					"unsupported-icon",
-					config,
+					context,
 				)) {
 					// Consume the generator
 				}
