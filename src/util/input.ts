@@ -25,7 +25,6 @@ export const inputImageMargin = (inputImageSize - inputContentSize) / 2;
 export interface Config {
 	backgroundPath: string;
 	foregroundPath: string;
-	logger: Logger | undefined;
 }
 
 export type FileInput = Input<InputData>;
@@ -66,7 +65,10 @@ interface BackgroundImageData extends ImageData {
 	stats: OpaqueImageStats;
 }
 
-export async function readIcon(config: Optional<Config>): Promise<FileInput> {
+export async function readIcon(
+	config: Optional<Config>,
+	logger: Logger,
+): Promise<FileInput> {
 	const fullConfig = getConfig(config);
 
 	const [backgroundBuffer, foregroundBuffer] = await Promise.all([
@@ -81,7 +83,7 @@ export async function readIcon(config: Optional<Config>): Promise<FileInput> {
 
 	return {
 		fileBuffers,
-		read: memoize(() => loadData(fullConfig, fileBuffers)),
+		read: memoize(() => loadData(fullConfig, fileBuffers, logger)),
 	};
 }
 
@@ -89,19 +91,19 @@ function getConfig(config: Optional<Config>): Config {
 	return {
 		backgroundPath: config.backgroundPath || defaultBackgroundPath,
 		foregroundPath: config.foregroundPath || "./icon.svg",
-		logger: config.logger,
 	};
 }
 
 async function loadData(
 	config: Config,
 	buffers: InputFileBuffers,
+	logger: Logger,
 ): Promise<InputData> {
 	if (config.backgroundPath) {
-		config.logger?.info("Reading background file", config.backgroundPath);
+		logger.info("Reading background file", config.backgroundPath);
 	}
 	if (config.foregroundPath) {
-		config.logger?.info("Reading file", config.foregroundPath);
+		logger.info("Reading file", config.foregroundPath);
 	}
 
 	const [backgroundImageData, foregroundImageData] = await Promise.all([

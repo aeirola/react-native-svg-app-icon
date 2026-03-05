@@ -2,10 +2,9 @@ import * as path from "node:path";
 import { beforeAll, beforeEach, describe, it } from "vitest";
 
 import { cleanupTestOutputs } from "../../test/utils/cleanup";
+import { logger, makeContext } from "../../test/utils/context";
 import { verifyGeneratedFiles } from "../../test/utils/file-comparison";
-import { CacheSession } from "../cache";
 import * as input from "../util/input";
-import { createLogger } from "../util/logger";
 import { generate, type PartialConfig } from "./index";
 
 describe("ios/index", () => {
@@ -21,27 +20,25 @@ describe("ios/index", () => {
 
 	beforeEach(async () => {
 		// Load test icons
-		fileInput = await input.readIcon({
-			backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
-			foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
-			logger: createLogger("silent"),
-		});
+		fileInput = await input.readIcon(
+			{
+				backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
+				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+			},
+			logger,
+		);
 	});
 
 	describe("generate", () => {
 		it("generates iOS icons and manifest matching reference files", async () => {
 			const baseDir = path.join(assetsPath, "icons");
 			const outputPath = path.join(baseDir, "output");
-			const config: PartialConfig = {
+			const context = makeContext<PartialConfig>({
 				iosOutputPath: outputPath,
-				cache: new CacheSession({
-					inputFileBuffers: fileInput.fileBuffers,
-					force: false,
-				}),
-			};
+			});
 
 			// Generate icons and manifest
-			for await (const _file of generate(config, fileInput)) {
+			for await (const _file of generate(context, fileInput)) {
 				// Files are generated and written to disk
 			}
 

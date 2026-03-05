@@ -2,11 +2,10 @@ import * as path from "node:path";
 import { beforeAll, beforeEach, describe, it } from "vitest";
 
 import { cleanupTestOutput } from "../../../test/utils/cleanup";
+import { logger, makeContext } from "../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
-import { CacheSession } from "../../cache";
 import * as input from "../../util/input";
-import { createLogger } from "../../util/logger";
-import type { ResolvedConfig } from "../config";
+import type { Config } from "../config";
 import { generateLegacySquareIcons } from "./square-icons";
 
 describe("android/legacy/square-icons", () => {
@@ -27,24 +26,21 @@ describe("android/legacy/square-icons", () => {
 	});
 
 	beforeEach(async () => {
-		fileInput = await input.readIcon({
-			backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
-			foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
-			logger: createLogger("silent"),
-		});
+		fileInput = await input.readIcon(
+			{
+				backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
+				foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
+			},
+			logger,
+		);
 	});
 
 	it("generates square icons matching reference images", async () => {
-		const outputPath = path.join(baseDir, "output");
-		const config: ResolvedConfig = {
-			androidOutputPath: outputPath,
-			cache: new CacheSession({
-				inputFileBuffers: fileInput.fileBuffers,
-				force: false,
-			}),
-		};
+		const context = makeContext<Config>({
+			androidOutputPath: path.join(baseDir, "output"),
+		});
 
-		for await (const _file of generateLegacySquareIcons(fileInput, config)) {
+		for await (const _file of generateLegacySquareIcons(fileInput, context)) {
 			// Files are generated and written to disk
 		}
 
