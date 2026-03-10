@@ -2,11 +2,10 @@ import * as path from "node:path";
 import { beforeAll, beforeEach, describe, it } from "vitest";
 
 import { cleanupTestOutput } from "../../../test/utils/cleanup";
+import { logger, makeContext } from "../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
-import { CacheSession } from "../../cache";
 import * as input from "../../util/input";
-import { createLogger } from "../../util/logger";
-import type { ResolvedConfig } from "../config";
+import type { Config } from "../config";
 import { generateLegacyRoundIcons } from "./round-icons";
 
 describe("android/legacy/round-icons", () => {
@@ -27,24 +26,22 @@ describe("android/legacy/round-icons", () => {
 	});
 
 	beforeEach(async () => {
-		fileInput = await input.readIcon({
-			backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
-			foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
-			logger: createLogger("silent"),
-		});
+		fileInput = await input.readIcon(
+			{
+				backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
+				foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
+			},
+			logger,
+		);
 	});
 
 	it("generates round icons matching reference images", async () => {
 		const outputPath = path.join(baseDir, "output");
-		const config: ResolvedConfig = {
+		const context = makeContext<Config>({
 			androidOutputPath: outputPath,
-			cache: new CacheSession({
-				inputFileBuffers: fileInput.fileBuffers,
-				force: false,
-			}),
-		};
+		});
 
-		for await (const _file of generateLegacyRoundIcons(fileInput, config)) {
+		for await (const _file of generateLegacyRoundIcons(fileInput, context)) {
 			// Files are generated and written to disk
 		}
 

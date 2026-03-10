@@ -43,10 +43,9 @@ export async function main(args: string[] = []): Promise<void> {
 		androidOutputPath: resolvedConfig.androidOutputPath,
 		iosOutputPath: resolvedConfig.iosOutputPath,
 		appName: resolvedConfig.appName,
-		logger,
 	};
 
-	const generatedFiles = reactNativeSvgAppIcon.generate(config);
+	const generatedFiles = reactNativeSvgAppIcon.generate(config, logger);
 
 	for await (const file of generatedFiles) {
 		logger.info(`Wrote ${file}`);

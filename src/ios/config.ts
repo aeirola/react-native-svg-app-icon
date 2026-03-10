@@ -1,15 +1,14 @@
 import * as path from "node:path";
 import * as fse from "fs-extra";
 import type { Optional } from "../util/optional";
-import type { OutputConfig } from "../util/output";
 
 interface PlatformConfig {
 	iosOutputPath: string;
 	appName?: string | undefined;
 }
 
-export type PartialConfig = Optional<PlatformConfig> & OutputConfig;
-export type ResolvedConfig = PlatformConfig & OutputConfig;
+export type PartialConfig = Optional<PlatformConfig>;
+export type ResolvedConfig = PlatformConfig;
 
 export async function getConfig(
 	config: PartialConfig,

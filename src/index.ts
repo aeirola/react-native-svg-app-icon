@@ -1,47 +1,32 @@
 import * as android from "./android";
 import { CacheSession } from "./cache";
+import type { Config, Platform } from "./config";
 import * as ios from "./ios";
+import type { Context } from "./util/context";
 import * as input from "./util/input";
 import type { Logger } from "./util/logger";
-import type { Optional } from "./util/optional";
 
-/**
- * Supported platforms for generating icons.
- */
-export type Platform = "android" | "ios";
+export type { Config, Platform };
 
-type PlatformConfig = android.PartialConfig & ios.PartialConfig;
-
-export type Config = Omit<PlatformConfig, "cache"> & {
-	icon: Optional<input.Config>;
-	platforms: Platform[];
-	logger: Logger;
-	/** Write output files even if they are up-to-date. */
-	force?: boolean;
-};
-
-export async function* generate(config: Config): AsyncIterable<string> {
-	const iconInput = await input.readIcon({
-		...config.icon,
-		logger: config.logger,
-	});
+export async function* generate(
+	config: Config,
+	logger: Logger,
+): AsyncIterable<string> {
+	const iconInput = await input.readIcon(config.icon, logger);
 
 	const cache = new CacheSession({
 		inputFileBuffers: iconInput.fileBuffers,
 		force: config.force ?? false,
 	});
 
-	const platformConfig: PlatformConfig = {
-		...config,
-		cache,
-	};
+	const context: Context<Config> = { config, logger, cache };
 
 	try {
 		if (config.platforms.includes("android")) {
-			yield* android.generate(platformConfig, iconInput);
+			yield* android.generate(context, iconInput);
 		}
 		if (config.platforms.includes("ios")) {
-			yield* ios.generate(platformConfig, iconInput);
+			yield* ios.generate(context, iconInput);
 		}
 	} finally {
 		await cache.flush();

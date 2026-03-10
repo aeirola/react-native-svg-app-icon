@@ -1,7 +1,8 @@
+import type { Context } from "../../util/context";
 import * as input from "../../util/input";
 import * as output from "../../util/output";
 import { prepareForInlining } from "../../util/svg";
-import type { ResolvedConfig } from "../config";
+import type { Config } from "../config";
 import { densities, getIconPath, launcherName } from "../resources";
 import { dropShadowFilter, shadedEdgeFilter } from "./lightning-filter";
 import {
@@ -63,7 +64,7 @@ function buildSquareLegacyIconSvg(
 
 export async function* generateLegacySquareIcons(
 	fileInput: input.FileInput,
-	config: ResolvedConfig,
+	context: Context<Config>,
 ): AsyncIterable<string> {
 	yield* output.generatePngs(
 		{
@@ -82,13 +83,13 @@ export async function* generateLegacySquareIcons(
 		},
 		densities.map((density) => ({
 			filePath: getIconPath(
-				config,
+				context.config,
 				"mipmap",
 				{ density: density.name },
 				`${launcherName}.png`,
 			),
 			outputSize: legacyIconSize * density.scale,
-			cache: config.cache,
 		})),
+		context,
 	);
 }

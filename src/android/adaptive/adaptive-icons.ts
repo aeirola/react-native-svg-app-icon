@@ -1,6 +1,7 @@
+import type { Context } from "../../util/context";
 import * as input from "../../util/input";
 import * as output from "../../util/output";
-import type { ResolvedConfig } from "../config";
+import type { Config } from "../config";
 import {
 	densities,
 	getIconPath,
@@ -26,7 +27,7 @@ const adaptiveIconContent = (
 
 export async function* generateAdaptiveIcons(
 	fileInput: input.FileInput,
-	config: ResolvedConfig,
+	context: Context<Config>,
 ): AsyncIterable<string> {
 	const backgroundImageInput = input.mapInput(
 		fileInput,
@@ -37,14 +38,14 @@ export async function* generateAdaptiveIcons(
 		yield* generateVectorDrawable(
 			backgroundImageInput,
 			launcherBackgroundName,
-			config,
+			context,
 		);
 		backgroundResourceType = "drawable";
 	} catch {
 		yield* generateAdaptiveIconLayerPng(
 			backgroundImageInput,
 			launcherBackgroundName,
-			config,
+			context,
 		);
 		backgroundResourceType = "mipmap";
 	}
@@ -58,14 +59,14 @@ export async function* generateAdaptiveIcons(
 		yield* generateVectorDrawable(
 			foregroundImageInput,
 			launcherForegroundName,
-			config,
+			context,
 		);
 		foregroundResourceType = "drawable";
 	} catch {
 		yield* generateAdaptiveIconLayerPng(
 			foregroundImageInput,
 			launcherForegroundName,
-			config,
+			context,
 		);
 		foregroundResourceType = "mipmap";
 	}
@@ -73,42 +74,42 @@ export async function* generateAdaptiveIcons(
 	// Adaptive icon
 	yield* output.generateFile(
 		getIconPath(
-			config,
+			context.config,
 			"mipmap",
 			{ density: "anydpi", minApiLevel: 26 },
 			`${launcherName}.xml`,
 		),
 		() => adaptiveIconContent(backgroundResourceType, foregroundResourceType),
-		config,
+		context,
 	);
 	yield* output.generateFile(
 		getIconPath(
-			config,
+			context.config,
 			"mipmap",
 			{ density: "anydpi", minApiLevel: 26 },
 			`${roundIconName}.xml`,
 		),
 		() => adaptiveIconContent(backgroundResourceType, foregroundResourceType),
-		config,
+		context,
 	);
 }
 
 async function* generateAdaptiveIconLayerPng(
 	imageInput: input.Input<input.ImageData>,
 	fileName: string,
-	config: ResolvedConfig,
+	context: Context<Config>,
 ): AsyncIterable<string> {
 	yield* output.generatePngs(
 		{ image: imageInput },
 		densities.map((density) => ({
 			filePath: getIconPath(
-				config,
+				context.config,
 				"mipmap",
 				{ density: density.name, minApiLevel: adaptiveIconMinSdk },
 				`${fileName}.png`,
 			),
 			outputSize: adaptiveIconBaseSize * density.scale,
-			cache: config.cache,
 		})),
+		context,
 	);
 }
