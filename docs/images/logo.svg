@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-    width="108" height="108"
-    viewBox="-54 -54 208 208">
+    width="200" height="200"
+    viewBox="-10 -10 120 120">
   <defs>
+    
+
     <ellipse id="orbit" cx="50" cy="50" rx="46.5" ry="18.3"/>
     <g id="orbits" fill="none">
       <use href="#orbit" />
@@ -16,6 +18,9 @@
       <use href="#top-left-path" fill="white" />
     </mask>
   </defs>
+
+  <rect x="-10" y="-10" width="120" height="120"
+    rx="20" ry="20" fill="#f8f8f8" />
 
   <g stroke="#ffb13b" stroke-width="1.5"
      stroke-dasharray="5.1" stroke-linecap="round">
