@@ -27,7 +27,7 @@ For more information on outputs, see the [generated files](docs/generated_files.
 
 ## Quick start
 
-Create an 108x108dp SVG file with your logo in the center 66dp. It should follow the Android [adaptive icon guidelines](https://developer.android.com/develop/ui/views/launch/icon_design_adaptive#design-adaptive-icons). Then run the following command in your react native project root to generate all necessary images:
+Create a 108x108dp SVG file with your logo in the center 66dp. It should follow the Android [adaptive icon guidelines](https://developer.android.com/develop/ui/views/launch/icon_design_adaptive#design-adaptive-icons). Then run the following command in your react native project root to generate all necessary images:
 
 ```sh
 npx react-native-svg-app-icon --foreground-path app-icon.svg
@@ -49,7 +49,7 @@ Requires node version 20, or later.
 
 ### Prepare source file
 
-The source file should be an 108x108dp SVG with the main content within the center 66dp that follows the [Android adaptive icon specification](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive).
+The source file should be a 108x108dp SVG with the main content within the center 66dp that follows the [Android adaptive icon specification](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive).
 
 For an example icon file, see [`example-rn/icon.svg`](example-rn/icon.svg). Or the official [Figma Template](https://www.figma.com/community/file/1131374111452281708/android-app-icons).
 
