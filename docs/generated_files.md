@@ -26,9 +26,9 @@ Regardless of the generated layer formats, adaptive icon files are produced that
 </adaptive-icon>
 ```
 
-#### Vector drawable foreground
+#### Vector drawable layers
 
-The foreground is generated as a [vector drawable](https://developer.android.com/guide/topics/graphics/vector-drawable-resources) for simple SVG input where all the visual content can be represented as vector drawable elements. For a full list of supported elements in the vector drawable specification, see the [reference](https://developer.android.com/reference/android/graphics/drawable/VectorDrawable.html) documentation.
+The foreground and background layers are generated as a [vector drawable](https://developer.android.com/guide/topics/graphics/vector-drawable-resources) for simple SVG input where all the visual content can be represented as vector drawable elements. For a full list of supported elements in the vector drawable specification, see the [reference](https://developer.android.com/reference/android/graphics/drawable/VectorDrawable.html) documentation.
 
 Vector drawable icons are generated using the [svg2vectordrawable](https://github.com/Ashung/svg2vectordrawable) library. In case there are problems with the output vector drawable, please check for information in that library.
 
@@ -49,9 +49,8 @@ Vector drawable icons are generated using the [svg2vectordrawable](https://githu
 </vector>
 ```
 
-#### Vector drawable background
-
 `drawable-anydpi-v26/ic_launcher_background.xml`
+
 ```xml
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -65,7 +64,7 @@ Vector drawable icons are generated using the [svg2vectordrawable](https://githu
 ```
 
 
-#### PNG fallback foreground
+#### PNG fallback
 
 In case the input SVG contains elements not supported by vector drawable, such as `<text>`, then the foreground is rendered as a normal PNG image for each density.
 

@@ -82,6 +82,8 @@ This will generate all the required icons under the `android/` and `ios/` direct
       - `ipad-*.png`
       - `iphone-*.png`
 
+The generated android icon is named `ic_launcher` and `ic_launcher_round` according to react native template defaults, so they need to be referenced in your `AndroidManifest.xml` as `@mipmap/ic_launcher` and `@mipmap/ic_launcher_round`. The name of the iOS icon can be changed with the `iosOutputPath` option, if you are using some name other than the default.
+
 ### Git
 
 If you generate the icons in a build step, such as npm [`prepare` script](https://docs.npmjs.com/cli/v11/using-npm/scripts#prepare-and-prepublish), and don't want to keep generated images in your repository, you can ignore them with
