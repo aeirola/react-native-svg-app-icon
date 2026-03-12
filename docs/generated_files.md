@@ -14,7 +14,7 @@ Adaptive icons consist of a partially transparent foreground layer and solid bac
 
 This foreground and background layers are generated as vector drawable icons when possible, with fallback to PNG images in case the SVG source images contains incompatible content.
 
-Regardless of the generated layer formats, the adaptive icon files are produced which specifies the correct background and foreground layers:
+Regardless of the generated layer formats, adaptive icon files are produced that specify the correct background and foreground layers:
 
 `mipmap-anydpi-v26/ic_launcher.xml` & `mipmap-anydpi-v26/ic_launcher_round.xml`
 
@@ -49,8 +49,9 @@ Vector drawable icons are generated using the [svg2vectordrawable](https://githu
 </vector>
 ```
 
-`drawable-anydpi-v26/ic_launcher_foreground.xml`
+#### Vector drawable background
 
+`drawable-anydpi-v26/ic_launcher_background.xml`
 ```xml
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -66,7 +67,7 @@ Vector drawable icons are generated using the [svg2vectordrawable](https://githu
 
 #### PNG fallback foreground
 
-In case the input SVG contains elements not supported by vector drawable, such as `<text>`, then the foreground is rendered as a normal PNG images for each density.
+In case the input SVG contains elements not supported by vector drawable, such as `<text>`, then the foreground is rendered as a normal PNG image for each density.
 
 ### Legacy icons
 
