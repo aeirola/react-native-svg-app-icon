@@ -1,4 +1,4 @@
-<img src="docs/images/logo.svg" alt="react-native-svg-app-icon" />
+![react-native-svg-app-icon](docs/images/logo.svg)
 
 # react-native-svg-app-icon
 
