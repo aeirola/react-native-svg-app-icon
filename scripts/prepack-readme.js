@@ -5,8 +5,8 @@
  * Images use raw.githubusercontent.com, links use github.com/blob/.
  *
  * Usage:
- *   node scripts/prepack-readme.js          # relativize → absolute
- *   node scripts/prepack-readme.js revert   # absolute → relativize
+ *   node scripts/prepack-readme.js          # relative → absolute
+ *   node scripts/prepack-readme.js revert   # absolute → relative
  */
 
 const fs = require("node:fs");
