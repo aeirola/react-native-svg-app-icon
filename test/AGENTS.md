@@ -12,7 +12,7 @@ Tests use **Vitest** with extended timeouts (`testTimeout: 60s`) for resource-in
 
 ## Test Utilities (`test/utils/`)
 
-- [file-comparison.ts](utils/file-comparison.ts) - `verifyGeneratedFiles(baseDir, options)`: auto-discovers files in `expected/` and compares against `output/`. PNG comparison via pixelmatch (with visual diff generation), parsed JSON comparison, or exact text match. Key option: `imageThreshold` (0 = exact, up to 0.16 for tolerance).
+- [file-comparison.ts](utils/file-comparison.ts) - `verifyGeneratedFiles(baseDir, options)`: auto-discovers files in `expected/` and compares against `output/`. PNG comparison via pixelmatch (with visual diff generation), parsed JSON comparison, or exact text match.
 - [sharpmatch.ts](utils/sharpmatch.ts) - Pixel-by-pixel image comparison using Sharp and pixelmatch. Generates diff PNG when `diffOutputPath` provided.
 - [cli-runner.ts](utils/cli-runner.ts) - `runCli(args, options)`: spawns CLI as a separate Node process. Returns `{ stdout, stderr, exitCode }`.
 - [tmp-dir.ts](utils/tmp-dir.ts) - Vitest fixture providing a temp directory per test with auto-`chdir()` and cleanup.

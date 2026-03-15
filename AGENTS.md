@@ -16,7 +16,7 @@ export async function* generate(config: Config): AsyncIterable<string> {
 
 **Lazy Loading**: Sharp library is loaded only when needed (expensive import).
 
-**Incremental Builds**: Output files are skipped if their cached content hash matches the current input file hash (unless `force: true`). Hashes are stored in a cache file and compared on each run.
+**Incremental Builds**: Output files are skipped if their cached content hash matches the current input (unless `force: true`). Hashes are stored in a temporary cache file and compared on each run.
 
 ## Development Workflow
 

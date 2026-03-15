@@ -18,10 +18,6 @@ Resolution order (later overrides earlier):
 
 The `app.json` file is optional — missing file (ENOENT) is silently ignored. The `svgAppIcon` key within `app.json` is also optional.
 
-## Config Properties
-
-`backgroundPath`, `foregroundPath`, `platforms`, `force`, `androidOutputPath`, `iosOutputPath`, `logLevel`, `appName`
-
 ## CLI Entry Point
 
 [index.ts](index.ts) handles:
