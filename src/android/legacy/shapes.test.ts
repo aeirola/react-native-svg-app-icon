@@ -26,7 +26,7 @@ describe("android/legacy/shapes", () => {
 						${shapes.roundIconClipPath}
 					</defs>
 
-					<rect clip-path="url(#roundIconClipPath)"
+					<rect clip-path="url(#roundIconClipPath)" fill="black"
 						width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}" />
 					</svg>`,
 			),
@@ -46,7 +46,7 @@ describe("android/legacy/shapes", () => {
 						${shapes.squareIconMask}
 					</defs>
 
-					<rect mask="url(#squareIconMask)"
+					<rect mask="url(#squareIconMask)" fill="black"
 						width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}" />
 					</svg>`,
 			),

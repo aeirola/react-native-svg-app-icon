@@ -53,15 +53,15 @@ export const squareIconShape = `
 
 /** SVG mask for the square icon. */
 export const squareIconMask = `
-<mask id="squareIconMask" mask-type="alpha">
-	<!-- SVG blur filter to soften mask edges. -->
-	<filter id="legacySquareIconMaskBlur">
-		<feConvolveMatrix kernelMatrix="
-			0.065 0 0.065
-			0     1 0
-			0.065 0 0.065" />
-	</filter>
+<!-- SVG blur filter to soften mask edges. -->
+<filter id="legacySquareIconMaskBlur">
+	<feConvolveMatrix kernelMatrix="
+		0.065 0 0.065
+		0     1 0
+		0.065 0 0.065" />
+</filter>
 
+<mask id="squareIconMask" mask-type="alpha">
 	<use href="#squareIconShape" filter="url(#legacySquareIconMaskBlur)" />
 </mask>`;
 

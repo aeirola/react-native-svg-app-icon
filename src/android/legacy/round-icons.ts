@@ -10,6 +10,7 @@ import {
 	legacyIconViewBox,
 	legacyRoundIconContentSize,
 	roundIconShape,
+	roundIconClipPath,
 } from "./shapes";
 
 /**
@@ -41,16 +42,14 @@ function buildRoundLegacyIconSvg(
 	width="${legacyIconSize}" height="${legacyIconSize}">
 	<defs>
 		${roundIconShape}
-		<clipPath id="shapeClipPath">
-			<use href="#roundIconShape" />
-		</clipPath>
+		${roundIconClipPath}
 		${dropShadowFilter}
 		${shadedEdgeFilter}
 	</defs>
 
 	<use href="#roundIconShape" filter="url(#dropShadowFilter)" />
 
-	<g clip-path="url(#shapeClipPath)">
+	<g clip-path="url(#roundIconClipPath)">
 		<g transform="translate(${scalingCompensationTranslation} ${scalingCompensationTranslation}) scale(${inputContentScalingFactor})">
 			${prepareForInlining(background, "background")}
 			${prepareForInlining(foreground, "foreground")}
