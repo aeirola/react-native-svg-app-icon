@@ -1,22 +1,10 @@
-# Copilot Instructions for react-native-svg-app-icon
+# react-native-svg-app-icon
 
 ## Project Overview
 
 CLI tool that generates iOS and Android app launcher icons from SVG source files for React Native projects. Converts a single 108x108 SVG into platform-specific assets: iOS PNGs, Android adaptive icons (vector drawable with PNG fallback), and legacy square/round icons.
 
-## Architecture
-
-### Source Code Structure (`src/`)
-
-- [index.ts](../src/index.ts) - Main entry point, orchestrates platform generators via async iterables
-- [cli.ts](../src/cli.ts) - CLI layer: merges config from `app.json` → CLI args → defaults
-- [input.ts](../src/input.ts) - SVG file reading, validation, lazy-loading with Sharp
-- [output.ts](../src/output.ts) - PNG generation with Sharp, handles caching based on file modification times
-- [ios.ts](../src/ios.ts) - iOS icon generation (PNGs + Contents.json manifest)
-- [android.ts](../src/android.ts) - Android icon generation (vector drawables, adaptive icons, legacy icons)
-- [optional.ts](../src/optional.ts) - Utility type for optional properties
-
-### Key Design Patterns
+## Key Design Patterns
 
 **Async Iterables for Output**: All generators use `async function*` to yield file paths as they're written:
 ```typescript
@@ -26,9 +14,9 @@ export async function* generate(config: Config): AsyncIterable<string> {
 }
 ```
 
-**Lazy Loading**: Sharp library is loaded only when needed (expensive import). Type-only imports at top, dynamic import in `input.ts`.
+**Lazy Loading**: Input files are read, and sharp library is loaded only when needed (expensive import).
 
-**Incremental Builds**: Output files are skipped if their cached content hash matches the current input file hash (unless `force: true`). Hashes are stored in a cache file and compared on each run.
+**Incremental Builds**: Output files are skipped if their cached content hash matches the current input (unless `force: true`). Hashes are stored in a temporary cache file and compared on each run.
 
 ## Development Workflow
 
@@ -46,11 +34,7 @@ Tests use **Vitest** and are organized into two categories:
 - **Unit tests** (`src/**/*.test.ts`): Co-located with source files, test individual modules. Fixture assets live in adjacent `*.test.assets/` directories (e.g., `adaptive-icons.test.assets/`).
 - **Integration tests** (`test/integration/`): End-to-end CLI tests that run the full generation pipeline via `runCli()` helper.
 
-**Test utilities** in `test/utils/`:
-- `file-comparison.ts` — `verifyGeneratedFiles(baseDir, options)` auto-discovers files in `expected/` and compares against `output/` using appropriate strategy per file type (PNG pixel comparison via `pixelmatch`, parsed JSON comparison, or exact text match). Generates visual diffs in `diff/` for PNG mismatches.
-- `tmp-dir.ts` — Vitest fixture that creates a temp directory, `process.chdir()` into it, and cleans up after the test.
-- `cli-runner.ts` — Spawns CLI as a separate Node process for integration tests.
-- `cleanup.ts` — `cleanupTestOutputs(basePath, testCases)` and `cleanupTestOutput(basePath)` to remove `output/` and `diff/` directories before test runs.
+**Test utilities** in `test/utils/` — see [test/AGENTS.md](test/AGENTS.md) for details.
 
 **Fixture directory convention**: Each test case directory contains:
 - `input/` — Source files (SVG icons, `app.json`)
@@ -84,8 +68,6 @@ it("generates expected output", async () => {
 });
 ```
 
-PNG comparison thresholds range from 0 (default, exact match) to 0.16 depending on test tolerance needs.
-
 ### Build Artifacts
 
 - Source: `src/*.ts` → Compiled: `lib/*.js` (CommonJS)
@@ -102,32 +84,13 @@ PNG comparison thresholds range from 0 (default, exact match) to 0.16 depending 
 
 ## Key Dependencies
 
-- **sharp**: SVG → PNG rasterization (handles density/DPI scaling). Use Context7 library documentation `/lovell/sharp` for API and docs.
+- **sharp**: SVG → PNG rasterization (handles density/DPI scaling). Context7 docs at `/lovell/sharp`
 - **svg2vectordrawable**: SVG → Android vector drawable XML conversion
-- **commander**: CLI argument parsing
-- **fs-extra**: Enhanced file system operations
+- **svgo**: SVG transformations
+- **commander**: CLI argument parsing. Context7 docs at `/tj/commander.js`
+- **arktype**: Input data validation. Context7 docs at `/arktypeio/arktype`
 
 Always use Context7 MCP when library/API documentation, code generation, setup, or configuration steps are needed, without requiring an explicit request.
-
-## Android Icon Specifics
-
-Android generation in [android.ts](../src/android.ts) handles multiple icon types:
-- Adaptive icons (SDK 26+): Vector drawable foreground/background with PNG fallback for complex SVGs
-- Legacy square icons: 48dp base with rounded corners, drop shadow
-- Legacy round icons: 44dp diameter circular mask
-
-Vector drawable conversion may fail for complex SVG features (text, filters). The code catches these and falls back to PNG.
-
-For legacy icons refer to https://m2.material.io/design/platform-guidance/android-icons.html for specification.
-
-For adaptive icons, refer to https://developer.android.com/develop/ui/views/launch/icon_design_adaptive and https://medium.com/androiddevelopers/implementing-adaptive-icons-1e4d1795470e as source documentation.
-
-
-## iOS Icon Specifics
-
-iOS generation in [ios.ts](../src/ios.ts) produces PNGs for all required sizes/scales defined in `iosIcons` array, plus a `Contents.json` manifest for Xcode asset catalogs.
-
-Use documentation at https://developer.apple.com/documentation/Xcode/configuring-your-app-icon for specifications.
 
 ## Configuration
 
