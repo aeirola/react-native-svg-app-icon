@@ -33,7 +33,7 @@ describe("android/legacy/lightning-filter", () => {
 				{ density: defaultSvgDensity * xhdpiScale },
 			);
 
-			await compareImages(image, "back", "square", 0.0075);
+			await compareImages(image, "back", "square", 0.007);
 		});
 
 		it("matches circle reference image", async () => {
@@ -51,7 +51,7 @@ describe("android/legacy/lightning-filter", () => {
 				{ density: defaultSvgDensity * xhdpiScale },
 			);
 
-			await compareImages(image, "back", "circle", 0.0075);
+			await compareImages(image, "back", "circle", 0.007);
 		});
 	});
 
@@ -71,7 +71,7 @@ describe("android/legacy/lightning-filter", () => {
 				{ density: defaultSvgDensity * xhdpiScale },
 			);
 
-			await compareImages(image, "fore", "square", 0.015);
+			await compareImages(image, "fore", "square", 0.01);
 		});
 		it("matches circle reference image", async () => {
 			const image = sharp(
@@ -88,7 +88,7 @@ describe("android/legacy/lightning-filter", () => {
 				{ density: defaultSvgDensity * xhdpiScale },
 			);
 
-			await compareImages(image, "fore", "circle", 0.015);
+			await compareImages(image, "fore", "circle", 0.0125);
 		});
 	});
 

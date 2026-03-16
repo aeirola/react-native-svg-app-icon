@@ -22,12 +22,6 @@ export const legacyIconSize = 48;
  */
 export const legacyIconViewBox = `0 0 ${legacyIconSize} ${legacyIconSize}`;
 
-/** SVG blur filter to soften mask edges. */
-const legacyIconMaskBlur = `
-<filter id="legacyIconMaskBlur">
-	<feGaussianBlur in="SourceGraphic" stdDeviation="0.4" />
-</filter>`;
-
 //
 // Square icon values
 //
@@ -58,13 +52,21 @@ export const squareIconShape = `
 />`;
 
 /** SVG mask for the square icon. */
+/* Using filter to soften the mask edges similarly in Image Asset Studio
+	 reference images. Preferring convolveMatrix instead of gaussian blur to
+	 produce pixel-level edge softening so that the blur effect is defined in
+	 pixels regardless of output image DPI. */
 export const squareIconMask = `
-<g id="squareIconMask">
-	${legacyIconMaskBlur}
-	<g filter="url(#legacyIconMaskBlur)">
-		<use href="#squareIconShape" />
-	</g>
-</g>`;
+<filter id="squareIconMaskBlur">
+	<feConvolveMatrix kernelMatrix="
+		0.065 0 0.065
+		0     1 0
+		0.065 0 0.065" />
+</filter>
+
+<mask id="squareIconMask" mask-type="alpha">
+	<use href="#squareIconShape" filter="url(#squareIconMaskBlur)" />
+</mask>`;
 
 //
 // Round icon values
@@ -86,12 +88,8 @@ export const roundIconShape = `
 	r="${legacyRoundIconContentSize / 2}"
 />`;
 
-/** SVG mask for the round icon. */
-export const roundIconMask = `
-<g id="roundIconMask">
-	${legacyIconMaskBlur}
-
-	<g filter="url(#legacyIconMaskBlur)">
-		<use href="#roundIconShape" />
-	</g>
-</g>`;
+/** SVG clip path for the round icon. */
+export const roundIconClipPath = `
+<clipPath id="roundIconClipPath">
+	<use href="#roundIconShape" />
+</clipPath>`;

@@ -9,6 +9,7 @@ import {
 	legacyIconSize,
 	legacyIconViewBox,
 	legacySquareIconContentSize,
+	squareIconMask,
 	squareIconShape,
 } from "./shapes";
 
@@ -40,16 +41,14 @@ function buildSquareLegacyIconSvg(
 	width="${legacyIconSize}" height="${legacyIconSize}">
 	<defs>
 		${squareIconShape}
-		<mask id="shapeMask" mask-type="alpha">
-			<use href="#squareIconShape" />
-		</mask>
+		${squareIconMask}
 		${dropShadowFilter}
 		${shadedEdgeFilter}
 	</defs>
 
 	<use href="#squareIconShape" filter="url(#dropShadowFilter)" />
 
-	<g mask="url(#shapeMask)">
+	<g mask="url(#squareIconMask)">
 		<g transform="translate(${scalingCompensationTranslation} ${scalingCompensationTranslation}) scale(${inputContentScalingFactor})">
 			${prepareForInlining(background, "background")}
 			${prepareForInlining(foreground, "foreground")}

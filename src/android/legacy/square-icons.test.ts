@@ -45,7 +45,7 @@ describe("android/legacy/square-icons", () => {
 		}
 
 		await verifyGeneratedFiles(baseDir, {
-			imageThreshold: 0.06,
+			imageThreshold: 0.045,
 		});
 	});
 });

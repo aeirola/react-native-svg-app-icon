@@ -11,6 +11,7 @@ describe("android/legacy/shapes", () => {
 	const baseDir = path.join(__dirname, "shapes.test.assets");
 	const defaultSvgDensity = 72;
 	const xhdpiScale = 2;
+	const referenceMaskColor = "#030303";
 
 	beforeAll(async () => {
 		await cleanupTestOutput(baseDir);
@@ -20,38 +21,40 @@ describe("android/legacy/shapes", () => {
 		const image = sharp(
 			Buffer.from(
 				`<svg viewBox="${shapes.legacyIconViewBox}"
-          width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}">
-          <defs>
-            ${shapes.roundIconShape}
-            ${shapes.roundIconMask}
-          </defs>
+					width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}">
+					<defs>
+						${shapes.roundIconShape}
+						${shapes.roundIconClipPath}
+					</defs>
 
-          <use href="#roundIconMask" />
-        </svg>`,
+					<rect clip-path="url(#roundIconClipPath)" fill="${referenceMaskColor}"
+						width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}" />
+					</svg>`,
 			),
 			{ density: defaultSvgDensity * xhdpiScale },
 		);
 
-		await compareImages(image, "circle", 0.025);
+		await compareImages(image, "circle", 0.015);
 	});
 
 	it("generates square icons matching reference images", async () => {
 		const image = sharp(
 			Buffer.from(
 				`<svg viewBox="${shapes.legacyIconViewBox}"
-          width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}">
-          <defs>
-            ${shapes.squareIconShape}
-            ${shapes.squareIconMask}
-          </defs>
+					width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}">
+					<defs>
+						${shapes.squareIconShape}
+						${shapes.squareIconMask}
+					</defs>
 
-          <use href="#squareIconMask" />
-        </svg>`,
+					<rect mask="url(#squareIconMask)" fill="${referenceMaskColor}"
+						width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}" />
+					</svg>`,
 			),
 			{ density: defaultSvgDensity * xhdpiScale },
 		);
 
-		await compareImages(image, "square", 0.025);
+		await compareImages(image, "square", 0.02);
 	});
 
 	async function compareImages(
