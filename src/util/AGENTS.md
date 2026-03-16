@@ -8,9 +8,9 @@ Shared infrastructure used across all platform generators.
 - [input.ts](input.ts) - SVG input loading, validation, and lazy image data.
 - [output.ts](output.ts) - File generation with cache-aware skip logic. `generatePngs()` for batch PNG output, `generateFile()` for single files (JSON, XML, text).
 - [logger.ts](logger.ts) - Leveled logging: `"silent" | "error" | "warn" | "info" | "debug"`. Factory: `createLogger(level)`.
-- [memoize.ts](memoize.ts) - Caches result of zero-argument functions. Used for lazy-loaded expensive operations (Sharp import, input data).
+- [memoize.ts](memoize.ts) - Caches result of zero-argument functions. Used for lazy-loaded expensive operations (input data).
 - [svg.ts](svg.ts) - SVG preprocessing via SVGO: strips XML declarations, prefixes IDs to prevent collisions when inlining multiple SVGs.
-- [version.ts](version.ts) - Reads package version from `package.json` for cache invalidation. Validated with ArkType.
+- [version.ts](version.ts) - Reads package version from `package.json` for cache invalidation.
 - [optional.ts](optional.ts) - `Optional<T>` type utility: all properties optional and explicitly `undefined`-able.
 
 ## Key Patterns

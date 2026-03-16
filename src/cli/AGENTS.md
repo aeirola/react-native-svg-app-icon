@@ -12,8 +12,8 @@ The CLI is the main user-facing entry point, exposed via the `bin` field in `pac
 [config.ts](config.ts) uses an **ArkType schema with embedded CLI metadata**. Each config property has a `.configure({ cli: [...] })` call that provides Commander.js option arguments. This allows automatic CLI option generation from the same schema that validates `app.json` input.
 
 Resolution order (later overrides earlier):
-1. ArkType schema defaults
-2. `app.json` → `svgAppIcon` key (validated with ArkType)
+1. Defaults
+2. `app.json`
 3. Commander.js parsed CLI arguments
 
 The `app.json` file is optional — missing file (ENOENT) is silently ignored. The `svgAppIcon` key within `app.json` is also optional.

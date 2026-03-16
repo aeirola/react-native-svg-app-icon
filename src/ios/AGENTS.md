@@ -1,6 +1,6 @@
 # iOS Icon Generation
 
-iOS generation in [index.ts](index.ts) produces PNGs for all required sizes/scales defined in `iosIcons` array, plus a `Contents.json` manifest for Xcode asset catalogs.
+iOS generation in [index.ts](index.ts) produces PNGs for all required sizes/scales, plus a `Contents.json` manifest for Xcode asset catalogs.
 
 ## Files
 
@@ -27,8 +27,8 @@ Filename format: `{idiom}-{size}@{scale}x.png` (e.g., `iphone-60@3x.png`)
 
 ## Generation Process
 
-1. Builds composite SVG with background + foreground layers using `buildIosIconSvg()`
-2. Generates PNGs at each required size/scale via `generatePngs()`
+1. Builds composite SVG with background + foreground layers
+2. Generates PNGs at each required size/scale
 3. Generates `Contents.json` manifest with filename, idiom, scale, and size metadata for Xcode
 
 ## Reference Documentation

@@ -14,7 +14,7 @@ export async function* generate(config: Config): AsyncIterable<string> {
 }
 ```
 
-**Lazy Loading**: Sharp library is loaded only when needed (expensive import).
+**Lazy Loading**: Input files are read, and sharp library is loaded only when needed (expensive import).
 
 **Incremental Builds**: Output files are skipped if their cached content hash matches the current input (unless `force: true`). Hashes are stored in a temporary cache file and compared on each run.
 
@@ -68,8 +68,6 @@ it("generates expected output", async () => {
 });
 ```
 
-PNG comparison thresholds range from 0 (default, exact match) to 0.16 depending on test tolerance needs.
-
 ### Build Artifacts
 
 - Source: `src/*.ts` → Compiled: `lib/*.js` (CommonJS)
@@ -86,10 +84,11 @@ PNG comparison thresholds range from 0 (default, exact match) to 0.16 depending 
 
 ## Key Dependencies
 
-- **sharp**: SVG → PNG rasterization (handles density/DPI scaling). Use Context7 library documentation `/lovell/sharp` for API and docs.
+- **sharp**: SVG → PNG rasterization (handles density/DPI scaling). Context7 docs at `/lovell/sharp`
 - **svg2vectordrawable**: SVG → Android vector drawable XML conversion
-- **commander**: CLI argument parsing
-- **fs-extra**: Enhanced file system operations
+- **svgo**: SVG transformations
+- **commander**: CLI argument parsing. Context7 docs at `/tj/commander.js`
+- **arktype**: Input data validation. Context7 docs at `/arktypeio/arktype`
 
 Always use Context7 MCP when library/API documentation, code generation, setup, or configuration steps are needed, without requiring an explicit request.
 

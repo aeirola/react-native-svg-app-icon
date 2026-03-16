@@ -32,8 +32,7 @@ Each test case directory follows:
 
 ## Integration Tests
 
-[integration/integration.test.ts](integration/integration.test.ts) runs end-to-end CLI tests using fixture directories in `integration/assets/`:
-- `simple`, `normal`, `layered`, `complex`, `cache-test`, `scaling-pattern`
+[integration/integration.test.ts](integration/integration.test.ts) runs end-to-end CLI tests using fixture directories in `integration/assets/`. Since the tests execute the build output, the project needs to be built before running integration tests.
 
 Each test copies input files to an output directory, runs the CLI, then verifies generated files match expected output. The `cache-test` fixture specifically validates incremental build behavior (skip on cache hit, regenerate with `--force`).
 
