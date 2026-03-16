@@ -22,12 +22,6 @@ export const legacyIconSize = 48;
  */
 export const legacyIconViewBox = `0 0 ${legacyIconSize} ${legacyIconSize}`;
 
-/** SVG blur filter to soften mask edges. */
-const legacyIconMaskBlur = `
-<filter id="legacyIconMaskBlur">
-	<feGaussianBlur in="SourceGraphic" stdDeviation="0.4" />
-</filter>`;
-
 //
 // Square icon values
 //
@@ -59,12 +53,17 @@ export const squareIconShape = `
 
 /** SVG mask for the square icon. */
 export const squareIconMask = `
-<g id="squareIconMask">
-	${legacyIconMaskBlur}
-	<g filter="url(#legacyIconMaskBlur)">
-		<use href="#squareIconShape" />
-	</g>
-</g>`;
+<mask id="squareIconMask" mask-type="alpha">
+	<!-- SVG blur filter to soften mask edges. -->
+	<filter id="legacySquareIconMaskBlur">
+		<feConvolveMatrix kernelMatrix="
+			0.065 0 0.065
+			0     1 0
+			0.065 0 0.065" />
+	</filter>
+
+	<use href="#squareIconShape" filter="url(#legacySquareIconMaskBlur)" />
+</mask>`;
 
 //
 // Round icon values
@@ -86,12 +85,9 @@ export const roundIconShape = `
 	r="${legacyRoundIconContentSize / 2}"
 />`;
 
-/** SVG mask for the round icon. */
-export const roundIconMask = `
-<g id="roundIconMask">
-	${legacyIconMaskBlur}
-
-	<g filter="url(#legacyIconMaskBlur)">
+/** SVG clip path for the round icon. */
+export const roundIconClipPath = `
+	<clipPath id="roundIconClipPath">
 		<use href="#roundIconShape" />
-	</g>
-</g>`;
+	</clipPath>
+`;

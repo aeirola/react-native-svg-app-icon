@@ -41,16 +41,16 @@ function buildRoundLegacyIconSvg(
 	width="${legacyIconSize}" height="${legacyIconSize}">
 	<defs>
 		${roundIconShape}
-		<mask id="shapeMask" mask-type="alpha">
+		<clipPath id="shapeClipPath">
 			<use href="#roundIconShape" />
-		</mask>
+		</clipPath>
 		${dropShadowFilter}
 		${shadedEdgeFilter}
 	</defs>
 
 	<use href="#roundIconShape" filter="url(#dropShadowFilter)" />
 
-	<g mask="url(#shapeMask)">
+	<g clip-path="url(#shapeClipPath)">
 		<g transform="translate(${scalingCompensationTranslation} ${scalingCompensationTranslation}) scale(${inputContentScalingFactor})">
 			${prepareForInlining(background, "background")}
 			${prepareForInlining(foreground, "foreground")}

@@ -12,9 +12,9 @@
     <path id="top-left-path"
       d="M30,100 L80,0 L0,0 L0,100 Z" />
 
-    <mask id="top-left-mask">
-      <use href="#top-left-path" fill="white" />
-    </mask>
+    <clipPath id="top-left-clip-path">
+      <use href="#top-left-path" />
+    </clipPath>
   </defs>
 
   <g stroke="#ffb13b" stroke-width="1.5"
@@ -28,7 +28,7 @@
     <circle cx="50" cy="50" fill="#ffb13b" r="9" />
   </g>
 
-  <g mask="url(#top-left-mask)">
+  <g clip-path="url(#top-left-clip-path)">
     <use href="#orbits" stroke="#61dafb" stroke-width="4.5" />
     <circle cx="50" cy="50" fill="#61dafb" r="9" />
   </g>

@@ -20,38 +20,40 @@ describe("android/legacy/shapes", () => {
 		const image = sharp(
 			Buffer.from(
 				`<svg viewBox="${shapes.legacyIconViewBox}"
-          width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}">
-          <defs>
-            ${shapes.roundIconShape}
-            ${shapes.roundIconMask}
-          </defs>
+					width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}">
+					<defs>
+						${shapes.roundIconShape}
+						${shapes.roundIconClipPath}
+					</defs>
 
-          <use href="#roundIconMask" />
-        </svg>`,
+					<rect clip-path="url(#roundIconClipPath)"
+						width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}" />
+					</svg>`,
 			),
 			{ density: defaultSvgDensity * xhdpiScale },
 		);
 
-		await compareImages(image, "circle", 0.025);
+		await compareImages(image, "circle", 0.02);
 	});
 
 	it("generates square icons matching reference images", async () => {
 		const image = sharp(
 			Buffer.from(
 				`<svg viewBox="${shapes.legacyIconViewBox}"
-          width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}">
-          <defs>
-            ${shapes.squareIconShape}
-            ${shapes.squareIconMask}
-          </defs>
+					width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}">
+					<defs>
+						${shapes.squareIconShape}
+						${shapes.squareIconMask}
+					</defs>
 
-          <use href="#squareIconMask" />
-        </svg>`,
+					<rect mask="url(#squareIconMask)"
+						width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}" />
+					</svg>`,
 			),
 			{ density: defaultSvgDensity * xhdpiScale },
 		);
 
-		await compareImages(image, "square", 0.025);
+		await compareImages(image, "square", 0.02);
 	});
 
 	async function compareImages(
