@@ -52,9 +52,12 @@ export const squareIconShape = `
 />`;
 
 /** SVG mask for the square icon. */
+/* Using filter to soften the mask edges similarly in Image Asset Studio
+	 reference images. Preferring convolveMatrix instead of gaussian blur to
+	 produce pixel-level edge softening so that the blur effect is defined in
+	 pixels regardless of output image DPI. */
 export const squareIconMask = `
-<!-- SVG blur filter to soften mask edges. -->
-<filter id="legacySquareIconMaskBlur">
+<filter id="squareIconMaskBlur">
 	<feConvolveMatrix kernelMatrix="
 		0.065 0 0.065
 		0     1 0
@@ -62,7 +65,7 @@ export const squareIconMask = `
 </filter>
 
 <mask id="squareIconMask" mask-type="alpha">
-	<use href="#squareIconShape" filter="url(#legacySquareIconMaskBlur)" />
+	<use href="#squareIconShape" filter="url(#squareIconMaskBlur)" />
 </mask>`;
 
 //
@@ -87,7 +90,6 @@ export const roundIconShape = `
 
 /** SVG clip path for the round icon. */
 export const roundIconClipPath = `
-	<clipPath id="roundIconClipPath">
-		<use href="#roundIconShape" />
-	</clipPath>
-`;
+<clipPath id="roundIconClipPath">
+	<use href="#roundIconShape" />
+</clipPath>`;

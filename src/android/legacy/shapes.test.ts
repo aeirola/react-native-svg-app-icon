@@ -11,6 +11,7 @@ describe("android/legacy/shapes", () => {
 	const baseDir = path.join(__dirname, "shapes.test.assets");
 	const defaultSvgDensity = 72;
 	const xhdpiScale = 2;
+	const referenceMaskColor = "#030303";
 
 	beforeAll(async () => {
 		await cleanupTestOutput(baseDir);
@@ -26,14 +27,14 @@ describe("android/legacy/shapes", () => {
 						${shapes.roundIconClipPath}
 					</defs>
 
-					<rect clip-path="url(#roundIconClipPath)" fill="black"
+					<rect clip-path="url(#roundIconClipPath)" fill="${referenceMaskColor}"
 						width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}" />
 					</svg>`,
 			),
 			{ density: defaultSvgDensity * xhdpiScale },
 		);
 
-		await compareImages(image, "circle", 0.02);
+		await compareImages(image, "circle", 0.015);
 	});
 
 	it("generates square icons matching reference images", async () => {
@@ -46,7 +47,7 @@ describe("android/legacy/shapes", () => {
 						${shapes.squareIconMask}
 					</defs>
 
-					<rect mask="url(#squareIconMask)" fill="black"
+					<rect mask="url(#squareIconMask)" fill="${referenceMaskColor}"
 						width="${shapes.legacyIconSize}" height="${shapes.legacyIconSize}" />
 					</svg>`,
 			),
