@@ -9,8 +9,8 @@ import {
 	legacyIconSize,
 	legacyIconViewBox,
 	legacyRoundIconContentSize,
-	roundIconShape,
 	roundIconClipPath,
+	roundIconShape,
 } from "./shapes";
 
 /**
