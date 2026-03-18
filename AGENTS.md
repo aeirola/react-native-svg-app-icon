@@ -74,6 +74,14 @@ it("generates expected output", async () => {
 - Published files: `lib/` and `assets/`
 - Two tsconfig files: `tsconfig.json` (type checking, noEmit) and `tsconfig.build.json` (actual build)
 
+### Publishing
+
+1. `npm version <patch|minor|major>` — bumps version and creates a git tag
+2. `git push --follow-tags` — pushes the tag to GitHub
+3. `.github/workflows/publish.yml` triggers automatically and publishes to npm
+
+The workflow uses [npm trusted publishing](https://docs.npmjs.com/trusted-publishers) — no npm token needed in repository secrets.
+
 ## Code Style
 
 - **Biome** for linting/formatting (not ESLint/Prettier)
