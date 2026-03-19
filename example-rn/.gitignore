@@ -73,3 +73,7 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# react-native-svg-app-icon
+android/app/src/*/res/*/ic_launcher*
+ios/*/*.xcassets/AppIcon.appiconset

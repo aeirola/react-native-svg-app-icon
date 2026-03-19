@@ -1,5 +1,20 @@
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
+Created with:
+```sh
+# Create project
+npx @react-native-community/cli@latest init --pm npm --directory example-rn --install-pods true --skip-git-init --replace-directory true SvgAppIconExample
+cd example-rn
+
+# Remove unused packages
+npm uninstall @react-native/eslint-config @types/jest eslint jest prettier
+rm -r .eslintrc.js .prettierrc.js jest.config.js __tests__/
+
+# Add package
+npm install --save-dev install-local
+npx install-local --save ../
+```
+
 # Getting Started
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
