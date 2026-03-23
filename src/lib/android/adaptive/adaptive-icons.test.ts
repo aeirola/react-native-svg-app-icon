@@ -1,9 +1,9 @@
 import * as path from "node:path";
 import { beforeAll, describe, it } from "vitest";
 
-import { cleanupTestOutputs } from "../../../test/utils/cleanup";
-import { logger, makeContext } from "../../../test/utils/context";
-import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
+import { cleanupTestOutputs } from "../../../../test/utils/cleanup";
+import { logger, makeContext } from "../../../../test/utils/context";
+import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
 import type { Config } from "../config";
 import { generateAdaptiveIcons } from "./adaptive-icons";
@@ -12,6 +12,7 @@ describe("android/adaptive-icons", () => {
 	const assetsPath = path.join(__dirname, "adaptive-icons.test.assets");
 	const testAssetsPath = path.join(
 		__dirname,
+		"..",
 		"..",
 		"..",
 		"..",

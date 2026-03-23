@@ -11,6 +11,7 @@ const defaultBackgroundPath = path.join(
 	__dirname,
 	"..",
 	"..",
+	"..",
 	"assets",
 	"default-icon-background.svg",
 );

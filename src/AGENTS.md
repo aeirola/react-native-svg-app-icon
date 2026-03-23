@@ -1,8 +1,4 @@
 # Source Code Structure
 
-- [index.ts](index.ts) - Main entry point, orchestrates platform generators via async iterables
+- [lib/](lib/) - Core library: icon generation entry point, platform generators, shared utilities, and cache
 - [cli/](cli/) - CLI layer: merges config from defaults → `app.json` → CLI args
-- [util/](util/) - Shared utilities: SVG/PNG handling with Sharp, file output, logging, memoization
-- [ios/](ios/) - iOS icon generation (PNGs + Contents.json manifest)
-- [android/](android/) - Android icon generation (vector drawables, adaptive icons, legacy icons)
-- [cache/](cache/) - Incremental build support via content hashing

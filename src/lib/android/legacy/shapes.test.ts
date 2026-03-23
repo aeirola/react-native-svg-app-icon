@@ -3,8 +3,8 @@ import * as fse from "fs-extra";
 import sharp from "sharp";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { cleanupTestOutput } from "../../../test/utils/cleanup";
-import sharpmatch from "../../../test/utils/sharpmatch";
+import { cleanupTestOutput } from "../../../../test/utils/cleanup";
+import sharpmatch from "../../../../test/utils/sharpmatch";
 import * as shapes from "./shapes";
 
 describe("android/legacy/shapes", () => {

@@ -8,7 +8,7 @@ export async function runCli(
 	args: string[],
 	options?: { cwd?: string },
 ): Promise<{ stdout: string; stderr: string; exitCode: number | null }> {
-	const cliPath = path.resolve(__dirname, "../../lib/cli/index.js");
+	const cliPath = path.resolve(__dirname, "../../dist/cli/index.js");
 
 	return new Promise((resolve, reject) => {
 		const child = spawn("node", [cliPath, ...args], {

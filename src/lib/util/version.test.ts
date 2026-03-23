@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { version as packageVersion } from "../../package.json";
+import { version as packageVersion } from "../../../package.json";
 import { getPackageVersion } from "./version";
 
 describe("getPackageVersion", () => {

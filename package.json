@@ -13,12 +13,12 @@
 	},
 	"files": [
 		"assets/",
-		"lib/"
+		"dist/"
 	],
 	"bin": {
-		"react-native-svg-app-icon": "lib/cli/index.js"
+		"react-native-svg-app-icon": "dist/cli/index.js"
 	},
-	"main": "lib/index.js",
+	"main": "dist/lib/index.js",
 	"type": "commonjs",
 	"scripts": {
 		"prepare": "tsc --project tsconfig.build.json",

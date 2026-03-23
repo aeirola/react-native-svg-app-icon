@@ -1,6 +1,6 @@
-import { CacheSession } from "../../src/cache";
-import type { Context } from "../../src/util/context";
-import { createLogger } from "../../src/util/logger";
+import { CacheSession } from "../../src/lib/cache";
+import type { Context } from "../../src/lib/util/context";
+import { createLogger } from "../../src/lib/util/logger";
 
 export const logger = createLogger("silent");
 

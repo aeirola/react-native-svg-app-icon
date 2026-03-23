@@ -1,7 +1,7 @@
 import * as fse from "fs-extra";
 import { it as base, describe, expect } from "vitest";
 
-import { tmpDir } from "../../test/utils/tmp-dir";
+import { tmpDir } from "../../../test/utils/tmp-dir";
 import { CacheSession } from "./index";
 import * as storage from "./storage";
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import * as fse from "fs-extra";
 
-import * as reactNativeSvgAppIcon from "../index";
-import { createLogger } from "../util/logger";
+import * as reactNativeSvgAppIcon from "../lib";
+import { createLogger } from "../lib/util/logger";
 import { readConfig } from "./config";
 
 const supportedPlatforms: reactNativeSvgAppIcon.Platform[] = ["android", "ios"];

@@ -1,9 +1,9 @@
 import * as path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { cleanupTestOutput } from "../../../test/utils/cleanup";
-import { logger, makeContext } from "../../../test/utils/context";
-import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
+import { cleanupTestOutput } from "../../../../test/utils/cleanup";
+import { logger, makeContext } from "../../../../test/utils/context";
+import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
 import type { Config } from "../config";
 import { generateVectorDrawable } from "./vector-drawable";
@@ -12,6 +12,7 @@ describe("android/vector-drawable", () => {
 	const assetsPath = path.join(__dirname, "vector-drawable.test.assets");
 	const testAssetsPath = path.join(
 		__dirname,
+		"..",
 		"..",
 		"..",
 		"..",
