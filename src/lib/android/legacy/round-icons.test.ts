@@ -1,17 +1,18 @@
 import * as path from "node:path";
 import { beforeAll, beforeEach, describe, it } from "vitest";
 
-import { cleanupTestOutput } from "../../../test/utils/cleanup";
-import { logger, makeContext } from "../../../test/utils/context";
-import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
+import { cleanupTestOutput } from "../../../../test/utils/cleanup";
+import { logger, makeContext } from "../../../../test/utils/context";
+import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
 import type { Config } from "../config";
-import { generateLegacySquareIcons } from "./square-icons";
+import { generateLegacyRoundIcons } from "./round-icons";
 
-describe("android/legacy/square-icons", () => {
-	const baseDir = path.join(__dirname, "square-icons.test.assets");
+describe("android/legacy/round-icons", () => {
+	const baseDir = path.join(__dirname, "round-icons.test.assets");
 	const testAssetsPath = path.join(
 		__dirname,
+		"..",
 		"..",
 		"..",
 		"..",
@@ -35,17 +36,18 @@ describe("android/legacy/square-icons", () => {
 		);
 	});
 
-	it("generates square icons matching reference images", async () => {
+	it("generates round icons matching reference images", async () => {
+		const outputPath = path.join(baseDir, "output");
 		const context = makeContext<Config>({
-			androidOutputPath: path.join(baseDir, "output"),
+			androidOutputPath: outputPath,
 		});
 
-		for await (const _file of generateLegacySquareIcons(fileInput, context)) {
+		for await (const _file of generateLegacyRoundIcons(fileInput, context)) {
 			// Files are generated and written to disk
 		}
 
 		await verifyGeneratedFiles(baseDir, {
-			imageThreshold: 0.045,
+			imageThreshold: 0.03,
 		});
 	});
 });

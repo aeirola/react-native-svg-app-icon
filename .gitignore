@@ -1,5 +1,5 @@
 node_modules/
-lib/
+dist/
 
 # Test output and diff directories
 **/*.test.assets/**/output/

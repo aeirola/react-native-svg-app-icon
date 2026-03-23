@@ -3,7 +3,7 @@
 	"include": ["src/**/*"],
 	"exclude": ["**/*.test.ts"],
 	"compilerOptions": {
-		"outDir": "./lib",
+		"outDir": "./dist",
 		"noEmit": false
 	}
 }

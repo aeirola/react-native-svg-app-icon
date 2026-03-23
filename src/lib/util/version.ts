@@ -2,7 +2,7 @@ import * as path from "node:path";
 import { type } from "arktype";
 import * as fse from "fs-extra";
 
-const packageJsonPath = path.join(__dirname, "..", "..", "package.json");
+const packageJsonPath = path.join(__dirname, "..", "..", "..", "package.json");
 
 const packageJsonSchema = type({ version: "string" });
 

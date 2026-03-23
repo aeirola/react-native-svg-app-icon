@@ -22,7 +22,7 @@ export async function* generate(config: Config): AsyncIterable<string> {
 
 ```bash
 npm install           # Install dependencies
-npm run prepare       # Build TypeScript → lib/ (runs automatically on install)
+npm run prepare       # Build TypeScript → dist/ (runs automatically on install)
 npm test              # Run all checks in parallel (lint, types, unit tests)
 npm run test:unit     # Run vitest tests only
 ```
@@ -70,8 +70,8 @@ it("generates expected output", async () => {
 
 ### Build Artifacts
 
-- Source: `src/*.ts` → Compiled: `lib/*.js` (CommonJS)
-- Published files: `lib/` and `assets/`
+- Source: `src/*.ts` → Compiled: `dist/*.js` (CommonJS)
+- Published files: `dist/` and `assets/`
 - Two tsconfig files: `tsconfig.json` (type checking, noEmit) and `tsconfig.build.json` (actual build)
 
 ### Publishing

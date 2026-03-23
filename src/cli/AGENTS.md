@@ -1,6 +1,6 @@
 # CLI Layer
 
-The CLI is the main user-facing entry point, exposed via the `bin` field in `package.json` (maps to `lib/cli/index.js`).
+The CLI is the main user-facing entry point, exposed via the `bin` field in `package.json` (maps to `dist/cli/index.js`).
 
 ## Files
 
