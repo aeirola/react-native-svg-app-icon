@@ -22,7 +22,8 @@
 			}
 		},
 		{
-			// Could at some point be implemented in with other rules
+			// Slightly inconvenient way to enforce module boundariesk hoping for
+			// better support later.
 			// See https://github.com/biomejs/biome/discussions/6245
 			"includes": ["src/lib/**"],
 			"linter": {
