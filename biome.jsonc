@@ -1,0 +1,47 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"files": {
+		"includes": ["**", "!example-rn", "!example-expo"]
+	},
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"overrides": [
+		{
+			"includes": ["tsconfig.json"],
+			"json": {
+				"parser": {
+					"allowComments": true,
+					"allowTrailingCommas": true
+				},
+				"formatter": {
+					"trailingCommas": "all"
+				}
+			}
+		},
+		{
+			// Could at some point be implemented in with other rules
+			// See https://github.com/biomejs/biome/discussions/6245
+			"includes": ["src/lib/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["**/cli/**"],
+										"message": "lib/ should not import from cli/. Only cli/ may depend on lib/, not vice versa."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		}
+	]
+}
