@@ -2,7 +2,7 @@ import * as path from "node:path";
 import { beforeAll, describe, it } from "vitest";
 
 import { cleanupTestOutputs } from "../../../../test/utils/cleanup";
-import { logger, makeContext } from "../../../../test/utils/context";
+import { makeContext } from "../../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
 import type { Config } from "../config";
@@ -39,7 +39,7 @@ describe("android/adaptive-icons", () => {
 					),
 					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
 				},
-				logger,
+				undefined,
 			);
 
 			const context = makeContext<Config>({
@@ -61,8 +61,10 @@ describe("android/adaptive-icons", () => {
 
 			// Load SVG with unsupported elements (text) that will force PNG fallback
 			const unsupportedFileInput = await input.readIcon(
-				{ foregroundPath: path.join(testAssetsPath, "text-icon.svg") },
-				logger,
+				{
+					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+				},
+				undefined,
 			);
 
 			const context = makeContext<Config>({

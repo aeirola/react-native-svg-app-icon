@@ -34,7 +34,7 @@ export async function* generate(
 ): AsyncIterable<string> {
 	const resolvedContext: Context<ResolvedConfig> = {
 		...context,
-		config: await getConfig(context.config),
+		config: await getConfig(context.config, context.logger),
 	};
 
 	yield* generateImages(resolvedContext, fileInput);

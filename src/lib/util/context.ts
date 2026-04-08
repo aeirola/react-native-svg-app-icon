@@ -11,6 +11,6 @@ import type { Logger } from "./logger";
  */
 export interface Context<Config = unknown> {
 	config: Config;
-	logger: Logger;
+	logger: Logger | undefined;
 	cache: CacheSession;
 }

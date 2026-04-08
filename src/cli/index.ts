@@ -2,8 +2,8 @@
 import * as fse from "fs-extra";
 
 import * as reactNativeSvgAppIcon from "../lib";
-import { createLogger } from "../lib/util/logger";
 import { readConfig } from "./config";
+import { createLogger } from "./logger";
 
 const supportedPlatforms: reactNativeSvgAppIcon.Platform[] = ["android", "ios"];
 
@@ -13,7 +13,7 @@ export async function main(args: string[] = []): Promise<void> {
 	// Create logger from config
 	const logger = createLogger(resolvedConfig.logLevel);
 
-	logger.info("Running react-native-svg-app-icon");
+	logger?.info("Running react-native-svg-app-icon");
 
 	if (!(await fse.pathExists(resolvedConfig.foregroundPath))) {
 		throw Error(
@@ -48,9 +48,9 @@ export async function main(args: string[] = []): Promise<void> {
 	const generatedFiles = reactNativeSvgAppIcon.generate(config, logger);
 
 	for await (const file of generatedFiles) {
-		logger.info(`Wrote ${file}`);
+		logger?.info(`Wrote ${file}`);
 	}
-	logger.info("Done");
+	logger?.info("Done");
 }
 
 if (require.main === module) {

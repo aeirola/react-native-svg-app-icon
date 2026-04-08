@@ -2,7 +2,7 @@ import * as path from "node:path";
 import { beforeAll, beforeEach, describe, it } from "vitest";
 
 import { cleanupTestOutputs } from "../../../test/utils/cleanup";
-import { logger, makeContext } from "../../../test/utils/context";
+import { makeContext } from "../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
 import * as input from "../util/input";
 import { generate, type PartialConfig } from "./index";
@@ -32,7 +32,7 @@ describe("ios/index", () => {
 				backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
 				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
 			},
-			logger,
+			undefined,
 		);
 	});
 

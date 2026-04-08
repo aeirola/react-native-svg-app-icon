@@ -3,6 +3,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { type } from "arktype";
 import * as fse from "fs-extra";
+import type { Logger } from "../util/logger";
 import { memoize } from "../util/memoize";
 
 const cacheDataType = type({
@@ -32,11 +33,16 @@ const getCachePath = memoize((): string => {
 	);
 });
 
-export async function readCacheData(): Promise<CacheData> {
+export async function readCacheData(
+	logger: Logger | undefined,
+): Promise<CacheData> {
 	try {
 		const raw: unknown = await fse.readJson(getCachePath());
 		return cacheDataType.assert(raw);
-	} catch {
+	} catch (error) {
+		logger?.debug(
+			`Could not read cache at ${getCachePath()}: ${error instanceof Error ? error.message : error}`,
+		);
 		return { inputs: {}, outputs: {} };
 	}
 }

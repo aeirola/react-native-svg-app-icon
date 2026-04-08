@@ -7,7 +7,7 @@ const it = base.extend({ tmpDir });
 
 describe("storage", () => {
 	it("returns written data after write", async ({ tmpDir: _tmpDir }) => {
-		expect(await readCacheData()).toEqual({ inputs: {}, outputs: {} });
+		expect(await readCacheData(undefined)).toEqual({ inputs: {}, outputs: {} });
 
 		const data = {
 			inputs: { "icon.svg": "abc123" },
@@ -16,6 +16,6 @@ describe("storage", () => {
 
 		await writeCacheData(data);
 
-		expect(await readCacheData()).toEqual(data);
+		expect(await readCacheData(undefined)).toEqual(data);
 	});
 });
