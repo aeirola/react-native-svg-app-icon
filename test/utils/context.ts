@@ -1,8 +1,5 @@
 import { CacheSession } from "../../src/lib/cache";
 import type { Context } from "../../src/lib/util/context";
-import { createLogger } from "../../src/lib/util/logger";
-
-export const logger = createLogger("silent");
 
 export const cache = new CacheSession({
 	inputFileBuffers: {
@@ -10,6 +7,7 @@ export const cache = new CacheSession({
 		background: Buffer.from(""),
 	},
 	force: true,
+	logger: undefined,
 });
 
 /**
@@ -27,5 +25,5 @@ export const cache = new CacheSession({
  * ```
  */
 export function makeContext<C>(config: C): Context<C> {
-	return { config, logger, cache };
+	return { config, cache, logger: undefined };
 }

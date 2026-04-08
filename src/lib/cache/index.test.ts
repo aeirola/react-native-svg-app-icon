@@ -28,6 +28,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 
 				expect(await session.isUpToDate(outputFile)).toBe(false);
@@ -46,6 +47,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
 				await session1.flush();
@@ -57,6 +59,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: true,
+					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(false);
 			});
@@ -74,6 +77,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
 				await session1.flush();
@@ -85,6 +89,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(true);
 			});
@@ -103,6 +108,7 @@ describe("cache", () => {
 						background: originalBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				session1.recordBuffer(output1, await fse.readFile(output1));
 				session1.recordBuffer(output2, await fse.readFile(output2));
@@ -118,6 +124,7 @@ describe("cache", () => {
 						background: changedBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				expect(await session2.isUpToDate(output1)).toBe(false);
 				expect(await session2.isUpToDate(output2)).toBe(false);
@@ -136,12 +143,13 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
 				await session1.flush();
 
 				// Tamper with the cached version to simulate an upgrade
-				const cacheData = await storage.readCacheData();
+				const cacheData = await storage.readCacheData(undefined);
 				await storage.writeCacheData({
 					...cacheData,
 					packageVersion: "0.0.0",
@@ -154,6 +162,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(false);
 			});
@@ -172,6 +181,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				session1.recordBuffer(output1, await fse.readFile(output1));
 				session1.recordBuffer(output2, await fse.readFile(output2));
@@ -186,6 +196,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				expect(await session2.isUpToDate(output1)).toBe(false);
 				expect(await session2.isUpToDate(output2)).toBe(true);
@@ -204,6 +215,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
 				await session1.flush();
@@ -217,6 +229,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(false);
 			});
@@ -232,6 +245,7 @@ describe("cache", () => {
 				const session1 = new CacheSession({
 					inputFileBuffers: { foreground: fgBuffer, background: bgBuffer },
 					force: false,
+					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
 				await session1.flush();
@@ -240,6 +254,7 @@ describe("cache", () => {
 				const session2 = new CacheSession({
 					inputFileBuffers: { foreground: fgBuffer, background: bgBuffer },
 					force: false,
+					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(true);
 
@@ -255,6 +270,7 @@ describe("cache", () => {
 						background: bgBufferChanged,
 					},
 					force: false,
+					logger: undefined,
 				});
 				expect(await session3.isUpToDate(outputFile)).toBe(false);
 			});
@@ -272,6 +288,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
 				await session1.flush();
@@ -283,6 +300,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(true);
 				// Intentionally omit session2.recordBuffer() to simulate a skipped file
@@ -295,6 +313,7 @@ describe("cache", () => {
 						background: inputBuffer,
 					},
 					force: false,
+					logger: undefined,
 				});
 				expect(await session3.isUpToDate(outputFile)).toBe(true);
 			});

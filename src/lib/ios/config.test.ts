@@ -11,9 +11,12 @@ describe("ios/config", () => {
 	describe("getConfig", () => {
 		it("uses provided iosOutputPath", async ({ tmpDir: _tmpDir }) => {
 			const customPath = path.join("/custom", "path");
-			const config = await getConfig({
-				iosOutputPath: customPath,
-			});
+			const config = await getConfig(
+				{
+					iosOutputPath: customPath,
+				},
+				undefined,
+			);
 
 			expect(config.iosOutputPath).toBe(customPath);
 		});
@@ -24,7 +27,7 @@ describe("ios/config", () => {
 			// Create Images.xcassets directory structure
 			await fse.ensureDir(path.join("ios", "MyProject", "Images.xcassets"));
 
-			const config = await getConfig({});
+			const config = await getConfig({}, undefined);
 
 			expect(config.iosOutputPath).toBe(
 				path.join("ios", "MyProject", "Images.xcassets", "AppIcon.appiconset"),
@@ -36,7 +39,7 @@ describe("ios/config", () => {
 		}) => {
 			await fse.ensureDir(path.join("ios", "My App", "Images.xcassets"));
 
-			const config = await getConfig({});
+			const config = await getConfig({}, undefined);
 
 			expect(config.iosOutputPath).toBe(
 				path.join("ios", "My App", "Images.xcassets", "AppIcon.appiconset"),
@@ -50,7 +53,7 @@ describe("ios/config", () => {
 			await fse.ensureDir(path.join("ios", "My", "Images.xcassets"));
 			await fse.ensureDir(path.join("ios", "My App", "Images.xcassets"));
 
-			const config = await getConfig({ appName: "My App" });
+			const config = await getConfig({ appName: "My App" }, undefined);
 
 			expect(config.iosOutputPath).toBe(
 				path.join("ios", "My App", "Images.xcassets", "AppIcon.appiconset"),
@@ -62,9 +65,12 @@ describe("ios/config", () => {
 		}) => {
 			await fse.ensureDir(path.join("ios", "ActualProject", "Images.xcassets"));
 
-			const config = await getConfig({
-				appName: "DifferentName",
-			});
+			const config = await getConfig(
+				{
+					appName: "DifferentName",
+				},
+				undefined,
+			);
 
 			expect(config.iosOutputPath).toBe(
 				path.join(
@@ -82,7 +88,7 @@ describe("ios/config", () => {
 			// Create ios directory but no Images.xcassets
 			await fse.ensureDir(path.join("ios", "MyProject"));
 
-			await expect(getConfig({})).rejects.toThrow(
+			await expect(getConfig({}, undefined)).rejects.toThrow(
 				"No Images.xcassets found under ios/ subdirectories",
 			);
 		});

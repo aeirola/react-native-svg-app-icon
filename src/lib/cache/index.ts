@@ -1,6 +1,7 @@
 import * as crypto from "node:crypto";
 import * as fse from "fs-extra";
 import type { InputFileBuffers } from "../util/input";
+import type { Logger } from "../util/logger";
 import { getPackageVersion } from "../util/version";
 import * as storage from "./storage";
 
@@ -34,6 +35,7 @@ async function hashFile(filePath: string): Promise<string | null> {
 export class CacheSession {
 	private readonly inputFileBuffers: InputFileBuffers;
 	private readonly force: boolean;
+	private readonly logger: Logger | undefined;
 
 	/** In-memory record of output hashes written this run. */
 	private newOutputHashes: Record<string, string> = {};
@@ -41,9 +43,15 @@ export class CacheSession {
 	constructor({
 		inputFileBuffers,
 		force,
-	}: { inputFileBuffers: InputFileBuffers; force: boolean }) {
+		logger,
+	}: {
+		inputFileBuffers: InputFileBuffers;
+		force: boolean;
+		logger: Logger | undefined;
+	}) {
 		this.inputFileBuffers = inputFileBuffers;
 		this.force = force;
+		this.logger = logger;
 	}
 
 	/**
@@ -52,20 +60,30 @@ export class CacheSession {
 	 */
 	async isUpToDate(outputFilePath: string): Promise<boolean> {
 		if (this.force) {
+			this.logger?.debug(`Cache miss for ${outputFilePath}: force flag is set`);
 			return false;
 		}
 
 		if (await this.hasPackageVersionChanged()) {
+			this.logger?.debug(
+				`Cache miss for ${outputFilePath}: package version changed`,
+			);
 			return false;
 		}
 
 		if (await this.haveInputsChanged()) {
+			this.logger?.debug(
+				`Cache miss for ${outputFilePath}: input files changed`,
+			);
 			return false;
 		}
 
 		const cache = await this.loadCache();
 		const cachedOutputHash = cache.outputs[outputFilePath];
 		if (!cachedOutputHash) {
+			this.logger?.debug(
+				`Cache miss for ${outputFilePath}: no cached hash found`,
+			);
 			return false;
 		}
 
@@ -74,6 +92,9 @@ export class CacheSession {
 			this.newOutputHashes[outputFilePath] = cachedOutputHash;
 			return true;
 		}
+		this.logger?.debug(
+			`Cache miss for ${outputFilePath}: output file changed on disk`,
+		);
 		return false;
 	}
 
@@ -139,7 +160,7 @@ export class CacheSession {
 	/** Lazily loaded from disk, then kept in memory. */
 	private cacheDataPromise?: Promise<storage.CacheData>;
 	private loadCache(): Promise<storage.CacheData> {
-		this.cacheDataPromise ??= storage.readCacheData();
+		this.cacheDataPromise ??= storage.readCacheData(this.logger);
 		return this.cacheDataPromise;
 	}
 }

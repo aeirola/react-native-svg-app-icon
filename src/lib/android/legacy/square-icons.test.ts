@@ -2,7 +2,7 @@ import * as path from "node:path";
 import { beforeAll, beforeEach, describe, it } from "vitest";
 
 import { cleanupTestOutput } from "../../../../test/utils/cleanup";
-import { logger, makeContext } from "../../../../test/utils/context";
+import { makeContext } from "../../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
 import type { Config } from "../config";
@@ -32,7 +32,7 @@ describe("android/legacy/square-icons", () => {
 				backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
 				foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
 			},
-			logger,
+			undefined,
 		);
 	});
 

@@ -76,9 +76,10 @@ export async function* generateFile(
 	contentProvider:
 		| (() => string | Record<string, unknown> | Buffer)
 		| (() => Promise<string | Record<string, unknown> | Buffer>),
-	{ cache }: Context,
+	{ cache, logger }: Context,
 ): AsyncIterable<string> {
 	if (await cache.isUpToDate(path)) {
+		logger?.debug(`Skipping ${path} (up to date)`);
 		return;
 	}
 

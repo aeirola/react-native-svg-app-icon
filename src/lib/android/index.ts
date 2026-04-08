@@ -11,6 +11,9 @@ export async function* generate(
 	context: Context<Config>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
+	context.logger?.debug(
+		`Android output path: ${context.config.androidOutputPath}`,
+	);
 	yield* generateLegacySquareIcons(fileInput, context);
 	yield* generateLegacyRoundIcons(fileInput, context);
 	yield* generateAdaptiveIcons(fileInput, context);

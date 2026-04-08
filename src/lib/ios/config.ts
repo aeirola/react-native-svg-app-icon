@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import * as fse from "fs-extra";
+import type { Logger } from "../util/logger";
 import type { Optional } from "../util/optional";
 
 interface PlatformConfig {
@@ -12,15 +13,22 @@ export type ResolvedConfig = PlatformConfig;
 
 export async function getConfig(
 	config: PartialConfig,
+	logger: Logger | undefined,
 ): Promise<ResolvedConfig> {
+	if (config.iosOutputPath) {
+		logger?.debug(`Using configured iOS output path: ${config.iosOutputPath}`);
+	}
 	return {
 		...config,
 		iosOutputPath:
-			config.iosOutputPath || (await getIconsetDir(config.appName)),
+			config.iosOutputPath || (await getIconsetDir(config.appName, logger)),
 	};
 }
 
-async function getIconsetDir(appName?: string): Promise<string> {
+async function getIconsetDir(
+	appName: string | undefined,
+	logger: Logger | undefined,
+): Promise<string> {
 	// Prefer the directory matching the app name from app.json, to avoid
 	// picking a wrong subdirectory when multiple matches exist (e.g. "My"
 	// vs "My App").
@@ -35,7 +43,11 @@ async function getIconsetDir(appName?: string): Promise<string> {
 			(await fse.pathExists(preferredPath)) &&
 			(await fse.stat(preferredPath)).isDirectory()
 		) {
-			return path.join(preferredPath, "AppIcon.appiconset");
+			const result = path.join(preferredPath, "AppIcon.appiconset");
+			logger?.debug(
+				`Auto-detected iOS output path from app name "${appName}": ${result}`,
+			);
+			return result;
 		}
 	}
 
@@ -45,7 +57,11 @@ async function getIconsetDir(appName?: string): Promise<string> {
 			(await fse.pathExists(testPath)) &&
 			(await fse.stat(testPath)).isDirectory()
 		) {
-			return path.join(testPath, "AppIcon.appiconset");
+			const result = path.join(testPath, "AppIcon.appiconset");
+			logger?.debug(
+				`Auto-detected iOS output path from directory scan: ${result}`,
+			);
+			return result;
 		}
 	}
 

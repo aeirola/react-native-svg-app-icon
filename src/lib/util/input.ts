@@ -68,7 +68,7 @@ interface BackgroundImageData extends ImageData {
 
 export async function readIcon(
 	config: Optional<Config>,
-	logger: Logger,
+	logger: Logger | undefined,
 ): Promise<FileInput> {
 	const fullConfig = getConfig(config);
 
@@ -98,13 +98,13 @@ function getConfig(config: Optional<Config>): Config {
 async function loadData(
 	config: Config,
 	buffers: InputFileBuffers,
-	logger: Logger,
+	logger: Logger | undefined,
 ): Promise<InputData> {
 	if (config.backgroundPath) {
-		logger.info("Reading background file", config.backgroundPath);
+		logger?.debug(`Reading background file ${config.backgroundPath}`);
 	}
 	if (config.foregroundPath) {
-		logger.info("Reading file", config.foregroundPath);
+		logger?.debug(`Reading foreground file ${config.foregroundPath}`);
 	}
 
 	const [backgroundImageData, foregroundImageData] = await Promise.all([
