@@ -2,16 +2,31 @@ import * as fse from "fs-extra";
 import { it as base, describe, expect } from "vitest";
 
 import { tmpDir } from "../../test/utils/tmp-dir";
-import { readConfig } from "./config";
+import { resolveConfig } from "./config";
 
 const it = base.extend({ tmpDir });
 
 describe("cli/config", () => {
-	describe("readConfig", () => {
+	describe("resolveConfig", () => {
 		it("returns default config when no app.json or arguments", async ({
 			tmpDir: _tmpDir,
 		}) => {
-			const resolvedConfig = await readConfig(["node", "script.js"]);
+			const resolvedConfig = await resolveConfig(["node", "script.js"]);
+
+			expect(resolvedConfig).toEqual({
+				foregroundPath: "./icon.svg",
+				platforms: ["android", "ios"],
+				force: false,
+				androidOutputPath: "./android/app/src/main/res",
+				logLevel: "info",
+			});
+		});
+
+		it("includes default background path when file exists", async ({
+			tmpDir: _tmpDir,
+		}) => {
+			await fse.writeFile("./icon-background.svg", "<svg/>");
+			const resolvedConfig = await resolveConfig(["node", "script.js"]);
 
 			expect(resolvedConfig).toEqual({
 				backgroundPath: "./icon-background.svg",
@@ -31,11 +46,10 @@ describe("cli/config", () => {
 				displayName: "Test Application",
 			});
 
-			const resolvedConfig = await readConfig(["node", "script.js"]);
+			const resolvedConfig = await resolveConfig(["node", "script.js"]);
 
 			expect(resolvedConfig).toMatchObject({
 				appName: "TestApp",
-				backgroundPath: "./icon-background.svg",
 				foregroundPath: "./icon.svg",
 			});
 		});
@@ -53,7 +67,7 @@ describe("cli/config", () => {
 				},
 			});
 
-			const resolvedConfig = await readConfig(["node", "script.js"]);
+			const resolvedConfig = await resolveConfig(["node", "script.js"]);
 
 			expect(resolvedConfig).toEqual({
 				appName: "TestApp",
@@ -76,7 +90,7 @@ describe("cli/config", () => {
 				},
 			});
 
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--foreground-path",
@@ -98,12 +112,11 @@ describe("cli/config", () => {
 				},
 			});
 
-			const resolvedConfig = await readConfig(["node", "script.js"]);
+			const resolvedConfig = await resolveConfig(["node", "script.js"]);
 
 			expect(resolvedConfig).toMatchObject({
 				logLevel: "debug",
 				platforms: ["ios"],
-				backgroundPath: "./icon-background.svg",
 			});
 		});
 
@@ -116,7 +129,7 @@ describe("cli/config", () => {
 				},
 			});
 
-			await expect(readConfig(["node", "script.js"])).rejects.toThrow(
+			await expect(resolveConfig(["node", "script.js"])).rejects.toThrow(
 				/Invalid app.json/,
 			);
 		});
@@ -130,7 +143,7 @@ describe("cli/config", () => {
 				},
 			});
 
-			await expect(readConfig(["node", "script.js"])).rejects.toThrow(
+			await expect(resolveConfig(["node", "script.js"])).rejects.toThrow(
 				/Invalid app.json/,
 			);
 		});
@@ -145,7 +158,7 @@ describe("cli/config", () => {
 				},
 			});
 
-			await expect(readConfig(["node", "script.js"])).rejects.toThrow(
+			await expect(resolveConfig(["node", "script.js"])).rejects.toThrow(
 				/Invalid app.json/,
 			);
 		});
@@ -155,13 +168,13 @@ describe("cli/config", () => {
 		}) => {
 			await fse.writeFile("app.json", "invalid json {");
 
-			await expect(readConfig(["node", "script.js"])).rejects.toThrow();
+			await expect(resolveConfig(["node", "script.js"])).rejects.toThrow();
 		});
 
 		it("reads background-path from CLI arguments", async ({
 			tmpDir: _tmpDir,
 		}) => {
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--background-path",
@@ -176,7 +189,7 @@ describe("cli/config", () => {
 		it("reads foreground-path from CLI arguments", async ({
 			tmpDir: _tmpDir,
 		}) => {
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--foreground-path",
@@ -191,7 +204,7 @@ describe("cli/config", () => {
 		it("reads platforms from CLI arguments with multiple values", async ({
 			tmpDir: _tmpDir,
 		}) => {
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--platforms",
@@ -207,7 +220,7 @@ describe("cli/config", () => {
 		it("reads platforms from CLI arguments with single value", async ({
 			tmpDir: _tmpDir,
 		}) => {
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--platforms",
@@ -220,7 +233,11 @@ describe("cli/config", () => {
 		});
 
 		it("reads force flag from CLI arguments", async ({ tmpDir: _tmpDir }) => {
-			const resolvedConfig = await readConfig(["node", "script.js", "--force"]);
+			const resolvedConfig = await resolveConfig([
+				"node",
+				"script.js",
+				"--force",
+			]);
 
 			expect(resolvedConfig).toMatchObject({
 				force: true,
@@ -230,7 +247,7 @@ describe("cli/config", () => {
 		it("reads short force flag from CLI arguments", async ({
 			tmpDir: _tmpDir,
 		}) => {
-			const resolvedConfig = await readConfig(["node", "script.js", "-f"]);
+			const resolvedConfig = await resolveConfig(["node", "script.js", "-f"]);
 
 			expect(resolvedConfig).toMatchObject({
 				force: true,
@@ -240,7 +257,7 @@ describe("cli/config", () => {
 		it("reads android-output-path from CLI arguments", async ({
 			tmpDir: _tmpDir,
 		}) => {
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--android-output-path",
@@ -255,7 +272,7 @@ describe("cli/config", () => {
 		it("reads ios-output-path from CLI arguments", async ({
 			tmpDir: _tmpDir,
 		}) => {
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--ios-output-path",
@@ -268,7 +285,7 @@ describe("cli/config", () => {
 		});
 
 		it("reads log-level from CLI arguments", async ({ tmpDir: _tmpDir }) => {
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--log-level",
@@ -281,7 +298,7 @@ describe("cli/config", () => {
 		});
 
 		it("reads multiple CLI arguments together", async ({ tmpDir: _tmpDir }) => {
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--background-path",
@@ -317,7 +334,7 @@ describe("cli/config", () => {
 				},
 			});
 
-			const resolvedConfig = await readConfig([
+			const resolvedConfig = await resolveConfig([
 				"node",
 				"script.js",
 				"--foreground-path",
