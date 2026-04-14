@@ -73,8 +73,8 @@ export type ResolvedConfig = Omit<ConfigSchema, "backgroundPath"> & {
  * Resolve and merge configuration from all sources:
  * defaults → app.json → command-line arguments
  *
- * Also resolves the background icon path: if explicitly provided it must
- * exist, otherwise falls back to the default path if present on disk.
+ * Also resolves the background icon path: an explicitly provided path is
+ * used as-is, otherwise the default path is used when it is present on disk.
  */
 export async function resolveConfig(
 	args: string[] = [],
