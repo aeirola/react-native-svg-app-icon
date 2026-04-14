@@ -56,21 +56,43 @@ const configSchema = type({
 		.default("info"),
 });
 
+type ConfigSchema = typeof configSchema.infer;
+
+const { backgroundPath: defaultBackgroundPath, ...defaultConfig } =
+	configSchema.assert({});
+
 /**
  * Fully resolved configuration, merged from defaults, app.json, and CLI arguments.
  */
-export type ResolvedConfig = typeof configSchema.infer & {
+export type ResolvedConfig = Omit<ConfigSchema, "backgroundPath"> & {
+	backgroundPath?: ConfigSchema["backgroundPath"];
 	appName?: typeof appJsonSchema.infer.name;
 };
 
 /**
- * Read and merge configuration from all sources:
+ * Resolve and merge configuration from all sources:
  * defaults → app.json → command-line arguments
+ *
+ * Also resolves the background icon path: an explicitly provided path is
+ * used as-is, otherwise the default path is used when it is present on disk.
  */
-export async function readConfig(args: string[] = []): Promise<ResolvedConfig> {
+export async function resolveConfig(
+	args: string[] = [],
+): Promise<ResolvedConfig> {
+	const fileConfig = await readAppJsonConfig();
+	const cliConfig = readCliArgs(args);
+
+	const userConfig = {
+		...fileConfig,
+		...cliConfig,
+	};
+
+	const backgroundPath = await resolveBackgroundPath(userConfig.backgroundPath);
+
 	return {
-		...(await readAppJsonConfig()),
-		...readCliArgs(args),
+		...defaultConfig,
+		...userConfig,
+		...(backgroundPath ? { backgroundPath } : {}),
 	};
 }
 
@@ -83,7 +105,7 @@ const appJsonSchema = type({
 	svgAppIcon: configSchema.default(() => ({})),
 });
 
-async function readAppJsonConfig(): Promise<ResolvedConfig> {
+async function readAppJsonConfig(): Promise<Partial<ResolvedConfig>> {
 	let rawAppJson: unknown;
 	try {
 		rawAppJson = await fse.readJson("./app.json");
@@ -96,17 +118,18 @@ async function readAppJsonConfig(): Promise<ResolvedConfig> {
 		}
 	}
 
-	// Validate the app.json structure
-	const result = appJsonSchema(rawAppJson);
-
-	if (result instanceof type.errors) {
-		throw new Error(`Invalid app.json: ${result.summary}`);
+	// Validate the app.json structure, but omit defaults
+	if (appJsonSchema.allows(rawAppJson)) {
+		return {
+			...(rawAppJson.name ? { appName: rawAppJson.name } : {}),
+			...rawAppJson.svgAppIcon,
+		};
+	} else {
+		const result = appJsonSchema(rawAppJson);
+		throw new Error(
+			`Invalid app.json: ${result instanceof type.errors ? result.summary : "Unknown validation error"}`,
+		);
 	}
-
-	return {
-		...(result.name ? { appName: result.name } : {}),
-		...result.svgAppIcon,
-	};
 }
 
 function readCliArgs(args: string[]): Partial<ResolvedConfig> {
@@ -147,4 +170,20 @@ function readCliArgs(args: string[]): Partial<ResolvedConfig> {
 	);
 
 	return userDefinedOptions;
+}
+
+async function resolveBackgroundPath(
+	backgroundPath: string | undefined,
+): Promise<string | undefined> {
+	if (backgroundPath) {
+		return backgroundPath;
+	}
+
+	// No explicit path — use default if it exists on disk
+	if (await fse.pathExists(defaultBackgroundPath)) {
+		return defaultBackgroundPath;
+	}
+
+	// No background icon available — fall back to internal white background
+	return undefined;
 }

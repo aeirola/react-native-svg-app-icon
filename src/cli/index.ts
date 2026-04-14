@@ -1,41 +1,19 @@
 #!/usr/bin/env node
-import * as fse from "fs-extra";
-
 import * as reactNativeSvgAppIcon from "../lib";
-import { readConfig } from "./config";
+import { resolveConfig } from "./config";
 import { createLogger } from "./logger";
 
-const supportedPlatforms: reactNativeSvgAppIcon.Platform[] = ["android", "ios"];
-
 export async function main(args: string[] = []): Promise<void> {
-	const resolvedConfig = await readConfig(args);
+	const resolvedConfig = await resolveConfig(args);
 
 	// Create logger from config
 	const logger = createLogger(resolvedConfig.logLevel);
 
 	logger?.info("Running react-native-svg-app-icon");
 
-	if (!(await fse.pathExists(resolvedConfig.foregroundPath))) {
-		throw Error(
-			`Icon is required, but not found at ${resolvedConfig.foregroundPath}`,
-		);
-	}
-
-	resolvedConfig.platforms = resolvedConfig.platforms
-		.map((platform) => platform.toLowerCase())
-		.filter((platform): platform is reactNativeSvgAppIcon.Platform => {
-			if ((supportedPlatforms as string[]).includes(platform)) {
-				return true;
-			} else {
-				throw Error(`Unsupported platform ${platform}`);
-			}
-		});
-
 	const config: reactNativeSvgAppIcon.Config = {
 		icon: {
-			backgroundPath: (await fse.pathExists(resolvedConfig.backgroundPath))
-				? resolvedConfig.backgroundPath
-				: undefined,
+			backgroundPath: resolvedConfig.backgroundPath,
 			foregroundPath: resolvedConfig.foregroundPath,
 		},
 		platforms: resolvedConfig.platforms,
