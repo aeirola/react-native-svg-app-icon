@@ -70,11 +70,21 @@ export async function readIcon(
 	config: Optional<Config>,
 	logger: Logger | undefined,
 ): Promise<FileInput> {
-	const fullConfig = await getConfig(config, logger);
+	const fullConfig = getConfig(config, logger);
 
 	const [backgroundBuffer, foregroundBuffer] = await Promise.all([
-		fse.readFile(fullConfig.backgroundPath),
-		fse.readFile(fullConfig.foregroundPath),
+		fse.readFile(fullConfig.backgroundPath).catch((error) => {
+			throw new Error(
+				`Failed to read background icon at ${fullConfig.backgroundPath}`,
+				{ cause: error },
+			);
+		}),
+		fse.readFile(fullConfig.foregroundPath).catch((error) => {
+			throw new Error(
+				`Icon is required, but not found at ${fullConfig.foregroundPath}`,
+				{ cause: error },
+			);
+		}),
 	]);
 
 	const fileBuffers: InputFileBuffers = {
@@ -88,22 +98,14 @@ export async function readIcon(
 	};
 }
 
-async function getConfig(
+function getConfig(
 	config: Optional<Config>,
 	logger: Logger | undefined,
-): Promise<Config> {
+): Config {
 	const foregroundPath = config.foregroundPath || "./icon.svg";
-
-	if (!(await fse.pathExists(foregroundPath))) {
-		throw new Error(`Icon is required, but not found at ${foregroundPath}`);
-	}
 
 	let backgroundPath: string;
 	if (config.backgroundPath !== undefined) {
-		if (!(await fse.pathExists(config.backgroundPath))) {
-			throw new Error(`Background icon not found at ${config.backgroundPath}`);
-		}
-
 		backgroundPath = config.backgroundPath;
 	} else {
 		logger?.debug(
