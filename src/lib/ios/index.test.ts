@@ -29,8 +29,14 @@ describe("ios/index", () => {
 		// Load test icons
 		fileInput = await input.readIcon(
 			{
-				backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
-				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+				projectRoot: __dirname,
+				icon: {
+					backgroundPath: path.join(
+						testAssetsPath,
+						"react-icon-background.svg",
+					),
+					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+				},
 			},
 			undefined,
 		);
@@ -42,6 +48,7 @@ describe("ios/index", () => {
 			const outputPath = path.join(baseDir, "output");
 			const context = makeContext<PartialConfig>({
 				iosOutputPath: outputPath,
+				projectRoot: __dirname,
 			});
 
 			// Generate icons and manifest

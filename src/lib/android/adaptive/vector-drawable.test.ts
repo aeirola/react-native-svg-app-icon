@@ -5,7 +5,7 @@ import { cleanupTestOutput } from "../../../../test/utils/cleanup";
 import { makeContext } from "../../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { generateVectorDrawable } from "./vector-drawable";
 
 describe("android/vector-drawable", () => {
@@ -30,14 +30,15 @@ describe("android/vector-drawable", () => {
 			// Load test icon
 			const fileInput = await input.readIcon(
 				{
-					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+					projectRoot: __dirname,
+					icon: { foregroundPath: path.join(testAssetsPath, "react-icon.svg") },
 				},
 				undefined,
 			);
 
 			const baseDir = assetsPath;
 			const outputPath = path.join(baseDir, "output");
-			const context = makeContext<Config>({
+			const context = makeContext<ResolvedConfig>({
 				androidOutputPath: outputPath,
 			});
 
@@ -65,12 +66,13 @@ describe("android/vector-drawable", () => {
 			// Load SVG with text element (unsupported in vector drawable)
 			const unsupportedFileInput = await input.readIcon(
 				{
-					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+					projectRoot: __dirname,
+					icon: { foregroundPath: path.join(testAssetsPath, "text-icon.svg") },
 				},
 				undefined,
 			);
 
-			const context = makeContext<Config>({
+			const context = makeContext<ResolvedConfig>({
 				androidOutputPath: outputPath,
 			});
 

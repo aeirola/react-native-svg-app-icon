@@ -5,7 +5,7 @@ import { cleanupTestOutputs } from "../../../../test/utils/cleanup";
 import { makeContext } from "../../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { generateAdaptiveIcons } from "./adaptive-icons";
 
 describe("android/adaptive-icons", () => {
@@ -33,16 +33,19 @@ describe("android/adaptive-icons", () => {
 			// Load test icons
 			const fileInput = await input.readIcon(
 				{
-					backgroundPath: path.join(
-						testAssetsPath,
-						"react-icon-background.svg",
-					),
-					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+					projectRoot: __dirname,
+					icon: {
+						backgroundPath: path.join(
+							testAssetsPath,
+							"react-icon-background.svg",
+						),
+						foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+					},
 				},
 				undefined,
 			);
 
-			const context = makeContext<Config>({
+			const context = makeContext<ResolvedConfig>({
 				androidOutputPath: outputPath,
 			});
 
@@ -62,12 +65,15 @@ describe("android/adaptive-icons", () => {
 			// Load SVG with unsupported elements (text) that will force PNG fallback
 			const unsupportedFileInput = await input.readIcon(
 				{
-					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+					projectRoot: __dirname,
+					icon: {
+						foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+					},
 				},
 				undefined,
 			);
 
-			const context = makeContext<Config>({
+			const context = makeContext<ResolvedConfig>({
 				androidOutputPath: outputPath,
 			});
 

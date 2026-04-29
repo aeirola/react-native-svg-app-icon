@@ -1,15 +1,6 @@
 import { CacheSession } from "../../src/lib/cache";
 import type { Context } from "../../src/lib/util/context";
 
-export const cache = new CacheSession({
-	inputFileBuffers: {
-		foreground: Buffer.from(""),
-		background: Buffer.from(""),
-	},
-	force: true,
-	logger: undefined,
-});
-
 /**
  * Creates a test context with sensible defaults.
  *
@@ -25,5 +16,15 @@ export const cache = new CacheSession({
  * ```
  */
 export function makeContext<C>(config: C): Context<C> {
-	return { config, cache, logger: undefined };
+	const logger = undefined;
+	const cache = new CacheSession({
+		inputFileBuffers: {
+			foreground: Buffer.from(""),
+			background: Buffer.from(""),
+		},
+		config: { force: true, projectRoot: process.cwd() },
+		logger,
+	});
+
+	return { config, cache, logger };
 }

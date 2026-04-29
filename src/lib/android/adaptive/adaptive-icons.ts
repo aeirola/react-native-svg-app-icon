@@ -1,7 +1,7 @@
 import type { Context } from "../../util/context";
 import * as input from "../../util/input";
 import * as output from "../../util/output";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import {
 	densities,
 	getIconPath,
@@ -27,7 +27,7 @@ const adaptiveIconContent = (
 
 export async function* generateAdaptiveIcons(
 	fileInput: input.FileInput,
-	context: Context<Config>,
+	context: Context<ResolvedConfig>,
 ): AsyncIterable<string> {
 	const backgroundImageInput = input.mapInput(
 		fileInput,
@@ -103,7 +103,7 @@ export async function* generateAdaptiveIcons(
 async function* generateAdaptiveIconLayerPng(
 	imageInput: input.Input<input.ImageData>,
 	fileName: string,
-	context: Context<Config>,
+	context: Context<ResolvedConfig>,
 ): AsyncIterable<string> {
 	yield* output.generatePngs(
 		{ image: imageInput },
