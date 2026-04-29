@@ -10,7 +10,7 @@ const it = base.extend({ tmpDir });
 describe("ios/config", () => {
 	describe("getConfig", () => {
 		it("uses provided iosOutputPath", async ({ tmpDir: _tmpDir }) => {
-			const customPath = path.join("/custom", "path");
+			const customPath = path.resolve("/custom", "path");
 			const config = await getConfig(
 				{
 					iosOutputPath: customPath,
