@@ -5,7 +5,7 @@ import { cleanupTestOutput } from "../../../../test/utils/cleanup";
 import { makeContext } from "../../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { generateLegacySquareIcons } from "./square-icons";
 
 describe("android/legacy/square-icons", () => {
@@ -29,15 +29,24 @@ describe("android/legacy/square-icons", () => {
 	beforeEach(async () => {
 		fileInput = await input.readIcon(
 			{
-				backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
-				foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
+				projectRoot: __dirname,
+				icon: {
+					backgroundPath: path.join(
+						testAssetsPath,
+						"square-icon-background.svg",
+					),
+					foregroundPath: path.join(
+						testAssetsPath,
+						"square-icon-foreground.svg",
+					),
+				},
 			},
 			undefined,
 		);
 	});
 
 	it("generates square icons matching reference images", async () => {
-		const context = makeContext<Config>({
+		const context = makeContext<ResolvedConfig>({
 			androidOutputPath: path.join(baseDir, "output"),
 		});
 

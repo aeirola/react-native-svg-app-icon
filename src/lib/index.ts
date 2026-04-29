@@ -19,11 +19,11 @@ export async function* generate(
 	config: Config,
 	logger: Logger | undefined,
 ): AsyncIterable<string> {
-	const iconInput = await input.readIcon(config.icon, logger);
+	const iconInput = await input.readIcon(config, logger);
 
 	const cache = new CacheSession({
 		inputFileBuffers: iconInput.fileBuffers,
-		force: config.force ?? false,
+		config,
 		logger,
 	});
 

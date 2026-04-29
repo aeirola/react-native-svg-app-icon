@@ -1,20 +1,24 @@
 import type { Context } from "../util/context";
 import type * as input from "../util/input";
 import { generateAdaptiveIcons } from "./adaptive/adaptive-icons";
-import type { Config } from "./config";
+import { getConfig, type PartialConfig, type ResolvedConfig } from "./config";
 import { generateLegacyRoundIcons } from "./legacy/round-icons";
 import { generateLegacySquareIcons } from "./legacy/square-icons";
 
-export type { Config } from "./config";
+export type { PartialConfig } from "./config";
 
 export async function* generate(
-	context: Context<Config>,
+	context: Context<PartialConfig>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
-	context.logger?.debug(
-		`Android output path: ${context.config.androidOutputPath}`,
+	const resolvedContext: Context<ResolvedConfig> = {
+		...context,
+		config: getConfig(context.config),
+	};
+	resolvedContext.logger?.debug(
+		`Android output path: ${resolvedContext.config.androidOutputPath}`,
 	);
-	yield* generateLegacySquareIcons(fileInput, context);
-	yield* generateLegacyRoundIcons(fileInput, context);
-	yield* generateAdaptiveIcons(fileInput, context);
+	yield* generateLegacySquareIcons(fileInput, resolvedContext);
+	yield* generateLegacyRoundIcons(fileInput, resolvedContext);
+	yield* generateAdaptiveIcons(fileInput, resolvedContext);
 }

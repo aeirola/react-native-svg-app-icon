@@ -2,7 +2,7 @@ import type { Context } from "../../util/context";
 import * as input from "../../util/input";
 import * as output from "../../util/output";
 import { prepareForInlining } from "../../util/svg";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { densities, getIconPath, roundIconName } from "../resources";
 import { dropShadowFilter, shadedEdgeFilter } from "./lightning-filter";
 import {
@@ -64,7 +64,7 @@ function buildRoundLegacyIconSvg(
 
 export async function* generateLegacyRoundIcons(
 	fileInput: input.FileInput,
-	context: Context<Config>,
+	context: Context<ResolvedConfig>,
 ): AsyncIterable<string> {
 	yield* output.generatePngs(
 		{

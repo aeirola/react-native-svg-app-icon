@@ -1,9 +1,15 @@
 import * as crypto from "node:crypto";
 import * as fse from "fs-extra";
+import type { BaseConfig } from "../config/base";
 import type { InputFileBuffers } from "../util/input";
 import type { Logger } from "../util/logger";
 import { getPackageVersion } from "../util/version";
-import * as storage from "./storage";
+import { type CacheData, CacheStorage } from "./storage";
+
+export type PartialConfig = BaseConfig & {
+	/** Write output files even if they are up-to-date. */
+	force?: boolean;
+};
 
 function hashBuffer(buffer: Buffer): string {
 	return crypto.createHash("sha256").update(buffer).digest("hex");
@@ -36,22 +42,24 @@ export class CacheSession {
 	private readonly inputFileBuffers: InputFileBuffers;
 	private readonly force: boolean;
 	private readonly logger: Logger | undefined;
+	private readonly storage: CacheStorage;
 
 	/** In-memory record of output hashes written this run. */
 	private newOutputHashes: Record<string, string> = {};
 
 	constructor({
 		inputFileBuffers,
-		force,
+		config,
 		logger,
 	}: {
 		inputFileBuffers: InputFileBuffers;
-		force: boolean;
+		config: PartialConfig;
 		logger: Logger | undefined;
 	}) {
 		this.inputFileBuffers = inputFileBuffers;
-		this.force = force;
+		this.force = config.force ?? false;
 		this.logger = logger;
+		this.storage = new CacheStorage(config.projectRoot, logger);
 	}
 
 	/**
@@ -114,7 +122,7 @@ export class CacheSession {
 	async flush(): Promise<void> {
 		const inputHashes = this.computeInputHashes();
 		const packageVersion = await getPackageVersion();
-		await storage.writeCacheData({
+		await this.storage.write({
 			packageVersion,
 			inputs: inputHashes,
 			outputs: this.newOutputHashes,
@@ -158,9 +166,9 @@ export class CacheSession {
 	}
 
 	/** Lazily loaded from disk, then kept in memory. */
-	private cacheDataPromise?: Promise<storage.CacheData>;
-	private loadCache(): Promise<storage.CacheData> {
-		this.cacheDataPromise ??= storage.readCacheData(this.logger);
+	private cacheDataPromise?: Promise<CacheData>;
+	private loadCache(): Promise<CacheData> {
+		this.cacheDataPromise ??= this.storage.read();
 		return this.cacheDataPromise;
 	}
 }

@@ -5,7 +5,7 @@ import { cleanupTestOutput } from "../../../../test/utils/cleanup";
 import { makeContext } from "../../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
 import * as input from "../../util/input";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { generateLegacyRoundIcons } from "./round-icons";
 
 describe("android/legacy/round-icons", () => {
@@ -29,8 +29,17 @@ describe("android/legacy/round-icons", () => {
 	beforeEach(async () => {
 		fileInput = await input.readIcon(
 			{
-				backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
-				foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
+				projectRoot: __dirname,
+				icon: {
+					backgroundPath: path.join(
+						testAssetsPath,
+						"square-icon-background.svg",
+					),
+					foregroundPath: path.join(
+						testAssetsPath,
+						"square-icon-foreground.svg",
+					),
+				},
 			},
 			undefined,
 		);
@@ -38,7 +47,7 @@ describe("android/legacy/round-icons", () => {
 
 	it("generates round icons matching reference images", async () => {
 		const outputPath = path.join(baseDir, "output");
-		const context = makeContext<Config>({
+		const context = makeContext<ResolvedConfig>({
 			androidOutputPath: outputPath,
 		});
 

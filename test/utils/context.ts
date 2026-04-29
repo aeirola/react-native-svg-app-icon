@@ -6,7 +6,7 @@ export const cache = new CacheSession({
 		foreground: Buffer.from(""),
 		background: Buffer.from(""),
 	},
-	force: true,
+	config: { force: true, projectRoot: process.cwd() },
 	logger: undefined,
 });
 
