@@ -30,7 +30,11 @@ async function hashFile(filePath: string): Promise<string | null> {
  * don't need to handle either directly.
  *
  * Usage:
- *   const session = new CacheSession({ inputFileBuffers: { background: bgBuffer, foreground: fgBuffer }, force });
+ *   const session = new CacheSession({
+ *     inputFileBuffers: { background: bgBuffer, foreground: fgBuffer },
+ *     config: { force, projectRoot },
+ *     logger,
+ *   });
  *   // For each output file:
  *   if (await session.isUpToDate(outputPath)) continue;
  *   // ... generate content buffer ...
