@@ -29,7 +29,7 @@ describe("ios/index", () => {
 		// Load test icons
 		fileInput = await input.readIcon(
 			{
-				projectRoot: __dirname,
+				projectRoot: assetsPath,
 				icon: {
 					backgroundPath: path.join(
 						testAssetsPath,
@@ -48,7 +48,7 @@ describe("ios/index", () => {
 			const outputPath = path.join(baseDir, "output");
 			const context = makeContext<PartialConfig>({
 				iosOutputPath: outputPath,
-				projectRoot: __dirname,
+				projectRoot: baseDir,
 			});
 
 			// Generate icons and manifest

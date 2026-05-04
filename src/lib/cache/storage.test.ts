@@ -6,8 +6,8 @@ import { CacheStorage } from "./storage";
 const it = base.extend({ tmpDir });
 
 describe("storage", () => {
-	it("returns written data after write", async ({ tmpDir: _tmpDir }) => {
-		const storage = new CacheStorage(process.cwd(), undefined);
+	it("returns written data after write", async ({ tmpDir }) => {
+		const storage = new CacheStorage(tmpDir, undefined);
 
 		expect(await storage.read()).toEqual({ inputs: {}, outputs: {} });
 

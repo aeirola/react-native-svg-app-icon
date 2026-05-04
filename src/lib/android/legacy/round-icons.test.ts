@@ -29,7 +29,7 @@ describe("android/legacy/round-icons", () => {
 	beforeEach(async () => {
 		fileInput = await input.readIcon(
 			{
-				projectRoot: __dirname,
+				projectRoot: baseDir,
 				icon: {
 					backgroundPath: path.join(
 						testAssetsPath,
@@ -49,6 +49,7 @@ describe("android/legacy/round-icons", () => {
 		const outputPath = path.join(baseDir, "output");
 		const context = makeContext<ResolvedConfig>({
 			androidOutputPath: outputPath,
+			projectRoot: baseDir,
 		});
 
 		for await (const _file of generateLegacyRoundIcons(fileInput, context)) {

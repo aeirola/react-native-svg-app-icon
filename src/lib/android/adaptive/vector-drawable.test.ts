@@ -30,7 +30,7 @@ describe("android/vector-drawable", () => {
 			// Load test icon
 			const fileInput = await input.readIcon(
 				{
-					projectRoot: __dirname,
+					projectRoot: assetsPath,
 					icon: { foregroundPath: path.join(testAssetsPath, "react-icon.svg") },
 				},
 				undefined,
@@ -40,6 +40,7 @@ describe("android/vector-drawable", () => {
 			const outputPath = path.join(baseDir, "output");
 			const context = makeContext<ResolvedConfig>({
 				androidOutputPath: outputPath,
+				projectRoot: assetsPath,
 			});
 
 			// Map the file input to the expected format
@@ -66,7 +67,7 @@ describe("android/vector-drawable", () => {
 			// Load SVG with text element (unsupported in vector drawable)
 			const unsupportedFileInput = await input.readIcon(
 				{
-					projectRoot: __dirname,
+					projectRoot: assetsPath,
 					icon: { foregroundPath: path.join(testAssetsPath, "text-icon.svg") },
 				},
 				undefined,
@@ -74,6 +75,7 @@ describe("android/vector-drawable", () => {
 
 			const context = makeContext<ResolvedConfig>({
 				androidOutputPath: outputPath,
+				projectRoot: assetsPath,
 			});
 
 			const unsupportedInput = input.mapInput(

@@ -1,4 +1,5 @@
 import { CacheSession } from "../../src/lib/cache";
+import type { BaseConfig } from "../../src/lib/config/base";
 import type { Context } from "../../src/lib/util/context";
 
 /**
@@ -12,17 +13,25 @@ import type { Context } from "../../src/lib/util/context";
  * ```ts
  * import { makeContext } from "../../test/utils/context";
  *
- * const context = makeContext({ androidOutputPath: outputPath });
+ * const context = makeContext({
+ * 	androidOutputPath: outputPath,
+ * 	projectRoot: assetsPath,
+ * });
  * ```
  */
-export function makeContext<C>(config: C): Context<C> {
+export function makeContext<C>(
+	config: C & BaseConfig,
+): Context<C & BaseConfig> {
 	const logger = undefined;
 	const cache = new CacheSession({
 		inputFileBuffers: {
 			foreground: Buffer.from(""),
 			background: Buffer.from(""),
 		},
-		config: { force: true, projectRoot: process.cwd() },
+		config: {
+			force: true,
+			projectRoot: config.projectRoot,
+		},
 		logger,
 	});
 

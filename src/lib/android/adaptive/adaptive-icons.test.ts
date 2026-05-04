@@ -33,7 +33,7 @@ describe("android/adaptive-icons", () => {
 			// Load test icons
 			const fileInput = await input.readIcon(
 				{
-					projectRoot: __dirname,
+					projectRoot: baseDir,
 					icon: {
 						backgroundPath: path.join(
 							testAssetsPath,
@@ -47,6 +47,7 @@ describe("android/adaptive-icons", () => {
 
 			const context = makeContext<ResolvedConfig>({
 				androidOutputPath: outputPath,
+				projectRoot: baseDir,
 			});
 
 			// Generate adaptive icons
@@ -65,7 +66,7 @@ describe("android/adaptive-icons", () => {
 			// Load SVG with unsupported elements (text) that will force PNG fallback
 			const unsupportedFileInput = await input.readIcon(
 				{
-					projectRoot: __dirname,
+					projectRoot: baseDir,
 					icon: {
 						foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
 					},
@@ -75,6 +76,7 @@ describe("android/adaptive-icons", () => {
 
 			const context = makeContext<ResolvedConfig>({
 				androidOutputPath: outputPath,
+				projectRoot: baseDir,
 			});
 
 			// Generate adaptive icons

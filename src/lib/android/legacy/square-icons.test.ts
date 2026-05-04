@@ -29,7 +29,7 @@ describe("android/legacy/square-icons", () => {
 	beforeEach(async () => {
 		fileInput = await input.readIcon(
 			{
-				projectRoot: __dirname,
+				projectRoot: baseDir,
 				icon: {
 					backgroundPath: path.join(
 						testAssetsPath,
@@ -48,6 +48,7 @@ describe("android/legacy/square-icons", () => {
 	it("generates square icons matching reference images", async () => {
 		const context = makeContext<ResolvedConfig>({
 			androidOutputPath: path.join(baseDir, "output"),
+			projectRoot: baseDir,
 		});
 
 		for await (const _file of generateLegacySquareIcons(fileInput, context)) {
