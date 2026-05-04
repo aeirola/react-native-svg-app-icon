@@ -21,6 +21,7 @@ export async function main(args: string[] = []): Promise<void> {
 		androidOutputPath: resolvedConfig.androidOutputPath,
 		iosOutputPath: resolvedConfig.iosOutputPath,
 		appName: resolvedConfig.appName,
+		projectRoot: process.cwd(),
 	};
 
 	const generatedFiles = reactNativeSvgAppIcon.generate(config, logger);

@@ -1,5 +1,6 @@
 import * as path from "node:path";
 import * as fse from "fs-extra";
+import type { BaseConfig } from "../config/base";
 import type { Logger } from "../util/logger";
 import type { Optional } from "../util/optional";
 
@@ -8,8 +9,8 @@ interface PlatformConfig {
 	appName?: string | undefined;
 }
 
-export type PartialConfig = Optional<PlatformConfig>;
-export type ResolvedConfig = PlatformConfig;
+export type PartialConfig = Optional<PlatformConfig> & BaseConfig;
+export type ResolvedConfig = PlatformConfig & BaseConfig;
 
 export async function getConfig(
 	config: PartialConfig,
@@ -18,15 +19,17 @@ export async function getConfig(
 	if (config.iosOutputPath) {
 		logger?.debug(`Using configured iOS output path: ${config.iosOutputPath}`);
 	}
+	const iosOutputPath = config.iosOutputPath
+		? path.resolve(config.projectRoot, config.iosOutputPath)
+		: await getIconsetDir(config, logger);
 	return {
 		...config,
-		iosOutputPath:
-			config.iosOutputPath || (await getIconsetDir(config.appName, logger)),
+		iosOutputPath,
 	};
 }
 
 async function getIconsetDir(
-	appName: string | undefined,
+	{ appName, projectRoot }: PartialConfig,
 	logger: Logger | undefined,
 ): Promise<string> {
 	// Prefer the directory matching the app name from app.json, to avoid
@@ -38,7 +41,12 @@ async function getIconsetDir(
 		appName !== ".." &&
 		appName !== "."
 	) {
-		const preferredPath = path.join("ios", appName, "Images.xcassets");
+		const preferredPath = path.resolve(
+			projectRoot,
+			"ios",
+			appName,
+			"Images.xcassets",
+		);
 		if (
 			(await fse.pathExists(preferredPath)) &&
 			(await fse.stat(preferredPath)).isDirectory()
@@ -51,8 +59,13 @@ async function getIconsetDir(
 		}
 	}
 
-	for (const fileName of await fse.readdir("ios")) {
-		const testPath = path.join("ios", fileName, "Images.xcassets");
+	for (const fileName of await fse.readdir(path.resolve(projectRoot, "ios"))) {
+		const testPath = path.resolve(
+			projectRoot,
+			"ios",
+			fileName,
+			"Images.xcassets",
+		);
 		if (
 			(await fse.pathExists(testPath)) &&
 			(await fse.stat(testPath)).isDirectory()

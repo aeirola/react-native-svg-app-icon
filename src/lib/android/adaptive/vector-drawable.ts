@@ -2,7 +2,7 @@ import svg2vectordrawable from "svg2vectordrawable";
 import type { Context } from "../../util/context";
 import type * as input from "../../util/input";
 import * as output from "../../util/output";
-import type { Config } from "../config";
+import type { ResolvedConfig } from "../config";
 import { getIconPath } from "../resources";
 
 const adaptiveIconMinSdk = 26;
@@ -10,7 +10,7 @@ const adaptiveIconMinSdk = 26;
 export async function* generateVectorDrawable(
 	imageInput: input.Input<input.ImageData>,
 	fileName: string,
-	context: Context<Config>,
+	context: Context<ResolvedConfig>,
 ): AsyncIterable<string> {
 	yield* output.generateFile(
 		getIconPath(

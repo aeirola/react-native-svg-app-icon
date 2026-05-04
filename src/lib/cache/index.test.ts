@@ -3,7 +3,7 @@ import { it as base, describe, expect } from "vitest";
 
 import { tmpDir } from "../../../test/utils/tmp-dir";
 import { CacheSession } from "./index";
-import * as storage from "./storage";
+import { CacheStorage } from "./storage";
 
 const it = base.extend({ tmpDir });
 
@@ -17,7 +17,7 @@ describe("cache", () => {
 	describe("CacheSession", () => {
 		describe("isUpToDate", () => {
 			it("returns false when no cache exists (cold start)", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const inputBuffer = Buffer.from("<svg>input</svg>", "utf-8");
 				const outputFile = await writeFile("output.png", "fake-png-data");
@@ -27,7 +27,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 
@@ -35,7 +35,7 @@ describe("cache", () => {
 			});
 
 			it("returns false when force is true even if cache is warm", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const inputBuffer = Buffer.from("<svg>input</svg>", "utf-8");
 				const outputFile = await writeFile("output.png", "fake-png-data");
@@ -46,7 +46,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
@@ -58,14 +58,14 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: true,
+					config: { force: true, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(false);
 			});
 
 			it("returns true when inputs and output are unchanged (warm cache)", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const inputBuffer = Buffer.from("<svg>input</svg>", "utf-8");
 				const outputFile = await writeFile("output.png", "fake-png-data");
@@ -76,7 +76,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
@@ -88,14 +88,14 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(true);
 			});
 
 			it("returns false for all outputs when an input file changes", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const originalBuffer = Buffer.from("<svg>original</svg>", "utf-8");
 				const output1 = await writeFile("out1.png", "png-data-1");
@@ -107,7 +107,7 @@ describe("cache", () => {
 						foreground: originalBuffer,
 						background: originalBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				session1.recordBuffer(output1, await fse.readFile(output1));
@@ -123,7 +123,7 @@ describe("cache", () => {
 						foreground: changedBuffer,
 						background: changedBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session2.isUpToDate(output1)).toBe(false);
@@ -131,7 +131,7 @@ describe("cache", () => {
 			});
 
 			it("returns false for all outputs when package version has changed", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const inputBuffer = Buffer.from("<svg>input</svg>", "utf-8");
 				const outputFile = await writeFile("output.png", "fake-png-data");
@@ -142,15 +142,16 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
 				await session1.flush();
 
 				// Tamper with the cached version to simulate an upgrade
-				const cacheData = await storage.readCacheData(undefined);
-				await storage.writeCacheData({
+				const cacheStorage = new CacheStorage(tmpDir, undefined);
+				const cacheData = await cacheStorage.read();
+				await cacheStorage.write({
 					...cacheData,
 					packageVersion: "0.0.0",
 				});
@@ -161,14 +162,14 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(false);
 			});
 
 			it("returns false only for a deleted output, true for unchanged ones", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const inputBuffer = Buffer.from("<svg>input</svg>", "utf-8");
 				const output1 = await writeFile("out1.png", "png-data-1");
@@ -180,7 +181,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				session1.recordBuffer(output1, await fse.readFile(output1));
@@ -195,7 +196,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session2.isUpToDate(output1)).toBe(false);
@@ -203,7 +204,7 @@ describe("cache", () => {
 			});
 
 			it("returns false for an output that was modified externally", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const inputBuffer = Buffer.from("<svg>input</svg>", "utf-8");
 				const outputFile = await writeFile("output.png", "original-data");
@@ -214,7 +215,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
@@ -228,14 +229,14 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(false);
 			});
 
 			it("handles multiple input files — change to any input invalidates all outputs", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const bgBuffer = Buffer.from("<svg>background</svg>", "utf-8");
 				const fgBuffer = Buffer.from("<svg>foreground</svg>", "utf-8");
@@ -244,7 +245,7 @@ describe("cache", () => {
 				// Build warm cache with both inputs
 				const session1 = new CacheSession({
 					inputFileBuffers: { foreground: fgBuffer, background: bgBuffer },
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
@@ -253,7 +254,7 @@ describe("cache", () => {
 				// Warm — no changes
 				const session2 = new CacheSession({
 					inputFileBuffers: { foreground: fgBuffer, background: bgBuffer },
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(true);
@@ -269,14 +270,14 @@ describe("cache", () => {
 						foreground: fgBuffer,
 						background: bgBufferChanged,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session3.isUpToDate(outputFile)).toBe(false);
 			});
 
 			it("remains up-to-date on the third run when the second run skipped the file", async ({
-				tmpDir: _tmpDir,
+				tmpDir,
 			}) => {
 				const inputBuffer = Buffer.from("<svg>input</svg>", "utf-8");
 				const outputFile = await writeFile("output.png", "fake-png-data");
@@ -287,7 +288,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				session1.recordBuffer(outputFile, await fse.readFile(outputFile));
@@ -299,7 +300,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session2.isUpToDate(outputFile)).toBe(true);
@@ -312,7 +313,7 @@ describe("cache", () => {
 						foreground: inputBuffer,
 						background: inputBuffer,
 					},
-					force: false,
+					config: { force: false, projectRoot: tmpDir },
 					logger: undefined,
 				});
 				expect(await session3.isUpToDate(outputFile)).toBe(true);
