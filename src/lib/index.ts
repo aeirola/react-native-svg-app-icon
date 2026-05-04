@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import * as android from "./android";
 import { CacheSession } from "./cache";
 import type { Config, Platform } from "./config";
@@ -19,6 +20,10 @@ export async function* generate(
 	config: Config,
 	logger: Logger | undefined,
 ): AsyncIterable<string> {
+	if (!path.isAbsolute(config.projectRoot)) {
+		throw new Error("config.projectRoot must be an absolute path");
+	}
+
 	const iconInput = await input.readIcon(config, logger);
 
 	const cache = new CacheSession({
