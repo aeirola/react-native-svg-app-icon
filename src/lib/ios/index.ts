@@ -3,7 +3,7 @@ import type { Context } from "../util/context";
 import * as input from "../util/input";
 import * as output from "../util/output";
 import { prepareForInlining } from "../util/svg";
-import { getConfig, type PartialConfig, type ResolvedConfig } from "./config";
+import { getConfig, type IosConfig, type ResolvedConfig } from "./config";
 
 const iosIcons = [
 	{ idiom: "iphone", scale: 2, size: 20 },
@@ -26,10 +26,10 @@ const iosIcons = [
 	{ idiom: "ios-marketing", scale: 1, size: 1024 },
 ];
 
-export type { PartialConfig };
+export type { IosConfig };
 
 export async function* generate(
-	context: Context<PartialConfig>,
+	context: Context<IosConfig>,
 	fileInput: input.FileInput,
 ): AsyncIterable<string> {
 	const resolvedContext: Context<ResolvedConfig> = {

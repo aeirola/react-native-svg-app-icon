@@ -1,18 +1,24 @@
-import type * as android from "../android";
-import type * as cache from "../cache";
-import type * as ios from "../ios";
-import type * as input from "../util/input";
-import type { BaseConfig } from "./base";
+import { type } from "arktype";
+import { AndroidConfig } from "../android/config";
+import { CacheConfig } from "../cache";
+import { IosConfig } from "../ios/config";
+import { InputConfig } from "../util/input";
 
 /**
  * Supported platforms for generating icons.
  */
-export type Platform = "android" | "ios";
+export const Platform = type("'android'|'ios'");
 
-export type Config = BaseConfig &
-	android.PartialConfig &
-	ios.PartialConfig &
-	input.PartialConfig &
-	cache.PartialConfig & {
-		platforms: Platform[];
-	};
+export const Config = type.merge(
+	InputConfig,
+	AndroidConfig,
+	IosConfig,
+	CacheConfig,
+	type({
+		platforms: Platform.array().default(() => ["android", "ios"]),
+	}),
+);
+
+export type Platform = typeof Platform.infer;
+export type Config = typeof Config.inferIn;
+export type ResolvedConfig = typeof Config.infer;

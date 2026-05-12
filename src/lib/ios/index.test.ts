@@ -5,7 +5,7 @@ import { cleanupTestOutputs } from "../../../test/utils/cleanup";
 import { makeContext } from "../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
 import * as input from "../util/input";
-import { generate, type PartialConfig } from "./index";
+import { generate, type IosConfig } from "./index";
 
 describe("ios/index", () => {
 	const assetsPath = path.join(__dirname, "index.test.assets");
@@ -46,7 +46,7 @@ describe("ios/index", () => {
 		it("generates iOS icons and manifest matching reference files", async () => {
 			const baseDir = path.join(assetsPath, "icons");
 			const outputPath = path.join(baseDir, "output");
-			const context = makeContext<PartialConfig>({
+			const context = makeContext<IosConfig>({
 				iosOutputPath: outputPath,
 				projectRoot: baseDir,
 			});

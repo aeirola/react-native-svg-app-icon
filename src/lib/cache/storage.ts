@@ -5,7 +5,7 @@ import { type } from "arktype";
 import * as fse from "fs-extra";
 import type { Logger } from "../util/logger";
 
-const cacheDataType = type({
+const CacheData = type({
 	/** Version of react-native-svg-app-icon that wrote this cache entry. */
 	"packageVersion?": "string",
 	inputs: { "[string]": "string" },
@@ -15,7 +15,7 @@ const cacheDataType = type({
 /**
  * Persisted cache state for a single generation run.
  */
-export type CacheData = typeof cacheDataType.infer;
+export type CacheData = typeof CacheData.infer;
 
 /**
  * Handles reading and writing of persisted cache state for a project.
@@ -57,7 +57,7 @@ export class CacheStorage {
 	async read(): Promise<CacheData> {
 		try {
 			const raw: unknown = await fse.readJson(this.cachePath);
-			return cacheDataType.assert(raw);
+			return CacheData.assert(raw);
 		} catch (error) {
 			this.logger?.debug(
 				`Could not read cache at ${this.cachePath}: ${error instanceof Error ? error.message : error}`,

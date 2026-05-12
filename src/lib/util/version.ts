@@ -4,7 +4,7 @@ import * as fse from "fs-extra";
 
 const packageJsonPath = path.join(__dirname, "..", "..", "..", "package.json");
 
-const packageJsonSchema = type({ version: "string" });
+const PackageJson = type({ version: "string" });
 
 /**
  * Reads the version field from the package's `package.json` file.
@@ -14,6 +14,6 @@ const packageJsonSchema = type({ version: "string" });
  */
 export async function getPackageVersion(): Promise<string> {
 	const raw = await fse.readJson(packageJsonPath);
-	const pkg = packageJsonSchema.assert(raw);
+	const pkg = PackageJson.assert(raw);
 	return pkg.version;
 }

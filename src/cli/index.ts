@@ -4,23 +4,20 @@ import { resolveConfig } from "./config";
 import { createLogger } from "./logger";
 
 export async function main(args: string[] = []): Promise<void> {
-	const resolvedConfig = await resolveConfig(args);
+	const { logLevel, foregroundPath, backgroundPath, ...libConfig } =
+		await resolveConfig(args);
 
 	// Create logger from config
-	const logger = createLogger(resolvedConfig.logLevel);
+	const logger = createLogger(logLevel);
 
 	logger?.info("Running react-native-svg-app-icon");
 
 	const config: reactNativeSvgAppIcon.Config = {
+		...libConfig,
 		icon: {
-			backgroundPath: resolvedConfig.backgroundPath,
-			foregroundPath: resolvedConfig.foregroundPath,
+			...(backgroundPath !== undefined ? { backgroundPath } : {}),
+			foregroundPath: foregroundPath,
 		},
-		platforms: resolvedConfig.platforms,
-		force: resolvedConfig.force,
-		androidOutputPath: resolvedConfig.androidOutputPath,
-		iosOutputPath: resolvedConfig.iosOutputPath,
-		appName: resolvedConfig.appName,
 		projectRoot: process.cwd(),
 	};
 

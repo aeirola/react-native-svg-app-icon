@@ -1,12 +1,12 @@
 import path from "node:path";
+import { type } from "arktype";
 import * as fse from "fs-extra";
 
 // sharp library is slow to load, only import types here, and import when needed
 import type * as SharpType from "sharp";
-import type { BaseConfig } from "../config/base";
+import { BaseConfig } from "../config/base";
 import type { Logger } from "./logger";
 import { memoize } from "./memoize";
-import type { Optional } from "./optional";
 
 const defaultBackgroundPath = path.join(
 	__dirname,
@@ -24,12 +24,19 @@ export const inputContentSize = 72;
 /** Margin around the input SVG content within the full image. */
 export const inputImageMargin = (inputImageSize - inputContentSize) / 2;
 
-interface ResolvedConfig {
-	backgroundPath: string;
-	foregroundPath: string;
-}
+export const InputConfig = type.merge(
+	BaseConfig,
+	type({
+		icon: {
+			"backgroundPath?": "string",
+			foregroundPath: "string",
+		},
+	}),
+);
 
-export type PartialConfig = BaseConfig & { icon: Optional<ResolvedConfig> };
+export type InputConfig = typeof InputConfig.infer;
+
+type ResolvedConfig = Required<InputConfig["icon"]>;
 
 export type FileInput = Input<InputData>;
 type InputData = {
@@ -70,7 +77,7 @@ interface BackgroundImageData extends ImageData {
 }
 
 export async function readIcon(
-	config: PartialConfig,
+	config: InputConfig,
 	logger: Logger | undefined,
 ): Promise<FileInput> {
 	const fullConfig = getConfig(config, logger);
@@ -102,16 +109,16 @@ export async function readIcon(
 }
 
 function getConfig(
-	config: PartialConfig,
+	config: InputConfig,
 	logger: Logger | undefined,
 ): ResolvedConfig {
 	const foregroundPath = path.resolve(
 		config.projectRoot,
-		config.icon?.foregroundPath ?? "icon.svg",
+		config.icon.foregroundPath,
 	);
 
 	let backgroundPath: string;
-	if (config.icon?.backgroundPath !== undefined) {
+	if (config.icon.backgroundPath !== undefined) {
 		backgroundPath = path.resolve(
 			config.projectRoot,
 			config.icon.backgroundPath,
