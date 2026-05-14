@@ -22,12 +22,11 @@ export async function getConfig(
 	if (config.iosOutputPath) {
 		logger?.debug(`Using configured iOS output path: ${config.iosOutputPath}`);
 	}
-	const iosOutputPath = config.iosOutputPath
-		? path.resolve(config.projectRoot, config.iosOutputPath)
-		: await getIconsetDir(config, logger);
+
 	return {
-		...config,
-		iosOutputPath,
+		iosOutputPath: config.iosOutputPath
+			? path.resolve(config.projectRoot, config.iosOutputPath)
+			: await getIconsetDir(config, logger),
 	};
 }
 
