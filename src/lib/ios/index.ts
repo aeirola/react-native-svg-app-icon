@@ -26,7 +26,7 @@ const iosIcons = [
 	{ idiom: "ios-marketing", scale: 1, size: 1024 },
 ];
 
-export type { IosConfig };
+export { IosConfig } from "./config";
 
 export async function* generate(
 	context: Context<IosConfig>,

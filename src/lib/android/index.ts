@@ -5,7 +5,7 @@ import { type AndroidConfig, getConfig, type ResolvedConfig } from "./config";
 import { generateLegacyRoundIcons } from "./legacy/round-icons";
 import { generateLegacySquareIcons } from "./legacy/square-icons";
 
-export type { AndroidConfig } from "./config";
+export { AndroidConfig } from "./config";
 
 export async function* generate(
 	context: Context<AndroidConfig>,

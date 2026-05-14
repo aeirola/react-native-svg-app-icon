@@ -1,7 +1,7 @@
 import { type } from "arktype";
-import { AndroidConfig } from "../android/config";
+import { AndroidConfig } from "../android";
 import { CacheConfig } from "../cache";
-import { IosConfig } from "../ios/config";
+import { IosConfig } from "../ios";
 import { InputConfig } from "../util/input";
 
 /**
