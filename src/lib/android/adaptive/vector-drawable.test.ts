@@ -31,7 +31,7 @@ describe("android/vector-drawable", () => {
 			const fileInput = await input.readIcon(
 				{
 					projectRoot: assetsPath,
-					icon: { foregroundPath: path.join(testAssetsPath, "react-icon.svg") },
+					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
 				},
 				undefined,
 			);
@@ -68,7 +68,7 @@ describe("android/vector-drawable", () => {
 			const unsupportedFileInput = await input.readIcon(
 				{
 					projectRoot: assetsPath,
-					icon: { foregroundPath: path.join(testAssetsPath, "text-icon.svg") },
+					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
 				},
 				undefined,
 			);

@@ -27,16 +27,16 @@ export const inputImageMargin = (inputImageSize - inputContentSize) / 2;
 export const InputConfig = type.merge(
 	BaseConfig,
 	type({
-		icon: {
-			"backgroundPath?": "string",
-			foregroundPath: "string",
-		},
+		"backgroundPath?": "string",
+		foregroundPath: "string",
 	}),
 );
 
 export type InputConfig = typeof InputConfig.infer;
 
-type ResolvedConfig = Required<InputConfig["icon"]>;
+type ResolvedConfig = Required<
+	Pick<InputConfig, "backgroundPath" | "foregroundPath">
+>;
 
 export type FileInput = Input<InputData>;
 type InputData = {
@@ -114,15 +114,12 @@ function getConfig(
 ): ResolvedConfig {
 	const foregroundPath = path.resolve(
 		config.projectRoot,
-		config.icon.foregroundPath,
+		config.foregroundPath,
 	);
 
 	let backgroundPath: string;
-	if (config.icon.backgroundPath !== undefined) {
-		backgroundPath = path.resolve(
-			config.projectRoot,
-			config.icon.backgroundPath,
-		);
+	if (config.backgroundPath !== undefined) {
+		backgroundPath = path.resolve(config.projectRoot, config.backgroundPath);
 	} else {
 		logger?.debug(
 			"No background icon specified, falling back to white background",

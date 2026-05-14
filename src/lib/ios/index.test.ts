@@ -30,13 +30,8 @@ describe("ios/index", () => {
 		fileInput = await input.readIcon(
 			{
 				projectRoot: assetsPath,
-				icon: {
-					backgroundPath: path.join(
-						testAssetsPath,
-						"react-icon-background.svg",
-					),
-					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
-				},
+				backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
+				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
 			},
 			undefined,
 		);

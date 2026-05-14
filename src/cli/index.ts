@@ -4,8 +4,7 @@ import { resolveConfig } from "./config";
 import { createLogger } from "./logger";
 
 export async function main(args: string[] = []): Promise<void> {
-	const { logLevel, foregroundPath, backgroundPath, ...libConfig } =
-		await resolveConfig(args);
+	const { logLevel, ...libConfig } = await resolveConfig(args);
 
 	// Create logger from config
 	const logger = createLogger(logLevel);
@@ -14,10 +13,6 @@ export async function main(args: string[] = []): Promise<void> {
 
 	const config: reactNativeSvgAppIcon.Config = {
 		...libConfig,
-		icon: {
-			...(backgroundPath !== undefined ? { backgroundPath } : {}),
-			foregroundPath: foregroundPath,
-		},
 		projectRoot: process.cwd(),
 	};
 

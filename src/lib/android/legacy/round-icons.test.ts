@@ -30,16 +30,8 @@ describe("android/legacy/round-icons", () => {
 		fileInput = await input.readIcon(
 			{
 				projectRoot: baseDir,
-				icon: {
-					backgroundPath: path.join(
-						testAssetsPath,
-						"square-icon-background.svg",
-					),
-					foregroundPath: path.join(
-						testAssetsPath,
-						"square-icon-foreground.svg",
-					),
-				},
+				backgroundPath: path.join(testAssetsPath, "square-icon-background.svg"),
+				foregroundPath: path.join(testAssetsPath, "square-icon-foreground.svg"),
 			},
 			undefined,
 		);

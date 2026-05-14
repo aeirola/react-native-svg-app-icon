@@ -34,13 +34,11 @@ describe("android/adaptive-icons", () => {
 			const fileInput = await input.readIcon(
 				{
 					projectRoot: baseDir,
-					icon: {
-						backgroundPath: path.join(
-							testAssetsPath,
-							"react-icon-background.svg",
-						),
-						foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
-					},
+					backgroundPath: path.join(
+						testAssetsPath,
+						"react-icon-background.svg",
+					),
+					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
 				},
 				undefined,
 			);
@@ -67,9 +65,7 @@ describe("android/adaptive-icons", () => {
 			const unsupportedFileInput = await input.readIcon(
 				{
 					projectRoot: baseDir,
-					icon: {
-						foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
-					},
+					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
 				},
 				undefined,
 			);

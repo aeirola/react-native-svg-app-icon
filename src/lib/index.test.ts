@@ -11,16 +11,14 @@ describe("lib/index", () => {
 				platforms: [],
 				force: false,
 				androidOutputPath: "./android/app/src/main/res",
-				icon: {
-					foregroundPath: path.join(
-						__dirname,
-						"..",
-						"..",
-						"test",
-						"assets",
-						"react-icon.svg",
-					),
-				},
+				foregroundPath: path.join(
+					__dirname,
+					"..",
+					"..",
+					"test",
+					"assets",
+					"react-icon.svg",
+				),
 			},
 			undefined,
 		);
