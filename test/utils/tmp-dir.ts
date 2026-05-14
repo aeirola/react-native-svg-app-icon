@@ -20,7 +20,8 @@ import * as path from "node:path";
  * ```
  */
 export const tmpDir = async (
-	// biome-ignore lint/correctness/noEmptyPattern: vitest requires a pattern for fixtures
+	// Vitest requires a pattern for fixtures here.
+	// oxlint-disable-next-line no-empty-pattern
 	{},
 	use: (tmpDir: string) => Promise<void>,
 ) => {

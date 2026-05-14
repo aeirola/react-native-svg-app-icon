@@ -1,0 +1,23 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"ignorePatterns": ["example-rn/**", "example-expo/**"],
+	"overrides": [
+		{
+			// Enforce that lib/ stays independent from cli/.
+			"files": ["src/lib/**"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": ["**/cli/**"],
+								"message": "lib/ should not import from cli/. Only cli/ may depend on lib/, not vice versa."
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+}
