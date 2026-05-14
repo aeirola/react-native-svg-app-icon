@@ -1,15 +1,21 @@
 import * as crypto from "node:crypto";
+import { type } from "arktype";
 import * as fse from "fs-extra";
-import type { BaseConfig } from "../config/base";
+import { BaseConfig } from "../config/base";
 import type { InputFileBuffers } from "../util/input";
 import type { Logger } from "../util/logger";
 import { getPackageVersion } from "../util/version";
 import { type CacheData, CacheStorage } from "./storage";
 
-export type PartialConfig = BaseConfig & {
-	/** Write output files even if they are up-to-date. */
-	force?: boolean;
-};
+export const CacheConfig = type.merge(
+	BaseConfig,
+	type({
+		/** Write output files even if they are up-to-date. */
+		force: "boolean = false",
+	}),
+);
+
+export type CacheConfig = typeof CacheConfig.infer;
 
 function hashBuffer(buffer: Buffer): string {
 	return crypto.createHash("sha256").update(buffer).digest("hex");
@@ -57,11 +63,11 @@ export class CacheSession {
 		logger,
 	}: {
 		inputFileBuffers: InputFileBuffers;
-		config: PartialConfig;
+		config: CacheConfig;
 		logger: Logger | undefined;
 	}) {
 		this.inputFileBuffers = inputFileBuffers;
-		this.force = config.force ?? false;
+		this.force = config.force;
 		this.logger = logger;
 		this.storage = new CacheStorage(config.projectRoot, logger);
 	}

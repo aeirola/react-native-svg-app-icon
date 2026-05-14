@@ -1,13 +1,13 @@
-import * as path from "node:path";
 import * as android from "./android";
 import { CacheSession } from "./cache";
-import type { Config, Platform } from "./config";
+import { Config, type Platform, type ResolvedConfig } from "./config";
 import * as ios from "./ios";
 import type { Context } from "./util/context";
 import * as input from "./util/input";
 import type { Logger } from "./util/logger";
 
-export type { Config, Platform };
+export { Config } from "./config";
+export type { Platform };
 
 /**
  * Generate platform-specific app icons from SVG source files.
@@ -20,26 +20,28 @@ export async function* generate(
 	config: Config,
 	logger: Logger | undefined,
 ): AsyncIterable<string> {
-	if (!path.isAbsolute(config.projectRoot)) {
-		throw new Error("config.projectRoot must be an absolute path");
-	}
+	const resolvedConfig = Config.assert(config);
 
-	const iconInput = await input.readIcon(config, logger);
+	const iconInput = await input.readIcon(resolvedConfig, logger);
 
 	const cache = new CacheSession({
 		inputFileBuffers: iconInput.fileBuffers,
-		config,
+		config: resolvedConfig,
 		logger,
 	});
 
-	const context: Context<Config> = { config, logger, cache };
+	const context: Context<ResolvedConfig> = {
+		config: resolvedConfig,
+		logger,
+		cache,
+	};
 
 	try {
-		if (config.platforms.includes("android")) {
+		if (resolvedConfig.platforms.includes("android")) {
 			logger?.info("Generating Android icons");
 			yield* android.generate(context, iconInput);
 		}
-		if (config.platforms.includes("ios")) {
+		if (resolvedConfig.platforms.includes("ios")) {
 			logger?.info("Generating iOS icons");
 			yield* ios.generate(context, iconInput);
 		}

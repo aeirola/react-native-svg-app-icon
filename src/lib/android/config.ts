@@ -1,13 +1,18 @@
 import * as path from "node:path";
-import type { BaseConfig } from "../config/base";
+import { type } from "arktype";
+import { BaseConfig } from "../config/base";
 
-export interface ResolvedConfig {
-	androidOutputPath: string;
-}
+export const AndroidConfig = type.merge(
+	BaseConfig,
+	type({
+		androidOutputPath: "string = './android/app/src/main/res'",
+	}),
+);
 
-export interface PartialConfig extends BaseConfig, ResolvedConfig {}
+export type AndroidConfig = typeof AndroidConfig.infer;
+export type ResolvedConfig = Pick<AndroidConfig, "androidOutputPath">;
 
-export function getConfig(config: PartialConfig): ResolvedConfig {
+export function getConfig(config: AndroidConfig): ResolvedConfig {
 	return {
 		androidOutputPath: path.resolve(
 			config.projectRoot,

@@ -1,35 +1,37 @@
 import * as path from "node:path";
+import { type } from "arktype";
 import * as fse from "fs-extra";
-import type { BaseConfig } from "../config/base";
+import { BaseConfig } from "../config/base";
 import type { Logger } from "../util/logger";
-import type { Optional } from "../util/optional";
 
-interface PlatformConfig {
-	iosOutputPath: string;
-	appName?: string | undefined;
-}
+export const IosConfig = type.merge(
+	BaseConfig,
+	type({
+		"iosOutputPath?": "string",
+		"appName?": "string",
+	}),
+);
 
-export type PartialConfig = Optional<PlatformConfig> & BaseConfig;
-export type ResolvedConfig = PlatformConfig & BaseConfig;
+export type IosConfig = typeof IosConfig.infer;
+export type ResolvedConfig = Required<Pick<IosConfig, "iosOutputPath">>;
 
 export async function getConfig(
-	config: PartialConfig,
+	config: IosConfig,
 	logger: Logger | undefined,
 ): Promise<ResolvedConfig> {
 	if (config.iosOutputPath) {
 		logger?.debug(`Using configured iOS output path: ${config.iosOutputPath}`);
 	}
-	const iosOutputPath = config.iosOutputPath
-		? path.resolve(config.projectRoot, config.iosOutputPath)
-		: await getIconsetDir(config, logger);
+
 	return {
-		...config,
-		iosOutputPath,
+		iosOutputPath: config.iosOutputPath
+			? path.resolve(config.projectRoot, config.iosOutputPath)
+			: await getIconsetDir(config, logger),
 	};
 }
 
 async function getIconsetDir(
-	{ appName, projectRoot }: PartialConfig,
+	{ appName, projectRoot }: IosConfig,
 	logger: Logger | undefined,
 ): Promise<string> {
 	// Prefer the directory matching the app name from app.json, to avoid

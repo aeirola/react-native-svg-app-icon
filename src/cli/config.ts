@@ -1,72 +1,53 @@
 import { type } from "arktype";
 import * as commander from "commander";
 import * as fse from "fs-extra";
+import { Config as LibConfig } from "../lib/config";
 
-// Enable defining commandline options directly in ArkType schema metadata
-declare global {
-	interface ArkEnv {
-		meta(): {
-			cli?: ConstructorParameters<typeof commander.Option>;
-		};
-	}
-}
+const IconConfig = LibConfig.get("icon").required();
 
 /**
  * Schema for configuration properties.
- *
- * CLI option metadata is embedded via ArkType `.configure()` for each property,
- * enabling automatic Commander.js option generation from the same schema.
  */
-const configSchema = type({
-	backgroundPath: type("string")
-		.configure({
-			cli: ["--background-path <path>", "background icon path"],
-		})
-		.default("./icon-background.svg"),
-	foregroundPath: type("string")
-		.configure({
-			cli: ["--foreground-path <path>", "foreground icon path"],
-		})
-		.default("./icon.svg"),
-	platforms: type("('android'|'ios')[]")
-		.configure({
-			cli: [
-				"--platforms <platforms...>",
-				"platforms for which to generate icons",
-			],
-		})
-		.default(() => ["android", "ios"]),
-	force: type("boolean")
-		.configure({
-			cli: ["-f, --force", "overwrite existing newer files"],
-		})
-		.default(false),
-	androidOutputPath: type("string")
-		.configure({
-			cli: ["--android-output-path <path>", "android output path"],
-		})
-		.default("./android/app/src/main/res"),
-	"iosOutputPath?": type("string").configure({
-		cli: ["--ios-output-path <path>", "ios output path"],
-	}),
-	logLevel: type("'silent'|'error'|'warn'|'info'|'debug'")
-		.configure({
-			cli: ["--log-level <level>", "log level"],
-		})
-		.default("info"),
+const CliConfig = LibConfig.omit("appName", "projectRoot", "icon").and({
+	backgroundPath: IconConfig.get("backgroundPath").default(
+		"./icon-background.svg",
+	),
+	foregroundPath: IconConfig.get("foregroundPath").default("./icon.svg"),
+	logLevel: type("'silent'|'error'|'warn'|'info'|'debug'").default("info"),
 });
 
-type ConfigSchema = typeof configSchema.infer;
+type CliConfig = typeof CliConfig.infer;
+
+type CommanderArgs = ConstructorParameters<typeof commander.Option>;
+
+/**
+ * CLI option metadata for each property, enabling Commander.js option
+ * generation for the same values.
+ */
+const configFlags: {
+	[Field in keyof Required<CliConfig>]: CommanderArgs;
+} = {
+	backgroundPath: ["--background-path <path>", "background icon path"],
+	foregroundPath: ["--foreground-path <path>", "foreground icon path"],
+	platforms: [
+		"--platforms <platforms...>",
+		"platforms for which to generate icons",
+	],
+	force: ["-f, --force", "overwrite existing newer files"],
+	androidOutputPath: ["--android-output-path <path>", "android output path"],
+	iosOutputPath: ["--ios-output-path <path>", "ios output path"],
+	logLevel: ["--log-level <level>", "log level"],
+};
 
 const { backgroundPath: defaultBackgroundPath, ...defaultConfig } =
-	configSchema.assert({});
+	CliConfig.assert({});
 
 /**
  * Fully resolved configuration, merged from defaults, app.json, and CLI arguments.
  */
-export type ResolvedConfig = Omit<ConfigSchema, "backgroundPath"> & {
-	backgroundPath?: ConfigSchema["backgroundPath"];
-	appName?: typeof appJsonSchema.infer.name;
+export type ResolvedConfig = Omit<CliConfig, "backgroundPath"> & {
+	backgroundPath?: CliConfig["backgroundPath"];
+	appName?: typeof AppJson.infer.name;
 };
 
 /**
@@ -99,10 +80,10 @@ export async function resolveConfig(
 /**
  * ArkType schema for app.json structure
  */
-const appJsonSchema = type({
+const AppJson = type({
 	"name?": "string",
 	"displayName?": "string",
-	svgAppIcon: configSchema.default(() => ({})),
+	svgAppIcon: CliConfig.default(() => ({})),
 });
 
 async function readAppJsonConfig(): Promise<Partial<ResolvedConfig>> {
@@ -119,13 +100,13 @@ async function readAppJsonConfig(): Promise<Partial<ResolvedConfig>> {
 	}
 
 	// Validate the app.json structure, but omit defaults
-	if (appJsonSchema.allows(rawAppJson)) {
+	if (AppJson.allows(rawAppJson)) {
 		return {
 			...(rawAppJson.name ? { appName: rawAppJson.name } : {}),
 			...rawAppJson.svgAppIcon,
 		};
 	} else {
-		const result = appJsonSchema(rawAppJson);
+		const result = AppJson(rawAppJson);
 		throw new Error(
 			`Invalid app.json: ${result instanceof type.errors ? result.summary : "Unknown validation error"}`,
 		);
@@ -137,11 +118,9 @@ function readCliArgs(args: string[]): Partial<ResolvedConfig> {
 
 	program.name("react-native-svg-app-icon");
 
-	for (const opt of configSchema.props) {
+	for (const opt of CliConfig.props) {
 		const optMeta = opt.value.meta;
-		if (!optMeta?.cli) continue; // Skip properties without CLI flag configuration
-
-		const cliOption = new commander.Option(...optMeta.cli);
+		const cliOption = new commander.Option(...configFlags[opt.key]);
 
 		if (optMeta.default !== undefined) {
 			cliOption.default(optMeta.default);

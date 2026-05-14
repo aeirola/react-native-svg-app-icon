@@ -11,7 +11,6 @@ Shared infrastructure used across all platform generators.
 - [memoize.ts](memoize.ts) - Caches result of zero-argument functions. Used for lazy-loaded expensive operations (input data).
 - [svg.ts](svg.ts) - SVG preprocessing via SVGO: strips XML declarations, prefixes IDs to prevent collisions when inlining multiple SVGs.
 - [version.ts](version.ts) - Reads package version from `package.json` for cache invalidation.
-- [optional.ts](optional.ts) - `Optional<T>` type utility: all properties optional and explicitly `undefined`-able.
 
 ## Key Patterns
 
