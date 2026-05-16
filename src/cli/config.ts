@@ -3,16 +3,19 @@ import * as commander from "commander";
 import * as fse from "fs-extra";
 import { Config as LibConfig } from "../lib/config";
 
-const IconConfig = LibConfig.get("icon").required();
-
 /**
  * Schema for configuration properties.
  */
-const CliConfig = LibConfig.omit("appName", "projectRoot", "icon").and({
-	backgroundPath: IconConfig.get("backgroundPath").default(
-		"./icon-background.svg",
-	),
-	foregroundPath: IconConfig.get("foregroundPath").default("./icon.svg"),
+const CliConfig = LibConfig.omit(
+	"appName",
+	"projectRoot",
+	"backgroundPath",
+	"foregroundPath",
+).and({
+	backgroundPath: LibConfig.required()
+		.get("backgroundPath")
+		.default("./icon-background.svg"),
+	foregroundPath: LibConfig.get("foregroundPath").default("./icon.svg"),
 	logLevel: type("'silent'|'error'|'warn'|'info'|'debug'").default("info"),
 });
 
