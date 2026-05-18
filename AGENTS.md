@@ -84,8 +84,8 @@ The workflow uses [npm trusted publishing](https://docs.npmjs.com/trusted-publis
 
 ## Code Style
 
-- **Biome** for linting/formatting (not ESLint/Prettier)
-- Run `npx biome check` or use IDE integration
+- **Oxlint** and **Oxfmt** for linting/formatting
+- Run `npx oxlint && npx oxfmt --check` or use IDE integration
 - Example directories (`example-rn/`, `example-expo/`) are excluded from linting
 - **Strict TypeScript**: Rely on precise, strict types throughout. Avoid `any` and `as` type assertions, prefer narrow types, and leverage TypeScript's type system fully.
 - **Input validation with arktype**: All external input (CLI args, `app.json` config, file contents) must be validated using [arktype](https://arktype.io). Use Context7 library documentation `/arktypeio/arktype` for API and docs.

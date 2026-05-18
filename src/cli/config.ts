@@ -89,13 +89,17 @@ const AppJson = type({
 	svgAppIcon: CliConfig.default(() => ({})),
 });
 
+function isErrnoException(error: unknown): error is NodeJS.ErrnoException {
+	return error instanceof Error && "code" in error;
+}
+
 async function readAppJsonConfig(): Promise<Partial<ResolvedConfig>> {
 	let rawAppJson: unknown;
 	try {
 		rawAppJson = await fse.readJson("./app.json");
 	} catch (error) {
 		// Only fall back to default if file not found
-		if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+		if (isErrnoException(error) && error.code === "ENOENT") {
 			rawAppJson = {};
 		} else {
 			throw error;
