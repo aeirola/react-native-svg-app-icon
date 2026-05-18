@@ -43,7 +43,7 @@ export async function* generateAdaptiveIcons(
 		backgroundResourceType = "drawable";
 	} catch (error) {
 		context.logger?.warn(
-			`Vector drawable conversion failed for background, falling back to PNG: ${error instanceof Error ? error.message : error}`,
+			`Vector drawable conversion failed for background, falling back to PNG: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		yield* generateAdaptiveIconLayerPng(
 			backgroundImageInput,
@@ -67,7 +67,7 @@ export async function* generateAdaptiveIcons(
 		foregroundResourceType = "drawable";
 	} catch (error) {
 		context.logger?.warn(
-			`Vector drawable conversion failed for foreground, falling back to PNG: ${error instanceof Error ? error.message : error}`,
+			`Vector drawable conversion failed for foreground, falling back to PNG: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		yield* generateAdaptiveIconLayerPng(
 			foregroundImageInput,

@@ -1,5 +1,19 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"options": {
+		"typeAware": true,
+		"denyWarnings": true
+	},
+	"rules": {
+		"eslint/sort-imports": [
+			"warn",
+			{
+				"ignoreDeclarationSort": true,
+				"ignoreMemberSort": true
+			}
+		],
+		"typescript/no-unsafe-type-assertion": "error"
+	},
 	"ignorePatterns": ["example-rn/**", "example-expo/**"],
 	"overrides": [
 		{

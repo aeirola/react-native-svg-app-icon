@@ -60,7 +60,7 @@ export class CacheStorage {
 			return CacheData.assert(raw);
 		} catch (error) {
 			this.logger?.debug(
-				`Could not read cache at ${this.cachePath}: ${error instanceof Error ? error.message : error}`,
+				`Could not read cache at ${this.cachePath}: ${error instanceof Error ? error.message : String(error)}`,
 			);
 			return { inputs: {}, outputs: {} };
 		}
