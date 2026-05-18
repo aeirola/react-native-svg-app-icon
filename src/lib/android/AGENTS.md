@@ -1,6 +1,7 @@
 # Android Icon Generation
 
 Android generation in [index.ts](index.ts) handles multiple icon types:
+
 - Adaptive icons (SDK 26+): Vector drawable foreground/background with PNG fallback for complex SVGs
 - Legacy square icons: PNG image including background and foreground image, with an applied rounded square mask and drop shadow
 - Legacy round icons: PNG image including background and foreground image, with an applied circular mask and drop shadow

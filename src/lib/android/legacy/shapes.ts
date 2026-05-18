@@ -34,8 +34,7 @@ export const legacyIconViewBox = `0 0 ${legacyIconSize} ${legacyIconSize}`;
 export const legacySquareIconContentSize = 38;
 
 /** Transparent margin to include around the visible square icon content. */
-const legacySquareIconMargin =
-	(legacyIconSize - legacySquareIconContentSize) / 2;
+const legacySquareIconMargin = (legacyIconSize - legacySquareIconContentSize) / 2;
 
 /**
  * Corner radius of the square icon in legacy icon sizing units (dp).

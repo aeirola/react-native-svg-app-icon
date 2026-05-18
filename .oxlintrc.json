@@ -1,37 +1,31 @@
 {
-	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"options": {
-		"typeAware": true,
-		"denyWarnings": true
-	},
-	"rules": {
-		"eslint/sort-imports": [
-			"warn",
-			{
-				"ignoreDeclarationSort": true,
-				"ignoreMemberSort": true
-			}
-		],
-		"typescript/no-unsafe-type-assertion": "error"
-	},
-	"ignorePatterns": ["example-rn/**", "example-expo/**"],
-	"overrides": [
-		{
-			// Enforce that lib/ stays independent from cli/.
-			"files": ["src/lib/**"],
-			"rules": {
-				"no-restricted-imports": [
-					"error",
-					{
-						"patterns": [
-							{
-								"group": ["**/cli/**"],
-								"message": "lib/ should not import from cli/. Only cli/ may depend on lib/, not vice versa."
-							}
-						]
-					}
-				]
-			}
-		}
-	]
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "options": {
+    "typeAware": true,
+    "denyWarnings": true
+  },
+  "rules": {
+    "eslint/sort-imports": "warn",
+    "typescript/no-unsafe-type-assertion": "error"
+  },
+  "ignorePatterns": ["example-rn/**", "example-expo/**"],
+  "overrides": [
+    {
+      // Enforce that lib/ stays independent from cli/.
+      "files": ["src/lib/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/cli/**"],
+                "message": "lib/ should not import from cli/. Only cli/ may depend on lib/, not vice versa."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

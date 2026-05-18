@@ -1,13 +1,10 @@
 {
-	"include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.js"],
-	"extends": [
-		"@tsconfig/strictest/tsconfig.json",
-		"@tsconfig/node20/tsconfig.json"
-	],
+  "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.js"],
+  "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/node20/tsconfig.json"],
 
-	"compilerOptions": {
-		"noEmit": true,
-		"allowJs": true,
-		"checkJs": true
-	}
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": true
+  }
 }

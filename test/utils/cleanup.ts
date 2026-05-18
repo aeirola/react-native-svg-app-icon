@@ -1,5 +1,5 @@
-import * as path from "node:path";
 import * as fse from "fs-extra";
+import * as path from "node:path";
 
 /**
  * Cleans up test output directories before test runs.
@@ -13,14 +13,11 @@ import * as fse from "fs-extra";
  * await cleanupTestOutputs(assetsPath, ["vector-drawable", "png-fallback"]);
  * ```
  */
-export async function cleanupTestOutputs(
-	basePath: string,
-	testCases: string[],
-): Promise<void> {
-	for (const testCase of testCases) {
-		await fse.remove(path.join(basePath, testCase, "output"));
-		await fse.remove(path.join(basePath, testCase, "diff"));
-	}
+export async function cleanupTestOutputs(basePath: string, testCases: string[]): Promise<void> {
+  for (const testCase of testCases) {
+    await fse.remove(path.join(basePath, testCase, "output"));
+    await fse.remove(path.join(basePath, testCase, "diff"));
+  }
 }
 
 /**
@@ -35,6 +32,6 @@ export async function cleanupTestOutputs(
  * ```
  */
 export async function cleanupTestOutput(basePath: string): Promise<void> {
-	await fse.remove(path.join(basePath, "output"));
-	await fse.remove(path.join(basePath, "diff"));
+  await fse.remove(path.join(basePath, "output"));
+  await fse.remove(path.join(basePath, "diff"));
 }

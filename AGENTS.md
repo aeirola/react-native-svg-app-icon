@@ -7,6 +7,7 @@ CLI tool that generates iOS and Android app launcher icons from SVG source files
 ## Key Design Patterns
 
 **Async Iterables for Output**: All generators use `async function*` to yield file paths as they're written:
+
 ```typescript
 export async function* generate(config: Config): AsyncIterable<string> {
   yield* android.generate(config, iconInput);
@@ -37,6 +38,7 @@ Tests use **Vitest** and are organized into two categories:
 **Test utilities** in `test/utils/` — see [test/AGENTS.md](test/AGENTS.md) for details.
 
 **Fixture directory convention**: Each test case directory contains:
+
 - `input/` — Source files (SVG icons, `app.json`)
 - `expected/` — Reference output files to compare against
 - `output/` — Generated during tests (cleaned up by `beforeAll`)
@@ -45,6 +47,7 @@ Tests use **Vitest** and are organized into two categories:
 Shared test SVG inputs are in `test/assets/`.
 
 **tmpDir fixture pattern** for tests needing a working directory:
+
 ```typescript
 import { it as base } from "vitest";
 import { tmpDir } from "../../test/utils/tmp-dir";
@@ -57,6 +60,7 @@ it("my test", async ({ tmpDir: _tmpDir }) => {
 ```
 
 **Output verification pattern** for fixture-based tests:
+
 ```typescript
 beforeAll(async () => {
   await cleanupTestOutputs(assetsPath, ["test-case-1", "test-case-2"]);

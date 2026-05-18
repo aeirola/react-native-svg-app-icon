@@ -1,5 +1,5 @@
-import { CacheSession } from "../../src/lib/cache";
 import type { BaseConfig } from "../../src/lib/config/base";
+import { CacheSession } from "../../src/lib/cache";
 import type { Context } from "../../src/lib/util/context";
 
 /**
@@ -19,21 +19,19 @@ import type { Context } from "../../src/lib/util/context";
  * });
  * ```
  */
-export function makeContext<C>(
-	config: C & BaseConfig,
-): Context<C & BaseConfig> {
-	const logger = undefined;
-	const cache = new CacheSession({
-		inputFileBuffers: {
-			foreground: Buffer.from(""),
-			background: Buffer.from(""),
-		},
-		config: {
-			force: true,
-			projectRoot: config.projectRoot,
-		},
-		logger,
-	});
+export function makeContext<C>(config: C & BaseConfig): Context<C & BaseConfig> {
+  const logger = undefined;
+  const cache = new CacheSession({
+    inputFileBuffers: {
+      foreground: Buffer.from(""),
+      background: Buffer.from(""),
+    },
+    config: {
+      force: true,
+      projectRoot: config.projectRoot,
+    },
+    logger,
+  });
 
-	return { config, cache, logger };
+  return { config, cache, logger };
 }

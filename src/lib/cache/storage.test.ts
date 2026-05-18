@@ -1,23 +1,23 @@
 import { it as base, describe, expect } from "vitest";
+import { CacheStorage } from "./storage";
 
 import { tmpDir } from "../../../test/utils/tmp-dir";
-import { CacheStorage } from "./storage";
 
 const it = base.extend({ tmpDir });
 
 describe("storage", () => {
-	it("returns written data after write", async ({ tmpDir }) => {
-		const storage = new CacheStorage(tmpDir, undefined);
+  it("returns written data after write", async ({ tmpDir }) => {
+    const storage = new CacheStorage(tmpDir, undefined);
 
-		expect(await storage.read()).toEqual({ inputs: {}, outputs: {} });
+    expect(await storage.read()).toEqual({ inputs: {}, outputs: {} });
 
-		const data = {
-			inputs: { "icon.svg": "abc123" },
-			outputs: { "icon.png": "def456" },
-		};
+    const data = {
+      inputs: { "icon.svg": "abc123" },
+      outputs: { "icon.png": "def456" },
+    };
 
-		await storage.write(data);
+    await storage.write(data);
 
-		expect(await storage.read()).toEqual(data);
-	});
+    expect(await storage.read()).toEqual(data);
+  });
 });

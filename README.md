@@ -152,15 +152,15 @@ Behaviour can be configured in the `app.json` under the `svgAppIcon` field. For 
 
 Supported configuration values are
 
-| Field               | Default                                               | Description                                                                                                                                                     |
-| ------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `foregroundPath`    | `"./icon.svg"`                                        | Input file path for the foreground layer. File needs to exist, and may contain transparency.                                                                    |
+| Field               | Default                                               | Description                                                                                                                                                          |
+| ------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `foregroundPath`    | `"./icon.svg"`                                        | Input file path for the foreground layer. File needs to exist, and may contain transparency.                                                                         |
 | `backgroundPath`    | `"./icon-background.svg"`                             | Input file path for the background layer. File doesn't need to exist, and will default to a fully white background. If the file exists, it needs to be fully opaque. |
-| `platforms`         | `["android", "ios"]`                                  | Array of platforms for which application launcher icons should be generated. Possible values are `android` and `ios`.                                           |
-| `force`             | `false`                                               | When `true`, output files will always be written even if they are newer than the input files.                                                                   |
-| `androidOutputPath` | `./android/app/src/main/res`                          | Where to place generated Android icons, can be used for flavor-specific icon generation                                                                         |
-| `iosOutputPath`     | `./ios/<app-name>/Images.xcassets/AppIcon.appiconset` | Where to place generated iOS icons. Uses `name` field from `app.json` if available, otherwise defaults to first target with an Images.xcassets folder           |
-| `logLevel`          | `"info"`                                              | Controls the verbosity of logging output. Possible values are `silent`, `error`, `warn`, `info`, and `debug`.                                                   |
+| `platforms`         | `["android", "ios"]`                                  | Array of platforms for which application launcher icons should be generated. Possible values are `android` and `ios`.                                                |
+| `force`             | `false`                                               | When `true`, output files will always be written even if they are newer than the input files.                                                                        |
+| `androidOutputPath` | `./android/app/src/main/res`                          | Where to place generated Android icons, can be used for flavor-specific icon generation                                                                              |
+| `iosOutputPath`     | `./ios/<app-name>/Images.xcassets/AppIcon.appiconset` | Where to place generated iOS icons. Uses `name` field from `app.json` if available, otherwise defaults to first target with an Images.xcassets folder                |
+| `logLevel`          | `"info"`                                              | Controls the verbosity of logging output. Possible values are `silent`, `error`, `warn`, `info`, and `debug`.                                                        |
 
 Alternatively, the configuration parameters can also be set as CLI flags. See `react-native-svg-app-icon --help` for details.
 

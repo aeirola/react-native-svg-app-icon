@@ -1,5 +1,5 @@
-import * as path from "node:path";
 import * as fse from "fs-extra";
+import * as path from "node:path";
 import { expect } from "vitest";
 import sharpmatch from "./sharpmatch";
 
@@ -22,59 +22,59 @@ import sharpmatch from "./sharpmatch";
  * @throws {Error} If file counts don't match or any comparison fails
  */
 export async function verifyGeneratedFiles(
-	baseDir: string,
-	options: { imageThreshold?: number; generatedAfter?: Date } = {},
+  baseDir: string,
+  options: { imageThreshold?: number; generatedAfter?: Date } = {},
 ): Promise<void> {
-	const { imageThreshold = 0, generatedAfter } = options;
+  const { imageThreshold = 0, generatedAfter } = options;
 
-	const outputDir = path.join(baseDir, "output");
-	const expectedDir = path.join(baseDir, "expected");
-	const diffDir = path.join(baseDir, "diff");
+  const outputDir = path.join(baseDir, "output");
+  const expectedDir = path.join(baseDir, "expected");
+  const diffDir = path.join(baseDir, "diff");
 
-	const allOutputFiles = await listDirectoryFiles(outputDir);
-	const expectedFiles = await listDirectoryFiles(expectedDir);
+  const allOutputFiles = await listDirectoryFiles(outputDir);
+  const expectedFiles = await listDirectoryFiles(expectedDir);
 
-	// Filter to only files generated after the specified timestamp (if provided)
-	let generatedFiles = allOutputFiles;
-	if (generatedAfter) {
-		generatedFiles = [];
-		for (const file of allOutputFiles) {
-			const filePath = path.join(outputDir, file);
-			const stats = await fse.stat(filePath);
-			if (stats.mtime > generatedAfter) {
-				generatedFiles.push(file);
-			}
-		}
-	}
+  // Filter to only files generated after the specified timestamp (if provided)
+  let generatedFiles = allOutputFiles;
+  if (generatedAfter) {
+    generatedFiles = [];
+    for (const file of allOutputFiles) {
+      const filePath = path.join(outputDir, file);
+      const stats = await fse.stat(filePath);
+      if (stats.mtime > generatedAfter) {
+        generatedFiles.push(file);
+      }
+    }
+  }
 
-	// Verify all expected files were generated
-	expect(generatedFiles).toEqual(expectedFiles);
+  // Verify all expected files were generated
+  expect(generatedFiles).toEqual(expectedFiles);
 
-	// Verify each generated file exists and compare with expected
-	for (const relativePath of expectedFiles) {
-		const outputPath = path.join(outputDir, relativePath);
-		const expectedPath = path.join(expectedDir, relativePath);
-		const diffPath = path.join(diffDir, relativePath);
+  // Verify each generated file exists and compare with expected
+  for (const relativePath of expectedFiles) {
+    const outputPath = path.join(outputDir, relativePath);
+    const expectedPath = path.join(expectedDir, relativePath);
+    const diffPath = path.join(diffDir, relativePath);
 
-		expect(
-			await fse.pathExists(outputPath),
-			`Expected file was not generated: ${relativePath}`,
-		).toBe(true);
+    expect(
+      await fse.pathExists(outputPath),
+      `Expected file was not generated: ${relativePath}`,
+    ).toBe(true);
 
-		// Determine file type and perform appropriate comparison
-		const ext = path.extname(relativePath).toLowerCase();
-		switch (ext) {
-			case ".png":
-				await compareImages(outputPath, expectedPath, diffPath, imageThreshold);
-				break;
-			case ".json":
-				await compareJsonFiles(outputPath, expectedPath);
-				break;
-			default:
-				await compareTextFiles(outputPath, expectedPath);
-				break;
-		}
-	}
+    // Determine file type and perform appropriate comparison
+    const ext = path.extname(relativePath).toLowerCase();
+    switch (ext) {
+      case ".png":
+        await compareImages(outputPath, expectedPath, diffPath, imageThreshold);
+        break;
+      case ".json":
+        await compareJsonFiles(outputPath, expectedPath);
+        break;
+      default:
+        await compareTextFiles(outputPath, expectedPath);
+        break;
+    }
+  }
 }
 
 /**
@@ -85,16 +85,14 @@ export async function verifyGeneratedFiles(
  * @returns Array of relative file paths (e.g., ["mipmap-hdpi/ic_launcher.png"])
  */
 async function listDirectoryFiles(directory: string): Promise<string[]> {
-	const entries = await fse.readdir(directory, {
-		withFileTypes: true,
-		recursive: true,
-	});
+  const entries = await fse.readdir(directory, {
+    withFileTypes: true,
+    recursive: true,
+  });
 
-	return entries
-		.filter((entry) => entry.isFile())
-		.map((entry) =>
-			path.join(path.relative(directory, entry.parentPath), entry.name),
-		);
+  return entries
+    .filter((entry) => entry.isFile())
+    .map((entry) => path.join(path.relative(directory, entry.parentPath), entry.name));
 }
 
 /**
@@ -107,20 +105,20 @@ async function listDirectoryFiles(directory: string): Promise<string[]> {
  * @throws {Error} If images have different dimensions or mismatch ratio exceeds threshold
  */
 async function compareImages(
-	outputPath: string,
-	expectedPath: string,
-	diffPath: string,
-	threshold: number,
+  outputPath: string,
+  expectedPath: string,
+  diffPath: string,
+  threshold: number,
 ): Promise<void> {
-	const { mismatchRatio } = await sharpmatch(outputPath, expectedPath, {
-		threshold,
-		diffOutputPath: diffPath,
-	});
+  const { mismatchRatio } = await sharpmatch(outputPath, expectedPath, {
+    threshold,
+    diffOutputPath: diffPath,
+  });
 
-	expect(
-		mismatchRatio,
-		`Image mismatch: ${(mismatchRatio * 100).toFixed(2)}% of pixels differ (threshold: ${(threshold * 100).toFixed(2)}%). See diff at ${diffPath}`,
-	).toBeLessThanOrEqual(threshold);
+  expect(
+    mismatchRatio,
+    `Image mismatch: ${(mismatchRatio * 100).toFixed(2)}% of pixels differ (threshold: ${(threshold * 100).toFixed(2)}%). See diff at ${diffPath}`,
+  ).toBeLessThanOrEqual(threshold);
 }
 
 /**
@@ -131,20 +129,15 @@ async function compareImages(
  * @param expectedPath - Path to the expected reference JSON file
  * @throws {Error} If JSON content doesn't match
  */
-async function compareJsonFiles(
-	outputPath: string,
-	expectedPath: string,
-): Promise<void> {
-	const outputContent = await fse.readFile(outputPath, "utf-8");
-	const expectedContent = await fse.readFile(expectedPath, "utf-8");
-	const filename = path.basename(outputPath);
+async function compareJsonFiles(outputPath: string, expectedPath: string): Promise<void> {
+  const outputContent = await fse.readFile(outputPath, "utf-8");
+  const expectedContent = await fse.readFile(expectedPath, "utf-8");
+  const filename = path.basename(outputPath);
 
-	const outputJson = JSON.parse(outputContent);
-	const expectedJson = JSON.parse(expectedContent);
+  const outputJson = JSON.parse(outputContent);
+  const expectedJson = JSON.parse(expectedContent);
 
-	expect(outputJson, `JSON content mismatch in ${filename}`).toEqual(
-		expectedJson,
-	);
+  expect(outputJson, `JSON content mismatch in ${filename}`).toEqual(expectedJson);
 }
 
 /**
@@ -154,12 +147,9 @@ async function compareJsonFiles(
  * @param expectedPath - Path to the expected reference file
  * @throws {Error} If file contents don't match
  */
-async function compareTextFiles(
-	outputPath: string,
-	expectedPath: string,
-): Promise<void> {
-	const outputContent = await fse.readFile(outputPath, "utf-8");
-	const expectedContent = await fse.readFile(expectedPath, "utf-8");
-	const filename = path.basename(outputPath);
-	expect(outputContent, `Text mismatch in ${filename}`).toBe(expectedContent);
+async function compareTextFiles(outputPath: string, expectedPath: string): Promise<void> {
+  const outputContent = await fse.readFile(outputPath, "utf-8");
+  const expectedContent = await fse.readFile(expectedPath, "utf-8");
+  const filename = path.basename(outputPath);
+  expect(outputContent, `Text mismatch in ${filename}`).toBe(expectedContent);
 }

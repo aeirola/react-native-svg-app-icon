@@ -1,43 +1,39 @@
-import type { Context } from "../../util/context";
 import * as input from "../../util/input";
 import * as output from "../../util/output";
-import { prepareForInlining } from "../../util/svg";
-import type { ResolvedConfig } from "../config";
 import { densities, getIconPath, roundIconName } from "../resources";
 import { dropShadowFilter, shadedEdgeFilter } from "./lightning-filter";
 import {
-	legacyIconSize,
-	legacyIconViewBox,
-	legacyRoundIconContentSize,
-	roundIconClipPath,
-	roundIconShape,
+  legacyIconSize,
+  legacyIconViewBox,
+  legacyRoundIconContentSize,
+  roundIconClipPath,
+  roundIconShape,
 } from "./shapes";
+import type { Context } from "../../util/context";
+import type { ResolvedConfig } from "../config";
+import { prepareForInlining } from "../../util/svg";
 
 /**
  * Scaling ratio to fit the input SVG content within the legacy round icon
  * content area.
  */
-const inputContentScalingFactor =
-	legacyRoundIconContentSize / input.inputContentSize;
+const inputContentScalingFactor = legacyRoundIconContentSize / input.inputContentSize;
 
 /**
  * Translation value to center the scaled input SVG content within the legacy
  * round icon content area.
  */
 const scalingCompensationTranslation =
-	(legacyIconSize - legacyRoundIconContentSize) / 2 -
-	inputContentScalingFactor * input.inputImageMargin;
+  (legacyIconSize - legacyRoundIconContentSize) / 2 -
+  inputContentScalingFactor * input.inputImageMargin;
 
 /**
  * Builds a wrapper SVG that composites background and foreground into a legacy
  * round icon.
  */
-function buildRoundLegacyIconSvg(
-	background: Buffer,
-	foreground: Buffer,
-): Buffer {
-	return Buffer.from(
-		`<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+function buildRoundLegacyIconSvg(background: Buffer, foreground: Buffer): Buffer {
+  return Buffer.from(
+    `<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
 	viewBox="${legacyIconViewBox}"
 	width="${legacyIconSize}" height="${legacyIconSize}">
 	<defs>
@@ -58,38 +54,38 @@ function buildRoundLegacyIconSvg(
 
 	<use href="#roundIconShape" filter="url(#shadedEdgeFilter)" />
 </svg>`,
-		"utf-8",
-	);
+    "utf-8",
+  );
 }
 
 export async function* generateLegacyRoundIcons(
-	fileInput: input.FileInput,
-	context: Context<ResolvedConfig>,
+  fileInput: input.FileInput,
+  context: Context<ResolvedConfig>,
 ): AsyncIterable<string> {
-	yield* output.generatePngs(
-		{
-			image: input.mapInput(fileInput, (inputData) => ({
-				...inputData.backgroundImageData,
-				data: buildRoundLegacyIconSvg(
-					inputData.backgroundImageData.data,
-					inputData.foregroundImageData.data,
-				),
-				metadata: {
-					...inputData.backgroundImageData.metadata,
-					width: legacyIconSize,
-					height: legacyIconSize,
-				},
-			})),
-		},
-		densities.map((density) => ({
-			filePath: getIconPath(
-				context.config,
-				"mipmap",
-				{ density: density.name },
-				`${roundIconName}.png`,
-			),
-			outputSize: legacyIconSize * density.scale,
-		})),
-		context,
-	);
+  yield* output.generatePngs(
+    {
+      image: input.mapInput(fileInput, (inputData) => ({
+        ...inputData.backgroundImageData,
+        data: buildRoundLegacyIconSvg(
+          inputData.backgroundImageData.data,
+          inputData.foregroundImageData.data,
+        ),
+        metadata: {
+          ...inputData.backgroundImageData.metadata,
+          width: legacyIconSize,
+          height: legacyIconSize,
+        },
+      })),
+    },
+    densities.map((density) => ({
+      filePath: getIconPath(
+        context.config,
+        "mipmap",
+        { density: density.name },
+        `${roundIconName}.png`,
+      ),
+      outputSize: legacyIconSize * density.scale,
+    })),
+    context,
+  );
 }

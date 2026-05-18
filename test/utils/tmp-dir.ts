@@ -20,19 +20,19 @@ import * as path from "node:path";
  * ```
  */
 export const tmpDir = async (
-	// Vitest requires a pattern for fixtures here.
-	// oxlint-disable-next-line no-empty-pattern
-	{},
-	use: (tmpDir: string) => Promise<void>,
+  // Vitest requires a pattern for fixtures here.
+  // oxlint-disable-next-line no-empty-pattern
+  {},
+  use: (tmpDir: string) => Promise<void>,
 ) => {
-	const originalCwd = process.cwd();
-	const tmpDirPath = await fs.promises.mkdtemp(
-		path.join(os.tmpdir(), "react-native-svg-app-icon-test-"),
-	);
-	process.chdir(tmpDirPath);
+  const originalCwd = process.cwd();
+  const tmpDirPath = await fs.promises.mkdtemp(
+    path.join(os.tmpdir(), "react-native-svg-app-icon-test-"),
+  );
+  process.chdir(tmpDirPath);
 
-	await use(tmpDirPath);
+  await use(tmpDirPath);
 
-	process.chdir(originalCwd);
-	await fs.promises.rm(tmpDirPath, { recursive: true, force: true });
+  process.chdir(originalCwd);
+  await fs.promises.rm(tmpDirPath, { recursive: true, force: true });
 };

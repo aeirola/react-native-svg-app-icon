@@ -1,57 +1,50 @@
+import * as input from "../util/input";
 import * as path from "node:path";
+import { type IosConfig, generate } from "./index";
 import { beforeAll, beforeEach, describe, it } from "vitest";
 
 import { cleanupTestOutputs } from "../../../test/utils/cleanup";
 import { makeContext } from "../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../test/utils/file-comparison";
-import * as input from "../util/input";
-import { generate, type IosConfig } from "./index";
 
 describe("ios/index", () => {
-	const assetsPath = path.join(__dirname, "index.test.assets");
-	const testAssetsPath = path.join(
-		__dirname,
-		"..",
-		"..",
-		"..",
-		"test",
-		"assets",
-	);
+  const assetsPath = path.join(__dirname, "index.test.assets");
+  const testAssetsPath = path.join(__dirname, "..", "..", "..", "test", "assets");
 
-	let fileInput: input.FileInput;
+  let fileInput: input.FileInput;
 
-	beforeAll(async () => {
-		// Clean up output directories from previous test runs
-		await cleanupTestOutputs(assetsPath, ["icons"]);
-	});
+  beforeAll(async () => {
+    // Clean up output directories from previous test runs
+    await cleanupTestOutputs(assetsPath, ["icons"]);
+  });
 
-	beforeEach(async () => {
-		// Load test icons
-		fileInput = await input.readIcon(
-			{
-				projectRoot: assetsPath,
-				backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
-				foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
-			},
-			undefined,
-		);
-	});
+  beforeEach(async () => {
+    // Load test icons
+    fileInput = await input.readIcon(
+      {
+        projectRoot: assetsPath,
+        backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
+        foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+      },
+      undefined,
+    );
+  });
 
-	describe("generate", () => {
-		it("generates iOS icons and manifest matching reference files", async () => {
-			const baseDir = path.join(assetsPath, "icons");
-			const outputPath = path.join(baseDir, "output");
-			const context = makeContext<IosConfig>({
-				iosOutputPath: outputPath,
-				projectRoot: baseDir,
-			});
+  describe("generate", () => {
+    it("generates iOS icons and manifest matching reference files", async () => {
+      const baseDir = path.join(assetsPath, "icons");
+      const outputPath = path.join(baseDir, "output");
+      const context = makeContext<IosConfig>({
+        iosOutputPath: outputPath,
+        projectRoot: baseDir,
+      });
 
-			// Generate icons and manifest
-			for await (const _file of generate(context, fileInput)) {
-				// Files are generated and written to disk
-			}
+      // Generate icons and manifest
+      for await (const _file of generate(context, fileInput)) {
+        // Files are generated and written to disk
+      }
 
-			await verifyGeneratedFiles(baseDir);
-		});
-	});
+      await verifyGeneratedFiles(baseDir);
+    });
+  });
 });

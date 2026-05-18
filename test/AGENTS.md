@@ -22,6 +22,7 @@ Tests use **Vitest** with extended timeouts (`testTimeout: 60s`) for resource-in
 ## Fixture Directory Convention
 
 Each test case directory follows:
+
 ```
 {test-case}/
   input/     - Source files (SVG icons, app.json)

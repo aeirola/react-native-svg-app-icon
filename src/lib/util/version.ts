@@ -1,6 +1,6 @@
+import * as fse from "fs-extra";
 import * as path from "node:path";
 import { type } from "arktype";
-import * as fse from "fs-extra";
 
 const packageJsonPath = path.join(__dirname, "..", "..", "..", "package.json");
 
@@ -13,7 +13,7 @@ const PackageJson = type({ version: "string" });
  * @throws If `package.json` cannot be read or does not contain a string `version` field.
  */
 export async function getPackageVersion(): Promise<string> {
-	const raw = await fse.readJson(packageJsonPath);
-	const pkg = PackageJson.assert(raw);
-	return pkg.version;
+  const raw = await fse.readJson(packageJsonPath);
+  const pkg = PackageJson.assert(raw);
+  return pkg.version;
 }
