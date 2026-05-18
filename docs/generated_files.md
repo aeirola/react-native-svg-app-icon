@@ -63,7 +63,6 @@ Vector drawable icons are generated using the [svg2vectordrawable](https://githu
 </vector>
 ```
 
-
 #### PNG fallback
 
 In case the input SVG contains elements not supported by vector drawable, such as `<text>`, then the foreground is rendered as a normal PNG image for each density.
@@ -97,8 +96,6 @@ Android 7.1 included support for defining specifically circular launcher icons. 
 ![Android xhdpi legacy round](../test/integration/assets/normal/expected/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png)
 ![Android hdpi legacy round](../test/integration/assets/normal/expected/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png)
 ![Android mdpi legacy round](../test/integration/assets/normal/expected/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png)
-
-
 
 ## iOS
 

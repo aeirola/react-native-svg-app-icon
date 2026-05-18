@@ -1,15 +1,15 @@
 import * as crypto from "node:crypto";
+import * as fse from "fs-extra";
 import * as os from "node:os";
 import * as path from "node:path";
-import { type } from "arktype";
-import * as fse from "fs-extra";
 import type { Logger } from "../util/logger";
+import { type } from "arktype";
 
 const CacheData = type({
-	/** Version of react-native-svg-app-icon that wrote this cache entry. */
-	"packageVersion?": "string",
-	inputs: { "[string]": "string" },
-	outputs: { "[string]": "string" },
+  /** Version of react-native-svg-app-icon that wrote this cache entry. */
+  "packageVersion?": "string",
+  inputs: { "[string]": "string" },
+  outputs: { "[string]": "string" },
 });
 
 /**
@@ -25,51 +25,42 @@ export type CacheData = typeof CacheData.infer;
  * directory.
  */
 export class CacheStorage {
-	private readonly cachePath: string;
-	private readonly logger: Logger | undefined;
+  private readonly cachePath: string;
+  private readonly logger: Logger | undefined;
 
-	/**
-	 * @param projectId - A string uniquely identifying the project (typically
-	 *   the project root path). Used to derive a stable cache file location.
-	 * @param logger - Optional logger for diagnostic messages on cache misses
-	 *   or read failures.
-	 */
-	constructor(projectId: string, logger: Logger | undefined) {
-		this.logger = logger;
-		const projectHash = crypto
-			.createHash("md5")
-			.update(projectId)
-			.digest("hex")
-			.substring(0, 8);
+  /**
+   * @param projectId - A string uniquely identifying the project (typically
+   *   the project root path). Used to derive a stable cache file location.
+   * @param logger - Optional logger for diagnostic messages on cache misses
+   *   or read failures.
+   */
+  constructor(projectId: string, logger: Logger | undefined) {
+    this.logger = logger;
+    const projectHash = crypto.createHash("md5").update(projectId).digest("hex").substring(0, 8);
 
-		this.cachePath = path.join(
-			os.tmpdir(),
-			"react-native-svg-app-icon",
-			projectHash,
-			"cache.json",
-		);
-	}
+    this.cachePath = path.join(os.tmpdir(), "react-native-svg-app-icon", projectHash, "cache.json");
+  }
 
-	/**
-	 * Reads persisted cache data from disk. Returns an empty cache if the file
-	 * does not exist or cannot be parsed.
-	 */
-	async read(): Promise<CacheData> {
-		try {
-			const raw: unknown = await fse.readJson(this.cachePath);
-			return CacheData.assert(raw);
-		} catch (error) {
-			this.logger?.debug(
-				`Could not read cache at ${this.cachePath}: ${error instanceof Error ? error.message : String(error)}`,
-			);
-			return { inputs: {}, outputs: {} };
-		}
-	}
+  /**
+   * Reads persisted cache data from disk. Returns an empty cache if the file
+   * does not exist or cannot be parsed.
+   */
+  async read(): Promise<CacheData> {
+    try {
+      const raw: unknown = await fse.readJson(this.cachePath);
+      return CacheData.assert(raw);
+    } catch (error) {
+      this.logger?.debug(
+        `Could not read cache at ${this.cachePath}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return { inputs: {}, outputs: {} };
+    }
+  }
 
-	/**
-	 * Persists cache data to disk, creating parent directories as needed.
-	 */
-	async write(data: CacheData): Promise<void> {
-		await fse.outputJson(this.cachePath, data, { spaces: 2 });
-	}
+  /**
+   * Persists cache data to disk, creating parent directories as needed.
+   */
+  async write(data: CacheData): Promise<void> {
+    await fse.outputJson(this.cachePath, data, { spaces: 2 });
+  }
 }

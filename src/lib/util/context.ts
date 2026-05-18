@@ -10,7 +10,7 @@ import type { Logger } from "./logger";
  * are scoped per platform/module.
  */
 export interface Context<Config = unknown> {
-	config: Config;
-	logger: Logger | undefined;
-	cache: CacheSession;
+  config: Config;
+  logger: Logger | undefined;
+  cache: CacheSession;
 }

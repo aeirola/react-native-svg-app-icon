@@ -1,98 +1,83 @@
+import * as input from "../../util/input";
 import * as path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import type { ResolvedConfig } from "../config";
 
 import { cleanupTestOutput } from "../../../../test/utils/cleanup";
+import { generateVectorDrawable } from "./vector-drawable";
 import { makeContext } from "../../../../test/utils/context";
 import { verifyGeneratedFiles } from "../../../../test/utils/file-comparison";
-import * as input from "../../util/input";
-import type { ResolvedConfig } from "../config";
-import { generateVectorDrawable } from "./vector-drawable";
 
 describe("android/vector-drawable", () => {
-	const assetsPath = path.join(__dirname, "vector-drawable.test.assets");
-	const testAssetsPath = path.join(
-		__dirname,
-		"..",
-		"..",
-		"..",
-		"..",
-		"test",
-		"assets",
-	);
+  const assetsPath = path.join(__dirname, "vector-drawable.test.assets");
+  const testAssetsPath = path.join(__dirname, "..", "..", "..", "..", "test", "assets");
 
-	beforeAll(async () => {
-		// Clean up output directories from previous test runs
-		await cleanupTestOutput(assetsPath);
-	});
+  beforeAll(async () => {
+    // Clean up output directories from previous test runs
+    await cleanupTestOutput(assetsPath);
+  });
 
-	describe("generateVectorDrawable", () => {
-		it("generates vector drawable XML matching expected output", async () => {
-			// Load test icon
-			const fileInput = await input.readIcon(
-				{
-					projectRoot: assetsPath,
-					foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
-				},
-				undefined,
-			);
+  describe("generateVectorDrawable", () => {
+    it("generates vector drawable XML matching expected output", async () => {
+      // Load test icon
+      const fileInput = await input.readIcon(
+        {
+          projectRoot: assetsPath,
+          foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+        },
+        undefined,
+      );
 
-			const baseDir = assetsPath;
-			const outputPath = path.join(baseDir, "output");
-			const context = makeContext<ResolvedConfig>({
-				androidOutputPath: outputPath,
-				projectRoot: assetsPath,
-			});
+      const baseDir = assetsPath;
+      const outputPath = path.join(baseDir, "output");
+      const context = makeContext<ResolvedConfig>({
+        androidOutputPath: outputPath,
+        projectRoot: assetsPath,
+      });
 
-			// Map the file input to the expected format
-			const imageInput = input.mapInput(
-				fileInput,
-				(inputData) => inputData.foregroundImageData,
-			);
+      // Map the file input to the expected format
+      const imageInput = input.mapInput(fileInput, (inputData) => inputData.foregroundImageData);
 
-			// Generate vector drawable
-			for await (const _file of generateVectorDrawable(
-				imageInput,
-				"icon",
-				context,
-			)) {
-				// Files are generated and written to disk
-			}
+      // Generate vector drawable
+      for await (const _file of generateVectorDrawable(imageInput, "icon", context)) {
+        // Files are generated and written to disk
+      }
 
-			await verifyGeneratedFiles(baseDir);
-		});
+      await verifyGeneratedFiles(baseDir);
+    });
 
-		it("uses strict mode to fail on unsupported SVG elements", async () => {
-			const outputPath = path.join(assetsPath, "output");
+    it("uses strict mode to fail on unsupported SVG elements", async () => {
+      const outputPath = path.join(assetsPath, "output");
 
-			// Load SVG with text element (unsupported in vector drawable)
-			const unsupportedFileInput = await input.readIcon(
-				{
-					projectRoot: assetsPath,
-					foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
-				},
-				undefined,
-			);
+      // Load SVG with text element (unsupported in vector drawable)
+      const unsupportedFileInput = await input.readIcon(
+        {
+          projectRoot: assetsPath,
+          foregroundPath: path.join(testAssetsPath, "text-icon.svg"),
+        },
+        undefined,
+      );
 
-			const context = makeContext<ResolvedConfig>({
-				androidOutputPath: outputPath,
-				projectRoot: assetsPath,
-			});
+      const context = makeContext<ResolvedConfig>({
+        androidOutputPath: outputPath,
+        projectRoot: assetsPath,
+      });
 
-			const unsupportedInput = input.mapInput(
-				unsupportedFileInput,
-				(inputData) => inputData.foregroundImageData,
-			);
+      const unsupportedInput = input.mapInput(
+        unsupportedFileInput,
+        (inputData) => inputData.foregroundImageData,
+      );
 
-			// Should throw an error due to strict mode
-			await expect(async () => {
-				for await (const _ of generateVectorDrawable(
-					unsupportedInput,
-					"unsupported-icon",
-					context,
-				)) {
-					// Consume the generator
-				}
-			}).rejects.toThrow();
-		});
-	});
+      // Should throw an error due to strict mode
+      await expect(async () => {
+        for await (const _ of generateVectorDrawable(
+          unsupportedInput,
+          "unsupported-icon",
+          context,
+        )) {
+          // Consume the generator
+        }
+      }).rejects.toThrow();
+    });
+  });
 });

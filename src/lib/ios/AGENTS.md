@@ -10,6 +10,7 @@ iOS generation in [index.ts](index.ts) produces PNGs for all required sizes/scal
 ## Output Path Auto-Discovery
 
 [config.ts](config.ts) resolves the iOS output directory:
+
 1. If `appName` provided, checks `ios/{appName}/Images.xcassets` first
 2. Otherwise scans all `ios/*/Images.xcassets` directories
 3. Appends `AppIcon.appiconset` to the selected directory
@@ -18,6 +19,7 @@ iOS generation in [index.ts](index.ts) produces PNGs for all required sizes/scal
 ## Icon Sizes
 
 18 total variants covering all Apple devices:
+
 - iPhone: 20, 29, 40, 60 at 2× and 3× scales
 - iPad: 20, 29, 40, 76 at 1× and 2× scales
 - iPad Pro: 83.5 at 2× scale

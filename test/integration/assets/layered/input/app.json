@@ -1,7 +1,7 @@
 {
-	"name": "layered",
-	"svgAppIcon": {
-		"foregroundPath": "./icon-foreground.svg",
-		"backgroundPath": "./icon-background.svg"
-	}
+  "name": "layered",
+  "svgAppIcon": {
+    "foregroundPath": "./icon-foreground.svg",
+    "backgroundPath": "./icon-background.svg"
+  }
 }

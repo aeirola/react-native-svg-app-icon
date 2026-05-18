@@ -8,24 +8,21 @@ import { optimize } from "svgo";
  * @param idPrefix The prefix to use for IDs within the SVG.
  * @returns The inlinable SVG as a string.
  */
-export function prepareForInlining(
-	svgBuffer: Buffer,
-	idPrefix: string,
-): string {
-	const svgoResult = optimize(svgBuffer.toString("utf-8"), {
-		plugins: [
-			"removeDoctype",
-			"removeXMLProcInst",
-			{
-				name: "prefixIds",
-				params: { prefix: idPrefix },
-			},
-		],
-	});
+export function prepareForInlining(svgBuffer: Buffer, idPrefix: string): string {
+  const svgoResult = optimize(svgBuffer.toString("utf-8"), {
+    plugins: [
+      "removeDoctype",
+      "removeXMLProcInst",
+      {
+        name: "prefixIds",
+        params: { prefix: idPrefix },
+      },
+    ],
+  });
 
-	if (svgoResult.error !== undefined) {
-		throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
-	}
+  if (svgoResult.error !== undefined) {
+    throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
+  }
 
-	return svgoResult.data;
+  return svgoResult.data;
 }

@@ -1,8 +1,8 @@
-import { type } from "arktype";
 import { AndroidConfig } from "../android";
 import { CacheConfig } from "../cache";
-import { IosConfig } from "../ios";
 import { InputConfig } from "../util/input";
+import { IosConfig } from "../ios";
+import { type } from "arktype";
 
 /**
  * Supported platforms for generating icons.
@@ -10,13 +10,13 @@ import { InputConfig } from "../util/input";
 export const Platform = type("'android'|'ios'");
 
 export const Config = type.merge(
-	InputConfig,
-	AndroidConfig,
-	IosConfig,
-	CacheConfig,
-	type({
-		platforms: Platform.array().default(() => ["android", "ios"]),
-	}),
+  InputConfig,
+  AndroidConfig,
+  IosConfig,
+  CacheConfig,
+  type({
+    platforms: Platform.array().default(() => ["android", "ios"]),
+  }),
 );
 
 export type Platform = typeof Platform.infer;

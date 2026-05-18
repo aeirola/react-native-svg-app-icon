@@ -1,59 +1,58 @@
 import * as fse from "fs-extra";
-
-import type { Context } from "./context";
 import type * as input from "./input";
 
+import type { Context } from "./context";
+
 interface GenerateInput {
-	image: input.Input<input.ImageData>;
-	/** Remove alpha channel from the output image. */
-	removeAlpha?: boolean;
+  image: input.Input<input.ImageData>;
+  /** Remove alpha channel from the output image. */
+  removeAlpha?: boolean;
 }
 
 interface GenerateConfig {
-	filePath: string;
-	outputSize: number;
+  filePath: string;
+  outputSize: number;
 }
 
 export async function* generatePngs(
-	fileInput: GenerateInput,
-	outputs: GenerateConfig[],
-	context: Context,
+  fileInput: GenerateInput,
+  outputs: GenerateConfig[],
+  context: Context,
 ): AsyncIterable<string> {
-	for (const output of outputs) {
-		yield* generatePng(fileInput, output, context);
-	}
+  for (const output of outputs) {
+    yield* generatePng(fileInput, output, context);
+  }
 }
 
 async function* generatePng(
-	fileInput: GenerateInput,
-	output: GenerateConfig,
-	context: Context,
+  fileInput: GenerateInput,
+  output: GenerateConfig,
+  context: Context,
 ): AsyncIterable<string> {
-	yield* generateFile(
-		output.filePath,
-		async () => {
-			const sharp = (await import("sharp")).default;
-			const inputImage = await fileInput.image.read();
-			const metadata = inputImage.metadata;
+  yield* generateFile(
+    output.filePath,
+    async () => {
+      const sharp = (await import("sharp")).default;
+      const inputImage = await fileInput.image.read();
+      const metadata = inputImage.metadata;
 
-			const targetDensity =
-				(output.outputSize / metadata.width) * metadata.density;
+      const targetDensity = (output.outputSize / metadata.width) * metadata.density;
 
-			let image = sharp(inputImage.data, { density: targetDensity });
+      let image = sharp(inputImage.data, { density: targetDensity });
 
-			if (fileInput.removeAlpha) {
-				image = image.removeAlpha();
-			}
+      if (fileInput.removeAlpha) {
+        image = image.removeAlpha();
+      }
 
-			return image
-				.png({
-					adaptiveFiltering: false,
-					compressionLevel: 9,
-				})
-				.toBuffer();
-		},
-		context,
-	);
+      return image
+        .png({
+          adaptiveFiltering: false,
+          compressionLevel: 9,
+        })
+        .toBuffer();
+    },
+    context,
+  );
 }
 
 /**
@@ -72,37 +71,37 @@ async function* generatePng(
  * @yields The file path when the file was written; yields nothing if skipped.
  */
 export async function* generateFile(
-	path: string,
-	contentProvider:
-		| (() => string | Record<string, unknown> | Buffer)
-		| (() => Promise<string | Record<string, unknown> | Buffer>),
-	{ cache, logger }: Context,
+  path: string,
+  contentProvider:
+    | (() => string | Record<string, unknown> | Buffer)
+    | (() => Promise<string | Record<string, unknown> | Buffer>),
+  { cache, logger }: Context,
 ): AsyncIterable<string> {
-	if (await cache.isUpToDate(path)) {
-		logger?.debug(`Skipping ${path} (up to date)`);
-		return;
-	}
+  if (await cache.isUpToDate(path)) {
+    logger?.debug(`Skipping ${path} (up to date)`);
+    return;
+  }
 
-	const content = await contentProvider();
-	let contentBuffer: Buffer;
-	if (Buffer.isBuffer(content)) {
-		contentBuffer = content;
-	} else {
-		let stringContent: string;
-		switch (typeof content) {
-			case "object":
-				stringContent = JSON.stringify(content, undefined, 2);
-				break;
-			case "string":
-				stringContent = content;
-				break;
-			default:
-				throw Error("Invalid content");
-		}
-		contentBuffer = Buffer.from(stringContent, "utf-8");
-	}
+  const content = await contentProvider();
+  let contentBuffer: Buffer;
+  if (Buffer.isBuffer(content)) {
+    contentBuffer = content;
+  } else {
+    let stringContent: string;
+    switch (typeof content) {
+      case "object":
+        stringContent = JSON.stringify(content, undefined, 2);
+        break;
+      case "string":
+        stringContent = content;
+        break;
+      default:
+        throw Error("Invalid content");
+    }
+    contentBuffer = Buffer.from(stringContent, "utf-8");
+  }
 
-	await fse.outputFile(path, contentBuffer);
-	cache.recordBuffer(path, contentBuffer);
-	yield path;
+  await fse.outputFile(path, contentBuffer);
+  cache.recordBuffer(path, contentBuffer);
+  yield path;
 }
