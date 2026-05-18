@@ -25,10 +25,9 @@
 		"prepare": "npm run clean && tsc --project tsconfig.build.json",
 		"prepack": "node scripts/prepack-readme.js",
 		"postpack": "node scripts/prepack-readme.js revert",
-		"test": "concurrently 'npm:test:lint:*' 'npm:test:unit' 'npm:test:integration'",
-		"test:lint": "concurrently 'npm:test:lint:*'",
+		"test": "concurrently 'npm:test:*'",
 		"test:lint:format": "oxfmt --check",
-		"test:lint:lint": "oxlint",
+		"test:lint:style": "oxlint",
 		"test:lint:types": "tsc",
 		"test:unit": "vitest run src/",
 		"test:integration": "npm run prepare && vitest run test/integration/"

@@ -27,8 +27,7 @@ jobs:
             package-lock.json
             example-expo/package-lock.json
       - run: npm ci
-      - run: npm run test:lint
-      - run: npx vitest run
+      - run: npm test
       - uses: actions/upload-artifact@v6
         if: always()
         with:
