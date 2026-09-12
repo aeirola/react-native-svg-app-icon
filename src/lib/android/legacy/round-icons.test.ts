@@ -36,8 +36,8 @@ describe("android/legacy/round-icons", () => {
       projectRoot: baseDir,
     });
 
-    for await (const _file of generateLegacyRoundIcons(fileInput, context)) {
-      // Files are generated and written to disk
+    for await (const task of generateLegacyRoundIcons(fileInput, context)) {
+      await task.run();
     }
 
     await verifyGeneratedFiles(baseDir, {

@@ -40,8 +40,8 @@ describe("ios/index", () => {
       });
 
       // Generate icons and manifest
-      for await (const _file of generate(context, fileInput)) {
-        // Files are generated and written to disk
+      for await (const task of generate(context, fileInput)) {
+        await task.run();
       }
 
       await verifyGeneratedFiles(baseDir);

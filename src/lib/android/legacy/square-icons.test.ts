@@ -35,8 +35,8 @@ describe("android/legacy/square-icons", () => {
       projectRoot: baseDir,
     });
 
-    for await (const _file of generateLegacySquareIcons(fileInput, context)) {
-      // Files are generated and written to disk
+    for await (const task of generateLegacySquareIcons(fileInput, context)) {
+      await task.run();
     }
 
     await verifyGeneratedFiles(baseDir, {

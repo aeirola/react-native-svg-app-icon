@@ -1,7 +1,7 @@
 import * as fse from "fs-extra";
 import type * as input from "./input";
-
 import type { Context } from "./context";
+import type { Task } from "../tasks";
 
 interface GenerateInput {
   image: input.Input<input.ImageData>;
@@ -18,7 +18,7 @@ export async function* generatePngs(
   fileInput: GenerateInput,
   outputs: GenerateConfig[],
   context: Context,
-): AsyncIterable<string> {
+): AsyncIterable<Task> {
   for (const output of outputs) {
     yield* generatePng(fileInput, output, context);
   }
@@ -28,7 +28,7 @@ async function* generatePng(
   fileInput: GenerateInput,
   output: GenerateConfig,
   context: Context,
-): AsyncIterable<string> {
+): AsyncIterable<Task> {
   yield* generateFile(
     output.filePath,
     async () => {
@@ -68,40 +68,44 @@ async function* generatePng(
  *   to be (re-)generated. Strings and objects are UTF-8 encoded (objects are
  *   JSON-serialised); Buffers are written as-is.
  * @param context - Generation context supplying the cache session.
- * @yields The file path when the file was written; yields nothing if skipped.
+ * @yields A write task for the file when generation is needed; yields nothing if skipped.
  */
 export async function* generateFile(
-  path: string,
+  filePath: string,
   contentProvider:
     | (() => string | Record<string, unknown> | Buffer)
     | (() => Promise<string | Record<string, unknown> | Buffer>),
   { cache, logger }: Context,
-): AsyncIterable<string> {
-  if (await cache.isUpToDate(path)) {
-    logger?.debug(`Skipping ${path} (up to date)`);
+): AsyncIterable<Task> {
+  if (await cache.isUpToDate(filePath)) {
+    logger?.debug(`Skipping ${filePath} (up to date)`);
     return;
   }
 
-  const content = await contentProvider();
-  let contentBuffer: Buffer;
-  if (Buffer.isBuffer(content)) {
-    contentBuffer = content;
-  } else {
-    let stringContent: string;
-    switch (typeof content) {
-      case "object":
-        stringContent = JSON.stringify(content, undefined, 2);
-        break;
-      case "string":
-        stringContent = content;
-        break;
-      default:
-        throw Error("Invalid content");
-    }
-    contentBuffer = Buffer.from(stringContent, "utf-8");
-  }
+  yield {
+    filePath,
+    run: async (): Promise<void> => {
+      const content = await contentProvider();
+      let contentBuffer: Buffer;
+      if (Buffer.isBuffer(content)) {
+        contentBuffer = content;
+      } else {
+        let stringContent: string;
+        switch (typeof content) {
+          case "object":
+            stringContent = JSON.stringify(content, undefined, 2);
+            break;
+          case "string":
+            stringContent = content;
+            break;
+          default:
+            throw Error("Invalid content");
+        }
+        contentBuffer = Buffer.from(stringContent, "utf-8");
+      }
 
-  await fse.outputFile(path, contentBuffer);
-  cache.recordBuffer(path, contentBuffer);
-  yield path;
+      await fse.outputFile(filePath, contentBuffer);
+      cache.recordBuffer(filePath, contentBuffer);
+    },
+  };
 }

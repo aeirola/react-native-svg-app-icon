@@ -16,6 +16,7 @@ export const Config = type.merge(
   CacheConfig,
   type({
     platforms: Platform.array().default(() => ["android", "ios"]),
+    concurrency: "number.integer >= 1 = 4",
   }),
 );
 

@@ -16,8 +16,6 @@ describe("lib/index", () => {
       undefined,
     );
 
-    await expect(generatedFiles[Symbol.asyncIterator]().next()).rejects.toThrow(
-      "projectRoot must be an absolute path",
-    );
+    await expect(generatedFiles).rejects.toThrow("projectRoot must be an absolute path");
   });
 });

@@ -39,8 +39,8 @@ describe("android/vector-drawable", () => {
       const imageInput = input.mapInput(fileInput, (inputData) => inputData.foregroundImageData);
 
       // Generate vector drawable
-      for await (const _file of generateVectorDrawable(imageInput, "icon", context)) {
-        // Files are generated and written to disk
+      for await (const task of generateVectorDrawable(imageInput, "icon", context)) {
+        await task.run();
       }
 
       await verifyGeneratedFiles(baseDir);
@@ -70,12 +70,12 @@ describe("android/vector-drawable", () => {
 
       // Should throw an error due to strict mode
       await expect(async () => {
-        for await (const _ of generateVectorDrawable(
+        for await (const task of generateVectorDrawable(
           unsupportedInput,
           "unsupported-icon",
           context,
         )) {
-          // Consume the generator
+          await task.run();
         }
       }).rejects.toThrow();
     });

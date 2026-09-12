@@ -9,9 +9,10 @@ import {
   launcherName,
   roundIconName,
 } from "../resources";
+import { convertToVectorDrawable, generateVectorDrawable } from "./vector-drawable";
 import type { Context } from "../../util/context";
 import type { ResolvedConfig } from "../config";
-import { generateVectorDrawable } from "./vector-drawable";
+import type { Task } from "../../tasks";
 
 const adaptiveIconMinSdk = 26;
 const adaptiveIconBaseSize = 108;
@@ -28,14 +29,20 @@ const adaptiveIconContent = (
 export async function* generateAdaptiveIcons(
   fileInput: input.FileInput,
   context: Context<ResolvedConfig>,
-): AsyncIterable<string> {
+): AsyncIterable<Task> {
   const backgroundImageInput = input.mapInput(
     fileInput,
     (inputData) => inputData.backgroundImageData,
   );
   let backgroundResourceType: ResourceType;
   try {
-    yield* generateVectorDrawable(backgroundImageInput, launcherBackgroundName, context);
+    const backgroundDrawable = await convertToVectorDrawable(backgroundImageInput);
+    yield* generateVectorDrawable(
+      backgroundImageInput,
+      launcherBackgroundName,
+      context,
+      backgroundDrawable,
+    );
     backgroundResourceType = "drawable";
   } catch (error) {
     context.logger?.warn(
@@ -51,7 +58,13 @@ export async function* generateAdaptiveIcons(
   );
   let foregroundResourceType: ResourceType;
   try {
-    yield* generateVectorDrawable(foregroundImageInput, launcherForegroundName, context);
+    const foregroundDrawable = await convertToVectorDrawable(foregroundImageInput);
+    yield* generateVectorDrawable(
+      foregroundImageInput,
+      launcherForegroundName,
+      context,
+      foregroundDrawable,
+    );
     foregroundResourceType = "drawable";
   } catch (error) {
     context.logger?.warn(
@@ -88,7 +101,7 @@ async function* generateAdaptiveIconLayerPng(
   imageInput: input.Input<input.ImageData>,
   fileName: string,
   context: Context<ResolvedConfig>,
-): AsyncIterable<string> {
+): AsyncIterable<Task> {
   yield* output.generatePngs(
     { image: imageInput },
     densities.map((density) => ({

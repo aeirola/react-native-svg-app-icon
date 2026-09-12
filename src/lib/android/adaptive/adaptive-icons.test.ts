@@ -38,8 +38,8 @@ describe("android/adaptive-icons", () => {
       });
 
       // Generate adaptive icons
-      for await (const _file of generateAdaptiveIcons(fileInput, context)) {
-        // Files are generated and written to disk
+      for await (const task of generateAdaptiveIcons(fileInput, context)) {
+        await task.run();
       }
 
       // Verify XML files (vector drawables and adaptive icon manifests)
@@ -65,8 +65,8 @@ describe("android/adaptive-icons", () => {
       });
 
       // Generate adaptive icons
-      for await (const _file of generateAdaptiveIcons(unsupportedFileInput, context)) {
-        // Files are generated and written to disk
+      for await (const task of generateAdaptiveIcons(unsupportedFileInput, context)) {
+        await task.run();
       }
 
       // Verify all generated files against expected

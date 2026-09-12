@@ -11,6 +11,7 @@ import {
 } from "./shapes";
 import type { Context } from "../../util/context";
 import type { ResolvedConfig } from "../config";
+import type { Task } from "../../tasks";
 import { prepareForInlining } from "../../util/svg";
 
 /**
@@ -61,7 +62,7 @@ function buildRoundLegacyIconSvg(background: Buffer, foreground: Buffer): Buffer
 export async function* generateLegacyRoundIcons(
   fileInput: input.FileInput,
   context: Context<ResolvedConfig>,
-): AsyncIterable<string> {
+): AsyncIterable<Task> {
   yield* output.generatePngs(
     {
       image: input.mapInput(fileInput, (inputData) => ({

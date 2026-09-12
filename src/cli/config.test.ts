@@ -16,6 +16,7 @@ describe("cli/config", () => {
         platforms: ["android", "ios"],
         force: false,
         androidOutputPath: "./android/app/src/main/res",
+        concurrency: 4,
         logLevel: "info",
       });
     });
@@ -30,6 +31,7 @@ describe("cli/config", () => {
         platforms: ["android", "ios"],
         force: false,
         androidOutputPath: "./android/app/src/main/res",
+        concurrency: 4,
         logLevel: "info",
       });
     });
@@ -68,6 +70,7 @@ describe("cli/config", () => {
         platforms: ["android"],
         force: true,
         androidOutputPath: "./android/app/src/main/res",
+        concurrency: 4,
         logLevel: "info",
       });
     });
@@ -245,6 +248,14 @@ describe("cli/config", () => {
       });
     });
 
+    it("reads concurrency from CLI arguments", async ({ tmpDir: _tmpDir }) => {
+      const resolvedConfig = await resolveConfig(["node", "script.js", "--concurrency", "2"]);
+
+      expect(resolvedConfig).toMatchObject({
+        concurrency: 2,
+      });
+    });
+
     it("reads multiple CLI arguments together", async ({ tmpDir: _tmpDir }) => {
       const resolvedConfig = await resolveConfig([
         "node",
@@ -296,6 +307,7 @@ describe("cli/config", () => {
         platforms: ["android", "ios"],
         force: true,
         androidOutputPath: "./android/app/src/main/res",
+        concurrency: 4,
         logLevel: "debug",
       });
     });

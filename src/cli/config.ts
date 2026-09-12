@@ -29,6 +29,7 @@ const configFlags: {
   force: ["-f, --force", "overwrite existing newer files"],
   androidOutputPath: ["--android-output-path <path>", "android output path"],
   iosOutputPath: ["--ios-output-path <path>", "ios output path"],
+  concurrency: ["--concurrency <number>", "max number of files to process in parallel"],
   logLevel: ["--log-level <level>", "log level"],
 };
 
@@ -115,6 +116,9 @@ function readCliArgs(args: string[]): Partial<ResolvedConfig> {
   for (const opt of CliConfig.props) {
     const optMeta = opt.value.meta;
     const cliOption = new commander.Option(...configFlags[opt.key]);
+    if (opt.key === "concurrency") {
+      cliOption.argParser((value) => Number(value));
+    }
 
     if (optMeta.default !== undefined) {
       cliOption.default(optMeta.default);

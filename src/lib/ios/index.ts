@@ -3,6 +3,7 @@ import * as output from "../util/output";
 import * as path from "node:path";
 import { type IosConfig, type ResolvedConfig, getConfig } from "./config";
 import type { Context } from "../util/context";
+import type { Task } from "../tasks";
 import { prepareForInlining } from "../util/svg";
 
 const iosIcons = [
@@ -31,7 +32,7 @@ export { IosConfig } from "./config";
 export async function* generate(
   context: Context<IosConfig>,
   fileInput: input.FileInput,
-): AsyncIterable<string> {
+): AsyncIterable<Task> {
   const resolvedContext: Context<ResolvedConfig> = {
     ...context,
     config: await getConfig(context.config, context.logger),
@@ -65,7 +66,7 @@ function buildIosIconSvg(background: Buffer, foreground: Buffer): Buffer {
 async function* generateImages(
   context: Context<ResolvedConfig>,
   fileInput: input.FileInput,
-): AsyncIterable<string> {
+): AsyncIterable<Task> {
   yield* output.generatePngs(
     {
       image: input.mapInput(fileInput, (inputData) => ({
@@ -90,7 +91,7 @@ async function* generateImages(
   );
 }
 
-async function* generateManifest(context: Context<ResolvedConfig>): AsyncIterable<string> {
+async function* generateManifest(context: Context<ResolvedConfig>): AsyncIterable<Task> {
   const fileName = path.join(context.config.iosOutputPath, "Contents.json");
   yield* output.generateFile(
     fileName,
