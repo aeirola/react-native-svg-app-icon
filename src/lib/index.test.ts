@@ -64,14 +64,8 @@ describe("lib/index", () => {
   it("interleaves platform task generators in round-robin order", async () => {
     androidTasks.length = 0;
     iosTasks.length = 0;
-    androidTasks.push(
-      { filePath: "android-1", run: async () => {} },
-      { filePath: "android-2", run: async () => {} },
-    );
-    iosTasks.push(
-      { filePath: "ios-1", run: async () => {} },
-      { filePath: "ios-2", run: async () => {} },
-    );
+    androidTasks.push({ run: async () => "android-1" }, { run: async () => "android-2" });
+    iosTasks.push({ run: async () => "ios-1" }, { run: async () => "ios-2" });
 
     await expect(
       generate(
@@ -90,11 +84,8 @@ describe("lib/index", () => {
   it("skips completed generators while continuing the remaining platform", async () => {
     androidTasks.length = 0;
     iosTasks.length = 0;
-    androidTasks.push({ filePath: "android-1", run: async () => {} });
-    iosTasks.push(
-      { filePath: "ios-1", run: async () => {} },
-      { filePath: "ios-2", run: async () => {} },
-    );
+    androidTasks.push({ run: async () => "android-1" });
+    iosTasks.push({ run: async () => "ios-1" }, { run: async () => "ios-2" });
 
     await expect(
       generate(

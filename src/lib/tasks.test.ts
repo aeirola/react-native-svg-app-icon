@@ -30,12 +30,12 @@ describe("runTasks", () => {
       for (let i = 0; i < 8; i++) {
         const filePath = `file-${i}`;
         yield {
-          filePath,
           run: async () => {
             inFlight++;
             peakInFlight = Math.max(peakInFlight, inFlight);
             await new Promise<void>((resolve) => setTimeout(resolve, 0));
             inFlight--;
+            return filePath;
           },
         };
       }
@@ -62,9 +62,9 @@ describe("runTasks", () => {
 
     const runPromise = runTasks(
       (async function* (): AsyncIterable<Task> {
-        yield { filePath: "a", run: async () => first.promise };
-        yield { filePath: "b", run: async () => second.promise };
-        yield { filePath: "c", run: async () => third.promise };
+        yield { run: async () => first.promise.then(() => "a") };
+        yield { run: async () => second.promise.then(() => "b") };
+        yield { run: async () => third.promise.then(() => "c") };
       })(),
       { concurrency: 3 },
     );
@@ -83,18 +83,18 @@ describe("runTasks", () => {
     const runPromise = runTasks(
       (async function* (): AsyncIterable<Task> {
         consumed++;
-        yield { filePath: "duplicate.png", run: async () => firstTask.promise };
+        yield { run: async () => firstTask.promise.then(() => "duplicate.png") };
         consumed++;
-        yield { filePath: "duplicate.png", run: async () => Promise.resolve() };
+        yield { run: async () => Promise.resolve("duplicate.png") };
         consumed++;
-        yield { filePath: "should-not-be-consumed.png", run: async () => Promise.resolve() };
+        yield { run: async () => Promise.resolve("should-not-be-consumed.png") };
       })(),
       { concurrency: 2 },
     );
 
     firstTask.resolve();
     await expect(runPromise).rejects.toThrow("duplicate output file path: duplicate.png");
-    expect(consumed).toBe(2);
+    expect(consumed).toBe(3);
   });
 
   it("detects duplicate file paths after the original task has settled", async () => {
@@ -103,11 +103,11 @@ describe("runTasks", () => {
     const runPromise = runTasks(
       (async function* (): AsyncIterable<Task> {
         consumed++;
-        yield { filePath: "duplicate.png", run: async () => Promise.resolve() };
+        yield { run: async () => Promise.resolve("duplicate.png") };
         consumed++;
-        yield { filePath: "duplicate.png", run: async () => Promise.resolve() };
+        yield { run: async () => Promise.resolve("duplicate.png") };
         consumed++;
-        yield { filePath: "should-not-be-consumed.png", run: async () => Promise.resolve() };
+        yield { run: async () => Promise.resolve("should-not-be-consumed.png") };
       })(),
       { concurrency: 1 },
     );
@@ -120,9 +120,10 @@ describe("runTasks", () => {
     const runPromise = runTasks(
       (async function* (): AsyncIterable<Task> {
         yield {
-          filePath: "/tmp/failed.png",
           run: async () => {
-            throw new Error("boom");
+            throw new Error("failed to write file /tmp/failed.png: boom", {
+              cause: new Error("boom"),
+            });
           },
         };
       })(),
@@ -149,18 +150,17 @@ describe("runTasks", () => {
       (async function* (): AsyncIterable<Task> {
         consumed++;
         yield {
-          filePath: "first.png",
           run: async () => {
             throw new Error("first failure");
           },
         };
         consumed++;
-        yield { filePath: "second.png", run: async () => Promise.resolve() };
+        yield { run: async () => Promise.resolve("second.png") };
       })(),
       { concurrency: 1 },
     );
 
-    await expect(runPromise).rejects.toThrow("failed to write file first.png: first failure");
+    await expect(runPromise).rejects.toThrow("first failure");
     expect(consumed).toBe(1);
   });
 
@@ -172,19 +172,18 @@ describe("runTasks", () => {
     const runPromise = runTasks(
       (async function* (): AsyncIterable<Task> {
         yield {
-          filePath: "fail-fast.png",
           run: async () => {
             throw new Error("failed early");
           },
         };
         yield {
-          filePath: "in-flight.png",
           run: async () => {
             try {
               await slowTask.promise;
             } finally {
               slowSettled = true;
             }
+            return "in-flight.png";
           },
         };
       })(),
@@ -199,7 +198,7 @@ describe("runTasks", () => {
 
     slowTask.resolve();
 
-    await expect(runPromise).rejects.toThrow("failed to write file fail-fast.png: failed early");
+    await expect(runPromise).rejects.toThrow("failed early");
     expect(slowSettled).toBe(true);
   });
 });

@@ -1,8 +1,7 @@
 import type { Logger } from "./util/logger";
 
 export interface Task {
-  filePath: string;
-  run(): Promise<void>;
+  run(): Promise<string | undefined>;
 }
 
 export interface RunTasksOptions {
@@ -12,8 +11,8 @@ export interface RunTasksOptions {
 
 interface SettledTaskResult {
   self: Promise<SettledTaskResult>;
-  filePath: string;
   index: number;
+  filePath?: string | undefined;
   error?: Error;
 }
 
@@ -29,7 +28,7 @@ export async function runTasks(
 
   const taskIterator = taskIterable[Symbol.asyncIterator]();
   const seenFilePaths = new Set<string>();
-  const writtenFilePaths: string[] = [];
+  const taskFilePaths: Array<string | undefined> = [];
   const inFlight = new Set<Promise<SettledTaskResult>>();
   let nextIndex = 0;
 
@@ -51,15 +50,8 @@ export async function runTasks(
         break;
       }
 
-      const task = nextTask.value;
-      if (seenFilePaths.has(task.filePath)) {
-        firstError = new Error(`duplicate output file path: ${task.filePath}`);
-        logger?.error(firstError.message);
-        break;
-      }
-      seenFilePaths.add(task.filePath);
       const index = nextIndex++;
-      inFlight.add(tagTaskResult(task, index, logger));
+      inFlight.add(tagTaskResult(nextTask.value, index, logger));
     }
 
     if (inFlight.size === 0) {
@@ -71,8 +63,16 @@ export async function runTasks(
     if (settledResult.error !== undefined) {
       firstError ??= settledResult.error;
     } else {
-      writtenFilePaths[settledResult.index] = settledResult.filePath;
-      logger?.info(`Wrote ${settledResult.filePath}`);
+      if (settledResult.filePath !== undefined) {
+        if (seenFilePaths.has(settledResult.filePath)) {
+          firstError = new Error(`duplicate output file path: ${settledResult.filePath}`);
+          logger?.error(firstError.message);
+        } else {
+          seenFilePaths.add(settledResult.filePath);
+          taskFilePaths[settledResult.index] = settledResult.filePath;
+          logger?.info(`Wrote ${settledResult.filePath}`);
+        }
+      }
     }
   }
 
@@ -86,8 +86,16 @@ export async function runTasks(
     if (settledResult.error !== undefined) {
       firstError ??= settledResult.error;
     } else {
-      writtenFilePaths[settledResult.index] = settledResult.filePath;
-      logger?.info(`Wrote ${settledResult.filePath}`);
+      if (settledResult.filePath !== undefined) {
+        if (seenFilePaths.has(settledResult.filePath)) {
+          firstError ??= new Error(`duplicate output file path: ${settledResult.filePath}`);
+          logger?.error(`duplicate output file path: ${settledResult.filePath}`);
+        } else {
+          seenFilePaths.add(settledResult.filePath);
+          taskFilePaths[settledResult.index] = settledResult.filePath;
+          logger?.info(`Wrote ${settledResult.filePath}`);
+        }
+      }
     }
   }
 
@@ -95,7 +103,19 @@ export async function runTasks(
     throw firstError;
   }
 
-  return writtenFilePaths;
+  return taskFilePaths.filter((filePath): filePath is string => filePath !== undefined);
+}
+
+export function withTaskFallback(task: Task, fallbackTask: (error: Error) => Task): Task {
+  return {
+    run: async (): Promise<string | undefined> => {
+      try {
+        return await task.run();
+      } catch (error) {
+        return await fallbackTask(toError(error)).run();
+      }
+    },
+  };
 }
 
 function tagTaskResult(
@@ -103,29 +123,25 @@ function tagTaskResult(
   index: number,
   logger: Logger | undefined,
 ): Promise<SettledTaskResult> {
-  const taskPromise = task.run().catch((error: unknown) => {
-    const writeError = toErrorWithFilePath(task.filePath, error);
-    logger?.error(writeError.message);
-    throw writeError;
-  });
+  const taskPromise = task.run();
 
   const taggedPromise: Promise<SettledTaskResult> = taskPromise.then(
-    (): SettledTaskResult => ({ self: taggedPromise, filePath: task.filePath, index }),
+    (filePath): SettledTaskResult =>
+      filePath === undefined
+        ? { self: taggedPromise, index }
+        : { self: taggedPromise, filePath, index },
     (error): SettledTaskResult => ({
       self: taggedPromise,
-      filePath: task.filePath,
       index,
       error: toError(error),
     }),
   );
-  return taggedPromise;
-}
-
-function toErrorWithFilePath(filePath: string, error: unknown): Error {
-  const reason = error instanceof Error ? error.message : String(error);
-  return new Error(`failed to write file ${filePath}: ${reason}`, {
-    cause: error instanceof Error ? error : undefined,
+  void taggedPromise.then((result) => {
+    if (result.error !== undefined) {
+      logger?.error(result.error.message);
+    }
   });
+  return taggedPromise;
 }
 
 function toError(error: unknown): Error {

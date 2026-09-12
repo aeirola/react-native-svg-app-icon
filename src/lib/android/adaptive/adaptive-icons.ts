@@ -9,10 +9,10 @@ import {
   launcherName,
   roundIconName,
 } from "../resources";
-import { convertToVectorDrawable, generateVectorDrawable } from "./vector-drawable";
+import { type Task, withTaskFallback } from "../../tasks";
 import type { Context } from "../../util/context";
 import type { ResolvedConfig } from "../config";
-import type { Task } from "../../tasks";
+import { generateVectorDrawable } from "./vector-drawable";
 
 const adaptiveIconMinSdk = 26;
 const adaptiveIconBaseSize = 108;
@@ -38,52 +38,37 @@ export async function* generateAdaptiveIcons(
     fileInput,
     (inputData) => inputData.foregroundImageData,
   );
-  const backgroundDrawableResultPromise = convertToVectorDrawable(backgroundImageInput).then(
-    (drawable) => ({ drawable }),
-    (error: unknown) => ({ error }),
-  );
-  const foregroundDrawableResultPromise = convertToVectorDrawable(foregroundImageInput).then(
-    (drawable) => ({ drawable }),
-    (error: unknown) => ({ error }),
-  );
+  const backgroundResourceType = createDeferred<ResourceType>();
+  const foregroundResourceType = createDeferred<ResourceType>();
 
-  let backgroundResourceType: ResourceType;
-  const backgroundDrawableResult = await backgroundDrawableResultPromise;
-  if ("drawable" in backgroundDrawableResult) {
-    yield* generateVectorDrawable(
-      backgroundImageInput,
-      launcherBackgroundName,
-      context,
-      backgroundDrawableResult.drawable,
-    );
-    backgroundResourceType = "drawable";
-  } else {
-    const error = backgroundDrawableResult.error;
-    context.logger?.warn(
-      `Vector drawable conversion failed for background, falling back to PNG: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    yield* generateAdaptiveIconLayerPng(backgroundImageInput, launcherBackgroundName, context);
-    backgroundResourceType = "mipmap";
-  }
-
-  let foregroundResourceType: ResourceType;
-  const foregroundDrawableResult = await foregroundDrawableResultPromise;
-  if ("drawable" in foregroundDrawableResult) {
-    yield* generateVectorDrawable(
-      foregroundImageInput,
-      launcherForegroundName,
-      context,
-      foregroundDrawableResult.drawable,
-    );
-    foregroundResourceType = "drawable";
-  } else {
-    const error = foregroundDrawableResult.error;
-    context.logger?.warn(
-      `Vector drawable conversion failed for foreground, falling back to PNG: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    yield* generateAdaptiveIconLayerPng(foregroundImageInput, launcherForegroundName, context);
-    foregroundResourceType = "mipmap";
-  }
+  yield* generateVectorDrawableWithFallback(
+    backgroundImageInput,
+    launcherBackgroundName,
+    "background",
+    context,
+    backgroundResourceType.resolve,
+    backgroundResourceType.reject,
+  );
+  yield* generateVectorDrawableWithFallback(
+    foregroundImageInput,
+    launcherForegroundName,
+    "foreground",
+    context,
+    foregroundResourceType.resolve,
+    foregroundResourceType.reject,
+  );
+  yield* generateAdaptiveIconLayerPng(
+    backgroundImageInput,
+    launcherBackgroundName,
+    context,
+    backgroundResourceType.promise,
+  );
+  yield* generateAdaptiveIconLayerPng(
+    foregroundImageInput,
+    launcherForegroundName,
+    context,
+    foregroundResourceType.promise,
+  );
 
   // Adaptive icon
   yield* output.generateFile(
@@ -93,7 +78,11 @@ export async function* generateAdaptiveIcons(
       { density: "anydpi", minApiLevel: 26 },
       `${launcherName}.xml`,
     ),
-    () => adaptiveIconContent(backgroundResourceType, foregroundResourceType),
+    async () =>
+      adaptiveIconContent(
+        await backgroundResourceType.promise,
+        await foregroundResourceType.promise,
+      ),
     context,
   );
   yield* output.generateFile(
@@ -103,7 +92,11 @@ export async function* generateAdaptiveIcons(
       { density: "anydpi", minApiLevel: 26 },
       `${roundIconName}.xml`,
     ),
-    () => adaptiveIconContent(backgroundResourceType, foregroundResourceType),
+    async () =>
+      adaptiveIconContent(
+        await backgroundResourceType.promise,
+        await foregroundResourceType.promise,
+      ),
     context,
   );
 }
@@ -112,8 +105,9 @@ async function* generateAdaptiveIconLayerPng(
   imageInput: input.Input<input.ImageData>,
   fileName: string,
   context: Context<ResolvedConfig>,
+  layerResourceType: Promise<ResourceType>,
 ): AsyncIterable<Task> {
-  yield* output.generatePngs(
+  for await (const task of output.generatePngs(
     { image: imageInput },
     densities.map((density) => ({
       filePath: getIconPath(
@@ -125,5 +119,90 @@ async function* generateAdaptiveIconLayerPng(
       outputSize: adaptiveIconBaseSize * density.scale,
     })),
     context,
-  );
+  )) {
+    yield {
+      run: async (): Promise<string | undefined> => {
+        if ((await layerResourceType) !== "mipmap") {
+          return undefined;
+        }
+        return await task.run();
+      },
+    };
+  }
+}
+
+async function* generateVectorDrawableWithFallback(
+  imageInput: input.Input<input.ImageData>,
+  fileName: string,
+  layerName: "background" | "foreground",
+  context: Context<ResolvedConfig>,
+  resolveLayerResourceType: (type: ResourceType) => void,
+  rejectLayerResourceType: (reason: unknown) => void,
+): AsyncIterable<Task> {
+  for await (const task of generateVectorDrawable(imageInput, fileName, context)) {
+    yield withTaskFallback(
+      {
+        run: async (): Promise<string | undefined> => {
+          const filePath = await task.run();
+          resolveLayerResourceType("drawable");
+          return filePath;
+        },
+      },
+      (error): Task => {
+        if (isVectorDrawableConversionError(error)) {
+          context.logger?.warn(
+            `Vector drawable conversion failed for ${layerName}, falling back to PNG: ${error.cause instanceof Error ? error.cause.message : error.message}`,
+          );
+          resolveLayerResourceType("mipmap");
+          return {
+            run: async (): Promise<undefined> => undefined,
+          };
+        }
+        rejectLayerResourceType(error);
+        return {
+          run: async (): Promise<never> => {
+            throw error;
+          },
+        };
+      },
+    );
+  }
+}
+
+function isVectorDrawableConversionError(error: Error): boolean {
+  const cause = error.cause;
+  return cause instanceof Error && cause.stack?.includes("svg2vectordrawable") === true;
+}
+
+function createDeferred<T>(): {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (reason: unknown) => void;
+} {
+  let resolve!: (value: T) => void;
+  let reject!: (reason: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+
+  return {
+    promise,
+    resolve: once(resolve),
+    reject: once(reject),
+  };
+}
+
+function once<T, Args extends unknown[]>(fn: (...args: Args) => T): (...args: Args) => T {
+  let hasRun = false;
+  let result!: T;
+
+  return (...args: Args): T => {
+    if (hasRun) {
+      return result;
+    }
+    hasRun = true;
+    result = fn(...args);
+    return result;
+  };
 }

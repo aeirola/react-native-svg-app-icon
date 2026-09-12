@@ -88,38 +88,36 @@ export async function* generateFile(
     | (() => Promise<string | Record<string, unknown> | Buffer>),
   { cache, logger }: Context,
 ): AsyncIterable<Task> {
-  const pendingWrites = getPendingWrites(cache);
-  let finishPendingWrite!: () => void;
-  const pendingWritePromise = new Promise<void>((resolve) => {
-    finishPendingWrite = resolve;
-  });
-
-  while (true) {
-    const existingPendingWrite = pendingWrites.get(filePath);
-    if (!existingPendingWrite) {
-      pendingWrites.set(filePath, pendingWritePromise);
-      break;
-    }
-    await existingPendingWrite;
-  }
-
-  const releasePendingWrite = () => {
-    if (pendingWrites.get(filePath) === pendingWritePromise) {
-      pendingWrites.delete(filePath);
-    }
-    finishPendingWrite();
-  };
-
-  if (await cache.isUpToDate(filePath)) {
-    logger?.debug(`Skipping ${filePath} (up to date)`);
-    releasePendingWrite();
-    return;
-  }
-
   yield {
-    filePath,
-    run: async (): Promise<void> => {
+    run: async (): Promise<string | undefined> => {
+      const pendingWrites = getPendingWrites(cache);
+      let finishPendingWrite!: () => void;
+      const pendingWritePromise = new Promise<void>((resolve) => {
+        finishPendingWrite = resolve;
+      });
+
+      while (true) {
+        const existingPendingWrite = pendingWrites.get(filePath);
+        if (!existingPendingWrite) {
+          pendingWrites.set(filePath, pendingWritePromise);
+          break;
+        }
+        await existingPendingWrite;
+      }
+
+      const releasePendingWrite = () => {
+        if (pendingWrites.get(filePath) === pendingWritePromise) {
+          pendingWrites.delete(filePath);
+        }
+        finishPendingWrite();
+      };
+
       try {
+        if (await cache.isUpToDate(filePath)) {
+          logger?.debug(`Skipping ${filePath} (up to date)`);
+          return undefined;
+        }
+
         const content = await contentProvider();
         let contentBuffer: Buffer;
         if (Buffer.isBuffer(content)) {
@@ -141,6 +139,12 @@ export async function* generateFile(
 
         await fse.outputFile(filePath, contentBuffer);
         cache.recordBuffer(filePath, contentBuffer);
+        return filePath;
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error);
+        throw new Error(`failed to write file ${filePath}: ${reason}`, {
+          cause: error instanceof Error ? error : undefined,
+        });
       } finally {
         releasePendingWrite();
       }

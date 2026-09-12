@@ -12,10 +12,7 @@ export async function* generateVectorDrawable(
   imageInput: input.Input<input.ImageData>,
   fileName: string,
   context: Context<ResolvedConfig>,
-  drawable?: string,
 ): AsyncIterable<Task> {
-  const vectorDrawable = drawable ?? (await convertToVectorDrawable(imageInput));
-
   yield* output.generateFile(
     getIconPath(
       context.config,
@@ -23,7 +20,7 @@ export async function* generateVectorDrawable(
       { density: "anydpi", minApiLevel: adaptiveIconMinSdk },
       `${fileName}.xml`,
     ),
-    () => vectorDrawable,
+    async () => await convertToVectorDrawable(imageInput),
     context,
   );
 }
