@@ -78,6 +78,12 @@ it("generates expected output", async () => {
 - Published files: `dist/` and `assets/`
 - Two tsconfig files: `tsconfig.json` (type checking, noEmit) and `tsconfig.build.json` (actual build)
 
+## Commit, Branch, and Pull Request Conventions
+
+- Agent commit messages must follow the Conventional Commits specification (for example: `feat: ...`, `fix: ...`, `chore: ...`).
+- Agent pull request titles must also follow the same Conventional Commits format.
+- Pull request branch names must use Conventional Commits-style prefixes (for example: `feat/...`, `fix/...`, `chore/...`).
+
 ### Publishing
 
 1. `npm version <patch|minor|major>` — bumps version and creates a git tag
@@ -107,8 +113,3 @@ Always use Context7 MCP when library/API documentation, code generation, setup, 
 ## Configuration
 
 Read from `app.json` under `svgAppIcon` key, or CLI flags. See README for full options.
-
-## Commit and Pull Request Conventions
-
-- Agent commit messages must follow the Conventional Commits specification (for example: `feat: ...`, `fix: ...`, `chore: ...`).
-- Agent pull request titles must also follow the same Conventional Commits format.
