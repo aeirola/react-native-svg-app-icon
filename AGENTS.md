@@ -107,3 +107,8 @@ Always use Context7 MCP when library/API documentation, code generation, setup, 
 ## Configuration
 
 Read from `app.json` under `svgAppIcon` key, or CLI flags. See README for full options.
+
+## Commit and Pull Request Conventions
+
+- Agent commit messages must follow the Conventional Commits specification (for example: `feat: ...`, `fix: ...`, `chore: ...`).
+- Agent pull request titles must also follow the same Conventional Commits format.
