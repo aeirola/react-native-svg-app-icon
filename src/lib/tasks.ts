@@ -12,6 +12,8 @@ export interface RunTasksOptions {
 
 interface SettledTaskResult {
   self: Promise<SettledTaskResult>;
+  filePath: string;
+  index: number;
   error?: Error;
 }
 
@@ -29,6 +31,7 @@ export async function runTasks(
   const seenFilePaths = new Set<string>();
   const writtenFilePaths: string[] = [];
   const inFlight = new Set<Promise<SettledTaskResult>>();
+  let nextIndex = 0;
 
   let isDone = false;
   let firstError: Error | undefined;
@@ -55,8 +58,8 @@ export async function runTasks(
         break;
       }
       seenFilePaths.add(task.filePath);
-      writtenFilePaths.push(task.filePath);
-      inFlight.add(tagTaskResult(task, logger));
+      const index = nextIndex++;
+      inFlight.add(tagTaskResult(task, index, logger));
     }
 
     if (inFlight.size === 0) {
@@ -67,6 +70,9 @@ export async function runTasks(
     inFlight.delete(settledResult.self);
     if (settledResult.error !== undefined) {
       firstError ??= settledResult.error;
+    } else {
+      writtenFilePaths[settledResult.index] = settledResult.filePath;
+      logger?.info(`Wrote ${settledResult.filePath}`);
     }
   }
 
@@ -79,6 +85,9 @@ export async function runTasks(
     inFlight.delete(settledResult.self);
     if (settledResult.error !== undefined) {
       firstError ??= settledResult.error;
+    } else {
+      writtenFilePaths[settledResult.index] = settledResult.filePath;
+      logger?.info(`Wrote ${settledResult.filePath}`);
     }
   }
 
@@ -89,7 +98,11 @@ export async function runTasks(
   return writtenFilePaths;
 }
 
-function tagTaskResult(task: Task, logger: Logger | undefined): Promise<SettledTaskResult> {
+function tagTaskResult(
+  task: Task,
+  index: number,
+  logger: Logger | undefined,
+): Promise<SettledTaskResult> {
   const taskPromise = task.run().catch((error: unknown) => {
     const writeError = toErrorWithFilePath(task.filePath, error);
     logger?.error(writeError.message);
@@ -97,8 +110,13 @@ function tagTaskResult(task: Task, logger: Logger | undefined): Promise<SettledT
   });
 
   const taggedPromise: Promise<SettledTaskResult> = taskPromise.then(
-    (): SettledTaskResult => ({ self: taggedPromise }),
-    (error): SettledTaskResult => ({ self: taggedPromise, error: toError(error) }),
+    (): SettledTaskResult => ({ self: taggedPromise, filePath: task.filePath, index }),
+    (error): SettledTaskResult => ({
+      self: taggedPromise,
+      filePath: task.filePath,
+      index,
+      error: toError(error),
+    }),
   );
   return taggedPromise;
 }

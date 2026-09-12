@@ -49,12 +49,41 @@ async function* generateTasks(
   context: Context<ResolvedConfig>,
   iconInput: input.FileInput,
 ): AsyncIterable<Task> {
+  const platformTaskGenerators: AsyncIterable<Task>[] = [];
+
   if (context.config.platforms.includes("android")) {
     context.logger?.info("Generating Android icons");
-    yield* android.generate(context, iconInput);
+    platformTaskGenerators.push(android.generate(context, iconInput));
   }
   if (context.config.platforms.includes("ios")) {
     context.logger?.info("Generating iOS icons");
-    yield* ios.generate(context, iconInput);
+    platformTaskGenerators.push(ios.generate(context, iconInput));
+  }
+
+  yield* interleaveTasks(platformTaskGenerators);
+}
+
+async function* interleaveTasks(taskGenerators: AsyncIterable<Task>[]): AsyncIterable<Task> {
+  const taskIterators = taskGenerators.map((taskGenerator) =>
+    taskGenerator[Symbol.asyncIterator](),
+  );
+  const isDone = taskIterators.map(() => false);
+  let pendingIterators = taskIterators.length;
+
+  while (pendingIterators > 0) {
+    for (const [index, taskIterator] of taskIterators.entries()) {
+      if (isDone[index]) {
+        continue;
+      }
+
+      const nextTask = await taskIterator.next();
+      if (nextTask.done) {
+        isDone[index] = true;
+        pendingIterators--;
+        continue;
+      }
+
+      yield nextTask.value;
+    }
   }
 }

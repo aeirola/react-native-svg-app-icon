@@ -34,17 +34,31 @@ export async function* generateAdaptiveIcons(
     fileInput,
     (inputData) => inputData.backgroundImageData,
   );
+  const foregroundImageInput = input.mapInput(
+    fileInput,
+    (inputData) => inputData.foregroundImageData,
+  );
+  const backgroundDrawableResultPromise = convertToVectorDrawable(backgroundImageInput).then(
+    (drawable) => ({ drawable }),
+    (error: unknown) => ({ error }),
+  );
+  const foregroundDrawableResultPromise = convertToVectorDrawable(foregroundImageInput).then(
+    (drawable) => ({ drawable }),
+    (error: unknown) => ({ error }),
+  );
+
   let backgroundResourceType: ResourceType;
-  try {
-    const backgroundDrawable = await convertToVectorDrawable(backgroundImageInput);
+  const backgroundDrawableResult = await backgroundDrawableResultPromise;
+  if ("drawable" in backgroundDrawableResult) {
     yield* generateVectorDrawable(
       backgroundImageInput,
       launcherBackgroundName,
       context,
-      backgroundDrawable,
+      backgroundDrawableResult.drawable,
     );
     backgroundResourceType = "drawable";
-  } catch (error) {
+  } else {
+    const error = backgroundDrawableResult.error;
     context.logger?.warn(
       `Vector drawable conversion failed for background, falling back to PNG: ${error instanceof Error ? error.message : String(error)}`,
     );
@@ -52,21 +66,18 @@ export async function* generateAdaptiveIcons(
     backgroundResourceType = "mipmap";
   }
 
-  const foregroundImageInput = input.mapInput(
-    fileInput,
-    (inputData) => inputData.foregroundImageData,
-  );
   let foregroundResourceType: ResourceType;
-  try {
-    const foregroundDrawable = await convertToVectorDrawable(foregroundImageInput);
+  const foregroundDrawableResult = await foregroundDrawableResultPromise;
+  if ("drawable" in foregroundDrawableResult) {
     yield* generateVectorDrawable(
       foregroundImageInput,
       launcherForegroundName,
       context,
-      foregroundDrawable,
+      foregroundDrawableResult.drawable,
     );
     foregroundResourceType = "drawable";
-  } catch (error) {
+  } else {
+    const error = foregroundDrawableResult.error;
     context.logger?.warn(
       `Vector drawable conversion failed for foreground, falling back to PNG: ${error instanceof Error ? error.message : String(error)}`,
     );

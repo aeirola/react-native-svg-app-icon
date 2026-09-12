@@ -1,5 +1,47 @@
 import * as path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { Task } from "./tasks";
+
+const androidTasks: Task[] = [];
+const iosTasks: Task[] = [];
+
+vi.mock("./android", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./android")>();
+  return {
+    ...actual,
+    generate: async function* (): AsyncIterable<Task> {
+      yield* androidTasks;
+    },
+  };
+});
+
+vi.mock("./ios", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./ios")>();
+  return {
+    ...actual,
+    generate: async function* (): AsyncIterable<Task> {
+      yield* iosTasks;
+    },
+  };
+});
+
+vi.mock("./util/input", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./util/input")>();
+  return {
+    ...actual,
+    readIcon: vi.fn(async () => ({ fileBuffers: { foreground: Buffer.from("icon") } })),
+  };
+});
+
+vi.mock("./cache", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./cache")>();
+  return {
+    ...actual,
+    CacheSession: class {
+      async flush(): Promise<void> {}
+    },
+  };
+});
 
 import { generate } from "./index";
 
@@ -17,5 +59,54 @@ describe("lib/index", () => {
     );
 
     await expect(generatedFiles).rejects.toThrow("projectRoot must be an absolute path");
+  });
+
+  it("interleaves platform task generators in round-robin order", async () => {
+    androidTasks.length = 0;
+    iosTasks.length = 0;
+    androidTasks.push(
+      { filePath: "android-1", run: async () => {} },
+      { filePath: "android-2", run: async () => {} },
+    );
+    iosTasks.push(
+      { filePath: "ios-1", run: async () => {} },
+      { filePath: "ios-2", run: async () => {} },
+    );
+
+    await expect(
+      generate(
+        {
+          projectRoot: "/project",
+          platforms: ["android", "ios"],
+          force: false,
+          androidOutputPath: "./android/app/src/main/res",
+          foregroundPath: path.join(__dirname, "..", "..", "test", "assets", "react-icon.svg"),
+        },
+        undefined,
+      ),
+    ).resolves.toEqual(["android-1", "ios-1", "android-2", "ios-2"]);
+  });
+
+  it("skips completed generators while continuing the remaining platform", async () => {
+    androidTasks.length = 0;
+    iosTasks.length = 0;
+    androidTasks.push({ filePath: "android-1", run: async () => {} });
+    iosTasks.push(
+      { filePath: "ios-1", run: async () => {} },
+      { filePath: "ios-2", run: async () => {} },
+    );
+
+    await expect(
+      generate(
+        {
+          projectRoot: "/project",
+          platforms: ["android", "ios"],
+          force: false,
+          androidOutputPath: "./android/app/src/main/res",
+          foregroundPath: path.join(__dirname, "..", "..", "test", "assets", "react-icon.svg"),
+        },
+        undefined,
+      ),
+    ).resolves.toEqual(["android-1", "ios-1", "ios-2"]);
   });
 });

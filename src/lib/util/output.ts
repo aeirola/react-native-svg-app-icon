@@ -14,6 +14,17 @@ interface GenerateConfig {
   outputSize: number;
 }
 
+const pendingWritesByCache = new WeakMap<object, Map<string, Promise<void>>>();
+
+function getPendingWrites(cache: object): Map<string, Promise<void>> {
+  let pendingWrites = pendingWritesByCache.get(cache);
+  if (!pendingWrites) {
+    pendingWrites = new Map<string, Promise<void>>();
+    pendingWritesByCache.set(cache, pendingWrites);
+  }
+  return pendingWrites;
+}
+
 export async function* generatePngs(
   fileInput: GenerateInput,
   outputs: GenerateConfig[],
@@ -77,35 +88,62 @@ export async function* generateFile(
     | (() => Promise<string | Record<string, unknown> | Buffer>),
   { cache, logger }: Context,
 ): AsyncIterable<Task> {
+  const pendingWrites = getPendingWrites(cache);
+  let finishPendingWrite!: () => void;
+  const pendingWritePromise = new Promise<void>((resolve) => {
+    finishPendingWrite = resolve;
+  });
+
+  while (true) {
+    const existingPendingWrite = pendingWrites.get(filePath);
+    if (!existingPendingWrite) {
+      pendingWrites.set(filePath, pendingWritePromise);
+      break;
+    }
+    await existingPendingWrite;
+  }
+
+  const releasePendingWrite = () => {
+    if (pendingWrites.get(filePath) === pendingWritePromise) {
+      pendingWrites.delete(filePath);
+    }
+    finishPendingWrite();
+  };
+
   if (await cache.isUpToDate(filePath)) {
     logger?.debug(`Skipping ${filePath} (up to date)`);
+    releasePendingWrite();
     return;
   }
 
   yield {
     filePath,
     run: async (): Promise<void> => {
-      const content = await contentProvider();
-      let contentBuffer: Buffer;
-      if (Buffer.isBuffer(content)) {
-        contentBuffer = content;
-      } else {
-        let stringContent: string;
-        switch (typeof content) {
-          case "object":
-            stringContent = JSON.stringify(content, undefined, 2);
-            break;
-          case "string":
-            stringContent = content;
-            break;
-          default:
-            throw Error("Invalid content");
+      try {
+        const content = await contentProvider();
+        let contentBuffer: Buffer;
+        if (Buffer.isBuffer(content)) {
+          contentBuffer = content;
+        } else {
+          let stringContent: string;
+          switch (typeof content) {
+            case "object":
+              stringContent = JSON.stringify(content, undefined, 2);
+              break;
+            case "string":
+              stringContent = content;
+              break;
+            default:
+              throw Error("Invalid content");
+          }
+          contentBuffer = Buffer.from(stringContent, "utf-8");
         }
-        contentBuffer = Buffer.from(stringContent, "utf-8");
-      }
 
-      await fse.outputFile(filePath, contentBuffer);
-      cache.recordBuffer(filePath, contentBuffer);
+        await fse.outputFile(filePath, contentBuffer);
+        cache.recordBuffer(filePath, contentBuffer);
+      } finally {
+        releasePendingWrite();
+      }
     },
   };
 }

@@ -16,10 +16,7 @@ export async function main(args: string[] = []): Promise<void> {
     projectRoot: process.cwd(),
   };
 
-  const generatedFiles = await reactNativeSvgAppIcon.generate(config, logger);
-  for (const file of generatedFiles) {
-    logger?.info(`Wrote ${file}`);
-  }
+  await reactNativeSvgAppIcon.generate(config, logger);
   logger?.info("Done");
 }
 

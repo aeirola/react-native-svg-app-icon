@@ -97,6 +97,25 @@ describe("runTasks", () => {
     expect(consumed).toBe(2);
   });
 
+  it("detects duplicate file paths after the original task has settled", async () => {
+    let consumed = 0;
+
+    const runPromise = runTasks(
+      (async function* (): AsyncIterable<Task> {
+        consumed++;
+        yield { filePath: "duplicate.png", run: async () => Promise.resolve() };
+        consumed++;
+        yield { filePath: "duplicate.png", run: async () => Promise.resolve() };
+        consumed++;
+        yield { filePath: "should-not-be-consumed.png", run: async () => Promise.resolve() };
+      })(),
+      { concurrency: 1 },
+    );
+
+    await expect(runPromise).rejects.toThrow("duplicate output file path: duplicate.png");
+    expect(consumed).toBe(2);
+  });
+
   it("fails on first rejection with file path context", async () => {
     const runPromise = runTasks(
       (async function* (): AsyncIterable<Task> {
@@ -110,6 +129,17 @@ describe("runTasks", () => {
     );
 
     await expect(runPromise).rejects.toThrow("failed to write file /tmp/failed.png: boom");
+    const error = await runPromise.then(
+      () => new Error("Expected runTasks to reject"),
+      (taskError: unknown) => taskError,
+    );
+    if (!(error instanceof Error)) {
+      throw new Error("Expected an Error rejection");
+    }
+    expect(error.cause).toBeInstanceOf(Error);
+    if (error.cause instanceof Error) {
+      expect(error.cause.message).toBe("boom");
+    }
   });
 
   it("stops consuming source generator after failure", async () => {
