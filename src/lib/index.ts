@@ -19,6 +19,8 @@ export interface GenerateResult {
  * @param config - Icon paths, target platforms, and output settings.
  * @param logger - Optional logger for progress and diagnostic messages.
  *   When `undefined`, all logging is disabled.
+ * @returns A promise resolving to an object containing the generated file paths
+ *   in `files`.
  */
 export async function generate(
   config: Config,
