@@ -9,15 +9,33 @@ import type { Logger } from "./util/logger";
 export { Config } from "./config";
 export type { Platform };
 
+export interface GenerateResult {
+  /**
+   * Absolute paths of files written during this generate call.
+   *
+   * Files skipped as up to date by the cache are omitted, so this only
+   * includes files that were actually generated or overwritten. Paths are
+   * returned after output path resolution, even when the configured output
+   * paths were relative.
+   */
+  generatedFiles: string[];
+}
+
 /**
  * Generate platform-specific app icons from SVG source files.
  *
  * @param config - Icon paths, target platforms, and output settings.
  * @param logger - Optional logger for progress and diagnostic messages.
  *   When `undefined`, all logging is disabled.
+ * @returns A promise resolving to an object containing the generated file paths
+ *   in `generatedFiles`.
  */
-export async function* generate(config: Config, logger: Logger | undefined): AsyncIterable<string> {
+export async function generate(
+  config: Config,
+  logger: Logger | undefined,
+): Promise<GenerateResult> {
   const resolvedConfig = Config.assert(config);
+  const generatedFiles: string[] = [];
 
   const iconInput = await input.readIcon(resolvedConfig, logger);
 
@@ -36,12 +54,19 @@ export async function* generate(config: Config, logger: Logger | undefined): Asy
   try {
     if (resolvedConfig.platforms.includes("android")) {
       logger?.info("Generating Android icons");
-      yield* android.generate(context, iconInput);
+      for await (const file of android.generate(context, iconInput)) {
+        generatedFiles.push(file);
+        logger?.info(`Wrote ${file}`);
+      }
     }
     if (resolvedConfig.platforms.includes("ios")) {
       logger?.info("Generating iOS icons");
-      yield* ios.generate(context, iconInput);
+      for await (const file of ios.generate(context, iconInput)) {
+        generatedFiles.push(file);
+        logger?.info(`Wrote ${file}`);
+      }
     }
+    return { generatedFiles };
   } finally {
     await cache.flush();
   }
