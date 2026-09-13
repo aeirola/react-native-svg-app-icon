@@ -54,25 +54,20 @@ export async function generate(
   try {
     if (resolvedConfig.platforms.includes("android")) {
       logger?.info("Generating Android icons");
-      await collectGeneratedFiles(android.generate(context, iconInput), generatedFiles, logger);
+      for await (const file of android.generate(context, iconInput)) {
+        generatedFiles.push(file);
+        logger?.info(`Wrote ${file}`);
+      }
     }
     if (resolvedConfig.platforms.includes("ios")) {
       logger?.info("Generating iOS icons");
-      await collectGeneratedFiles(ios.generate(context, iconInput), generatedFiles, logger);
+      for await (const file of ios.generate(context, iconInput)) {
+        generatedFiles.push(file);
+        logger?.info(`Wrote ${file}`);
+      }
     }
     return { generatedFiles };
   } finally {
     await cache.flush();
-  }
-}
-
-async function collectGeneratedFiles(
-  generatedFiles: AsyncIterable<string>,
-  collectedFiles: string[],
-  logger: Logger | undefined,
-): Promise<void> {
-  for await (const file of generatedFiles) {
-    collectedFiles.push(file);
-    logger?.info(`Wrote ${file}`);
   }
 }

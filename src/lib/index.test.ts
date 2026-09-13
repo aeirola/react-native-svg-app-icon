@@ -1,7 +1,11 @@
-import * as android from "./android";
+import * as fse from "fs-extra";
 import * as path from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it as baseIt } from "vitest";
 import { generate } from "./index";
+
+import { tmpDir } from "../../test/utils/tmp-dir";
+
+const it = baseIt.extend({ tmpDir });
 
 describe("lib/index", () => {
   it("throws when projectRoot is not absolute", async () => {
@@ -19,44 +23,41 @@ describe("lib/index", () => {
     await expect(generatedFiles).rejects.toThrow("projectRoot must be an absolute path");
   });
 
-  it("returns generated files in an object payload", async () => {
-    await expect(
-      generate(
-        {
-          projectRoot: __dirname,
-          platforms: [],
-          force: false,
-          androidOutputPath: "./android/app/src/main/res",
-          foregroundPath: path.join(__dirname, "..", "..", "test", "assets", "react-icon.svg"),
-        },
-        undefined,
-      ),
-    ).resolves.toEqual({ generatedFiles: [] });
-  });
+  it("returns absolute generated files and omits cache hits", async ({ tmpDir }) => {
+    const fixtureDir = path.join(__dirname, "..", "..", "test", "integration", "assets", "normal");
+    const expectedDir = path.join(fixtureDir, "expected");
 
-  it("returns absolute generated file paths in the result", async () => {
-    const generateSpy = vi.spyOn(android, "generate").mockImplementation(async function* () {
-      yield "/tmp/generated-a.png";
-      yield "/tmp/generated-b.png";
-    });
+    await fse.copy(path.join(fixtureDir, "input"), tmpDir, { overwrite: true });
 
-    try {
-      await expect(
-        generate(
-          {
-            projectRoot: __dirname,
-            platforms: ["android"],
-            force: false,
-            androidOutputPath: "./android/app/src/main/res",
-            foregroundPath: path.join(__dirname, "..", "..", "test", "assets", "react-icon.svg"),
-          },
-          undefined,
-        ),
-      ).resolves.toEqual({
-        generatedFiles: ["/tmp/generated-a.png", "/tmp/generated-b.png"],
-      });
-    } finally {
-      generateSpy.mockRestore();
-    }
+    const expectedFiles = (await fse.readdir(expectedDir, { recursive: true, withFileTypes: true }))
+      .filter((entry) => entry.isFile())
+      .map((entry) => path.join(tmpDir, path.relative(expectedDir, entry.parentPath), entry.name))
+      .sort();
+
+    const firstResult = await generate(
+      {
+        projectRoot: tmpDir,
+        platforms: ["android", "ios"],
+        force: false,
+        foregroundPath: "./icon/foreground.svg",
+        backgroundPath: "./icon/background.svg",
+      },
+      undefined,
+    );
+
+    expect(firstResult.generatedFiles.toSorted()).toEqual(expectedFiles);
+
+    const secondResult = await generate(
+      {
+        projectRoot: tmpDir,
+        platforms: ["android", "ios"],
+        force: false,
+        foregroundPath: "./icon/foreground.svg",
+        backgroundPath: "./icon/background.svg",
+      },
+      undefined,
+    );
+
+    expect(secondResult).toEqual({ generatedFiles: [] });
   });
 });
