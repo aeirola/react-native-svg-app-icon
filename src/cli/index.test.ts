@@ -55,7 +55,7 @@ describe("cli", () => {
 
     try {
       await expect(main()).resolves.toBeUndefined();
-      expect(logSpy.mock.calls.some(([message]) => /^Wrote /.test(String(message)))).toBe(true);
+      expect(logSpy.mock.calls.some(([message]) => String(message).startsWith("Wrote "))).toBe(true);
     } finally {
       logSpy.mockRestore();
     }
