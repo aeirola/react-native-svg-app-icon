@@ -31,18 +31,10 @@ describe("lib/index", () => {
         },
         undefined,
       ),
-    ).resolves.toEqual({ files: [] });
+    ).resolves.toEqual({ generatedFiles: [] });
   });
 
-  it("logs each written file and returns them in the result", async () => {
-    const info = vi.fn<(message: string) => void>();
-    const logger: import("./util/logger").Logger = {
-      info,
-      warn: vi.fn(),
-      error: vi.fn(),
-      debug: vi.fn(),
-    };
-
+  it("returns absolute generated file paths in the result", async () => {
     const generateSpy = vi.spyOn(android, "generate").mockImplementation(async function* () {
       yield "/tmp/generated-a.png";
       yield "/tmp/generated-b.png";
@@ -58,17 +50,11 @@ describe("lib/index", () => {
             androidOutputPath: "./android/app/src/main/res",
             foregroundPath: path.join(__dirname, "..", "..", "test", "assets", "react-icon.svg"),
           },
-          logger,
+          undefined,
         ),
       ).resolves.toEqual({
-        files: ["/tmp/generated-a.png", "/tmp/generated-b.png"],
+        generatedFiles: ["/tmp/generated-a.png", "/tmp/generated-b.png"],
       });
-
-      expect(info.mock.calls).toEqual([
-        ["Generating Android icons"],
-        ["Wrote /tmp/generated-a.png"],
-        ["Wrote /tmp/generated-b.png"],
-      ]);
     } finally {
       generateSpy.mockRestore();
     }

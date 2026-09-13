@@ -10,7 +10,15 @@ export { Config } from "./config";
 export type { Platform };
 
 export interface GenerateResult {
-  files: string[];
+  /**
+   * Absolute paths of files written during this generate call.
+   *
+   * Files skipped as up to date by the cache are omitted, so this only
+   * includes files that were actually generated or overwritten. Paths are
+   * returned after output path resolution, even when the configured output
+   * paths were relative.
+   */
+  generatedFiles: string[];
 }
 
 /**
@@ -20,14 +28,14 @@ export interface GenerateResult {
  * @param logger - Optional logger for progress and diagnostic messages.
  *   When `undefined`, all logging is disabled.
  * @returns A promise resolving to an object containing the generated file paths
- *   in `files`.
+ *   in `generatedFiles`.
  */
 export async function generate(
   config: Config,
   logger: Logger | undefined,
 ): Promise<GenerateResult> {
   const resolvedConfig = Config.assert(config);
-  const files: string[] = [];
+  const generatedFiles: string[] = [];
 
   const iconInput = await input.readIcon(resolvedConfig, logger);
 
@@ -46,13 +54,13 @@ export async function generate(
   try {
     if (resolvedConfig.platforms.includes("android")) {
       logger?.info("Generating Android icons");
-      await collectGeneratedFiles(android.generate(context, iconInput), files, logger);
+      await collectGeneratedFiles(android.generate(context, iconInput), generatedFiles, logger);
     }
     if (resolvedConfig.platforms.includes("ios")) {
       logger?.info("Generating iOS icons");
-      await collectGeneratedFiles(ios.generate(context, iconInput), files, logger);
+      await collectGeneratedFiles(ios.generate(context, iconInput), generatedFiles, logger);
     }
-    return { files };
+    return { generatedFiles };
   } finally {
     await cache.flush();
   }
@@ -60,11 +68,11 @@ export async function generate(
 
 async function collectGeneratedFiles(
   generatedFiles: AsyncIterable<string>,
-  files: string[],
+  collectedFiles: string[],
   logger: Logger | undefined,
 ): Promise<void> {
   for await (const file of generatedFiles) {
-    files.push(file);
+    collectedFiles.push(file);
     logger?.info(`Wrote ${file}`);
   }
 }
