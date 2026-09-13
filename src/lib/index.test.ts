@@ -1,11 +1,11 @@
 import * as fse from "fs-extra";
 import * as path from "node:path";
-import { describe, expect, it as baseIt } from "vitest";
+import { describe, expect, it } from "vitest";
 import { generate } from "./index";
 
 import { tmpDir } from "../../test/utils/tmp-dir";
 
-const it = baseIt.extend({ tmpDir });
+const test = it.extend({ tmpDir });
 
 describe("lib/index", () => {
   it("throws when projectRoot is not absolute", async () => {
@@ -23,7 +23,7 @@ describe("lib/index", () => {
     await expect(generatedFiles).rejects.toThrow("projectRoot must be an absolute path");
   });
 
-  it("returns absolute generated files and omits cache hits", async ({ tmpDir }) => {
+  test("returns absolute generated files and omits cache hits", async ({ tmpDir }) => {
     const fixtureDir = path.join(__dirname, "..", "..", "test", "integration", "assets", "normal");
     const expectedDir = path.join(fixtureDir, "expected");
 
