@@ -1,6 +1,6 @@
 import * as fse from "fs-extra";
 import * as path from "node:path";
-import { it as baseIt, describe, expect } from "vitest";
+import { it as baseIt, describe, expect, vi } from "vitest";
 import main from "./index";
 
 import { tmpDir } from "../../test/utils/tmp-dir";
@@ -40,5 +40,24 @@ describe("cli", () => {
         "--log-level=error",
       ]),
     ).resolves.toBeUndefined();
+  });
+
+  it("keeps logging written files", async ({ tmpDir: _tmpDir }) => {
+    await fse.ensureDir(path.join("ios", "project", "Images.xcassets"));
+    await fse.writeJson("app.json", {
+      svgAppIcon: {
+        backgroundPath: path.join(testAssetsPath, "react-icon-background.svg"),
+        foregroundPath: path.join(testAssetsPath, "react-icon.svg"),
+      },
+    });
+
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      await expect(main()).resolves.toBeUndefined();
+      expect(logSpy.mock.calls.some(([message]) => /^Wrote /.test(String(message)))).toBe(true);
+    } finally {
+      logSpy.mockRestore();
+    }
   });
 });
