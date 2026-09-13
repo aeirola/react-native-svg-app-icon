@@ -40,7 +40,7 @@ Each test copies input files to an output directory, runs the CLI, then verifies
 ## Running Tests
 
 ```bash
-npm run test:fix      # All checks with auto-fix for lint/format when possible
+npm run test:fix      # Auto-fix lint/format first, then run all checks
 npm run test:unit     # Unit tests only (src/)
 npm run test:integration  # Build + integration tests (test/integration/)
 ```
