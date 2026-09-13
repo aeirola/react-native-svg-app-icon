@@ -24,7 +24,7 @@ export async function* generate(config: Config): AsyncIterable<string> {
 ```bash
 npm install           # Install dependencies
 npm run prepare       # Build TypeScript → dist/ (runs automatically on install)
-npm test              # Run all checks in parallel (lint, types, unit tests)
+npm run test:fix      # Run checks in parallel and auto-fix lint/format issues when possible
 npm run test:unit     # Run vitest tests only
 ```
 
