@@ -31,7 +31,7 @@
     "prepare": "npm run clean && tsc --project tsconfig.build.json",
     "prepack": "node scripts/prepack-readme.js",
     "postpack": "node scripts/prepack-readme.js revert",
-    "test": "concurrently 'npm:test:lint:format' 'npm:test:lint:style' 'npm:test:lint:types' 'npm:test:unit'",
+    "test": "concurrently 'npm:test:lint:*' 'npm:test:unit'",
     "test:fix": "npm run test:fix:lint && npm test",
     "test:fix:lint": "npm run test:fix:lint:format && npm run test:fix:lint:style",
     "test:fix:lint:format": "oxfmt",
