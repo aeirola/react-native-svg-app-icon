@@ -18,8 +18,8 @@ jobs:
     name: Test ${{ matrix.os }} node${{ matrix.node_version }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node_version }}
           cache: npm
@@ -28,7 +28,7 @@ jobs:
             example-expo/package-lock.json
       - run: npm ci
       - run: npm test
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-outputs-${{ matrix.os }}-node${{ matrix.node_version }}
@@ -41,7 +41,7 @@ jobs:
       # React native example
       - working-directory: ./example-rn
         run: npm run icon
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: example-rn-${{ matrix.os }}-node${{ matrix.node_version }}
           path: |
@@ -52,7 +52,7 @@ jobs:
         run: npm ci
         # Skip windows builds for now as we don't identify conditional ios platform yet
         if: matrix.os != 'windows-latest'
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: example-expo-${{ matrix.os }}-node${{ matrix.node_version }}
           path: |
