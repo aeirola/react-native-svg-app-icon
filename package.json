@@ -51,19 +51,19 @@
     "svgo": "^2.8.0"
   },
   "devDependencies": {
-    "@tsconfig/node20": "^20.1.8",
+    "@tsconfig/node22": "^22.0.0",
     "@tsconfig/strictest": "^2.0.8",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.14.8",
+    "@types/node": "^22.0.0",
     "@types/svgo": "^2.6.4",
-    "concurrently": "^9.2.1",
-    "oxfmt": "^0.49.0",
-    "oxlint": "^1.64.0",
-    "oxlint-tsgolint": "^0.22.1",
-    "pixelmatch": "^7.1.0",
+    "concurrently": "^10.0.5",
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.83.0",
+    "oxlint-tsgolint": "^7.0.2002",
+    "pixelmatch": "^7.2.0",
     "rimraf": "^6.1.3",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.9"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
   },
   "devEngines": {
     "packageManager": {
@@ -72,10 +72,10 @@
     },
     "runtime": {
       "name": "node",
-      "version": ">=20.12"
+      "version": ">=22.12.0"
     }
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.12.0"
   }
 }
