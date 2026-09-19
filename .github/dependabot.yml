@@ -1,12 +1,22 @@
 version: 2
-updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
+multi-ecosystem-groups:
+  development:
     schedule:
       interval: "monthly"
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
     cooldown:
       default-days: 7
-    groups:
-      github-actions:
-        patterns:
-          - "*"
+      semver-major-days: 30
+      semver-minor-days: 14
+    allow:
+      - dependency-type: "development"
+    multi-ecosystem-group: "development"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    cooldown:
+      default-days: 30
+    multi-ecosystem-group: "development"
