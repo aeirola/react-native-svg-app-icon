@@ -7,6 +7,8 @@ multi-ecosystem-groups:
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    patterns:
+      - "*"
     cooldown:
       default-days: 7
       semver-major-days: 30
@@ -17,6 +19,8 @@ updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
+    patterns:
+      - "*"
     cooldown:
       default-days: 30
     multi-ecosystem-group: "development"
