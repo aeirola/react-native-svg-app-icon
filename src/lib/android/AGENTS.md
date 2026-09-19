@@ -15,7 +15,7 @@ Android generation in [index.ts](index.ts) handles multiple icon types:
 ### adaptive/
 
 - [adaptive-icons.ts](adaptive/adaptive-icons.ts) - Generates Android 8.0+ adaptive icons. Attempts vector drawable conversion for background/foreground; falls back to PNG at each density on failure. Creates `<adaptive-icon>` XML referencing background/foreground drawables.
-- [vector-drawable.ts](adaptive/vector-drawable.ts) - SVG → Android Vector Drawable XML via `svg2vectordrawable`. Failure triggers PNG fallback in the caller.
+- [vector-drawable.ts](adaptive/vector-drawable.ts) - SVG → Android Vector Drawable XML via `svg-vectordrawable`. Failure triggers PNG fallback in the caller.
 
 ### legacy/
 
