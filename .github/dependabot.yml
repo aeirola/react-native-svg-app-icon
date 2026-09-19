@@ -3,6 +3,8 @@ multi-ecosystem-groups:
   development:
     schedule:
       interval: "monthly"
+    commit-message:
+      prefix: "build"
 
 updates:
   - package-ecosystem: "npm"
@@ -15,6 +17,11 @@ updates:
       semver-minor-days: 14
     allow:
       - dependency-type: "development"
+    ignore:
+      - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-major"
     multi-ecosystem-group: "development"
 
   - package-ecosystem: "github-actions"
