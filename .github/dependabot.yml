@@ -9,6 +9,28 @@ multi-ecosystem-groups:
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    schedule:
+      interval: "monthly"
+    pull-request-branch-name:
+      word-separator: "-"
+      branch-name-case: "lowercase"
+    commit-message:
+      prefix: "fix"
+    patterns:
+      - "*"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 14
+    allow:
+      - dependency-type: "production"
+    versioning-strategy: "widen"
+    ignore:
+      # Should match that of svg2vectordrawable
+      - dependency-name: "svgo"
+
+  - package-ecosystem: "npm"
+    directory: "/"
     patterns:
       - "*"
     cooldown:
@@ -18,6 +40,7 @@ updates:
     allow:
       - dependency-type: "development"
     ignore:
+      # Should always match minimum supported runtime version
       - dependency-name: "@types/node"
         update-types:
           - "version-update:semver-minor"
