@@ -10,10 +10,15 @@
     },
     "android": {
       "package": "com.anonymous.svgappiconexpoexample"
-    }
-  },
-  "svgAppIcon": {
-    "foregroundPath": "./assets/icon.svg",
-    "backgroundPath": "./assets/icon-background.svg"
+    },
+    "plugins": [
+      [
+        "react-native-svg-app-icon", 
+        {
+          "foregroundPath": "./assets/icon.svg",
+          "backgroundPath": "./assets/icon-background.svg"
+        }
+      ]
+    ]
   }
 }

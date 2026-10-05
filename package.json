@@ -22,7 +22,8 @@
   },
   "files": [
     "assets/",
-    "dist/"
+    "dist/",
+    "app.plugin.js"
   ],
   "type": "commonjs",
   "main": "dist/lib/index.js",
@@ -56,6 +57,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "~22.12",
     "concurrently": "^10.0.5",
+    "expo": "^57.0.26",
     "oxfmt": "^0.68.0",
     "oxlint": "^1.83.0",
     "oxlint-tsgolint": "^7.0.2002",
@@ -63,6 +65,14 @@
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.1"
+  },
+  "peerDependencies": {
+    "expo": ">=50.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "devEngines": {
     "packageManager": {
