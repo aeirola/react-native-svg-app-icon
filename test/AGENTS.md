@@ -14,7 +14,9 @@ Tests use **Vitest** with extended timeouts (`testTimeout: 60s`) for resource-in
 
 - [file-comparison.ts](utils/file-comparison.ts) - `verifyGeneratedFiles(baseDir, options)`: auto-discovers files in `expected/` and compares against `output/`. PNG comparison via pixelmatch (with visual diff generation), parsed JSON comparison, or exact text match.
 - [sharpmatch.ts](utils/sharpmatch.ts) - Pixel-by-pixel image comparison using Sharp and pixelmatch. Generates diff PNG when `diffOutputPath` provided.
+- [command-runner.ts](utils/command-runner.ts) - `runCommand(command, args, options)`: runs a child process and captures stdout, stderr, and exit code.
 - [cli-runner.ts](utils/cli-runner.ts) - `runCli(args, options)`: spawns CLI as a separate Node process. Returns `{ stdout, stderr, exitCode }`.
+- [expo-runner.ts](utils/expo-runner.ts) - `runExpo(args, options)`: runs the installed Expo CLI with CI-friendly environment settings.
 - [tmp-dir.ts](utils/tmp-dir.ts) - Vitest fixture providing a temp directory per test with auto-`chdir()` and cleanup.
 - [context.ts](utils/context.ts) - `makeContext<C>(config)`: factory for test `Context` with silent logger and forced cache session.
 - [cleanup.ts](utils/cleanup.ts) - `cleanupTestOutputs(basePath, testCases)`: removes `output/` and `diff/` directories before test runs.

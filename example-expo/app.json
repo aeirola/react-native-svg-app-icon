@@ -12,11 +12,14 @@
       "package": "com.anonymous.svgappiconexpoexample"
     },
     "plugins": [
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "react-native-svg-app-icon", 
+        {
+          "foregroundPath": "./assets/icon.svg",
+          "backgroundPath": "./assets/icon-background.svg"
+        }
+      ]
     ]
-  },
-  "svgAppIcon": {
-    "foregroundPath": "./assets/icon.svg",
-    "backgroundPath": "./assets/icon-background.svg"
   }
 }
