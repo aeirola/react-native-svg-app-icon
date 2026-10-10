@@ -5,6 +5,11 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { cleanupTestOutputs } from "../../utils/cleanup";
 import { runExpo } from "../../utils/expo-runner";
 
+const readdirPortable = async (dir: string): Promise<string[]> =>
+  (await fse.readdir(dir, { recursive: true, encoding: "utf8" }))
+    .map((entry) => entry.split(path.sep).join("/"))
+    .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+
 describe("Expo integration tests", () => {
   const fixtureBaseDir = path.join(__dirname, "assets");
 
@@ -26,11 +31,8 @@ describe("Expo integration tests", () => {
       );
     }
 
-    await expect(
-      fse.readdir(path.join(outputDir, "android", "app", "src", "main", "res"), {
-        recursive: true,
-      }),
-    ).resolves.toMatchInlineSnapshot(`
+    await expect(readdirPortable(path.join(outputDir, "android", "app", "src", "main", "res")))
+      .resolves.toMatchInlineSnapshot(`
       [
         "drawable",
         "drawable-anydpi-v26",
@@ -74,7 +76,7 @@ describe("Expo integration tests", () => {
     `);
 
     await expect(
-      fse.readdir(
+      readdirPortable(
         path.join(
           outputDir,
           "ios",
@@ -82,9 +84,6 @@ describe("Expo integration tests", () => {
           "Images.xcassets",
           "AppIcon.appiconset",
         ),
-        {
-          recursive: true,
-        },
       ),
     ).resolves.toMatchInlineSnapshot(`
       [
