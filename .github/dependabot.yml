@@ -25,9 +25,6 @@ updates:
     allow:
       - dependency-type: "production"
     versioning-strategy: "widen"
-    ignore:
-      # Should match that of svg2vectordrawable
-      - dependency-name: "svgo"
 
   - package-ecosystem: "npm"
     directory: "/"

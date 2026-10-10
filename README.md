@@ -43,7 +43,7 @@ npm install --save-dev react-native-svg-app-icon
 
 SVG rendering handled by the splendid [`sharp`](https://github.com/lovell/sharp) library, meaning no dependencies outside of npm are required.
 
-Requires node version 20, or later.
+Requires node version 22, or later.
 
 ## Usage
 
