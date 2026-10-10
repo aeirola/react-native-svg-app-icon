@@ -4,12 +4,10 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "install-local",
-    "prepare": "expo prebuild && npm run clean-icons && react-native-svg-app-icon",
-    "clean-icons": "npx --yes rimraf \"android/app/src/main/res/mipmap-*\" \"ios/**/AppIcon.appiconset\"",
+    "prepare": "expo prebuild --clean --no-install",
     "start": "expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios",
-    "icon": "npx install-local && react-native-svg-app-icon"
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "expo": "~55.0.7",
