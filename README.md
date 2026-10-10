@@ -43,7 +43,7 @@ npm install --save-dev react-native-svg-app-icon
 
 SVG rendering handled by the splendid [`sharp`](https://github.com/lovell/sharp) library, meaning no dependencies outside of npm are required.
 
-Requires node version 20, or later.
+Requires node version 22, or later.
 
 ## Usage
 
@@ -182,7 +182,7 @@ Most existing solutions are centered around the idea of scaling PNG images.
 
 ### Android adaptive icons are not vector drawables
 
-All SVG features cannot be converted to android vector drawables. Using advanced SVG features, such as masks or text, will cause adaptive icons to be generated using PNG fallbacks instead. See [VectorDrawable](https://developer.android.com/reference/android/graphics/drawable/VectorDrawable) specification for supported features, and [svg2vectordrawable](https://github.com/Ashung/svg2vectordrawable) for the conversion behaviour.
+All SVG features cannot be converted to android vector drawables. Using advanced SVG features, such as masks or text, will cause adaptive icons to be generated using PNG fallbacks instead. See [VectorDrawable](https://developer.android.com/reference/android/graphics/drawable/VectorDrawable) specification for supported features, and [svg-vectordrawable](https://github.com/IBRAHIMDANS/svg-vectordrawable) for the conversion behaviour.
 
 ### SVG text is not rendered with the correct font
 

@@ -103,7 +103,7 @@ The workflow uses [npm trusted publishing](https://docs.npmjs.com/trusted-publis
 ## Key Dependencies
 
 - **sharp**: SVG → PNG rasterization (handles density/DPI scaling). Context7 docs at `/lovell/sharp`
-- **svg2vectordrawable**: SVG → Android vector drawable XML conversion
+- **svg-vectordrawable**: SVG → Android vector drawable XML conversion
 - **svgo**: SVG transformations
 - **commander**: CLI argument parsing. Context7 docs at `/tj/commander.js`
 - **arktype**: Input data validation. Context7 docs at `/arktypeio/arktype`

@@ -9,20 +9,22 @@ import { optimize } from "svgo";
  * @returns The inlinable SVG as a string.
  */
 export function prepareForInlining(svgBuffer: Buffer, idPrefix: string): string {
-  const svgoResult = optimize(svgBuffer.toString("utf-8"), {
-    plugins: [
-      "removeDoctype",
-      "removeXMLProcInst",
-      {
-        name: "prefixIds",
-        params: { prefix: idPrefix },
-      },
-    ],
-  });
+  try {
+    const svgoResult = optimize(svgBuffer.toString("utf-8"), {
+      plugins: [
+        "removeDoctype",
+        "removeXMLProcInst",
+        {
+          name: "prefixIds",
+          params: { prefix: idPrefix },
+        },
+      ],
+    });
 
-  if (svgoResult.error !== undefined) {
-    throw new Error(`Parsing SVG failed: ${svgoResult.error}`);
+    return svgoResult.data;
+  } catch (error) {
+    throw new Error(
+      `Parsing SVG failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
-
-  return svgoResult.data;
 }

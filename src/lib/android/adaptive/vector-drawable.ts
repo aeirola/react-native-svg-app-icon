@@ -2,8 +2,8 @@ import type * as input from "../../util/input";
 import * as output from "../../util/output";
 import type { Context } from "../../util/context";
 import type { ResolvedConfig } from "../config";
+import { convert } from "svg-vectordrawable";
 import { getIconPath } from "../resources";
-import svg2vectordrawable from "svg2vectordrawable";
 
 const adaptiveIconMinSdk = 26;
 
@@ -21,12 +21,11 @@ export async function* generateVectorDrawable(
     ),
     async () => {
       const imageData = await imageInput.read();
-      return await svg2vectordrawable(imageData.data.toString("utf-8"), {
+      const { xml } = convert(imageData.data.toString("utf-8"), {
         // Fail on unsupported elements, so that we fall back to PNG rendering
         strict: true,
-        // Use same default fill behaviour as in SVG spec
-        fillBlack: true,
       });
+      return xml;
     },
     context,
   );
