@@ -75,38 +75,41 @@ describe("Expo integration tests", () => {
       ]
     `);
 
-    await expect(
-      readdirPortable(
-        path.join(
-          outputDir,
-          "ios",
-          "expointegrationtestfixture",
-          "Images.xcassets",
-          "AppIcon.appiconset",
+    // Expo does not generate iOS projects on Windows
+    if (process.platform !== "win32") {
+      await expect(
+        readdirPortable(
+          path.join(
+            outputDir,
+            "ios",
+            "expointegrationtestfixture",
+            "Images.xcassets",
+            "AppIcon.appiconset",
+          ),
         ),
-      ),
-    ).resolves.toMatchInlineSnapshot(`
-      [
-        "Contents.json",
-        "ios-marketing-1024@1x.png",
-        "ipad-20@1x.png",
-        "ipad-20@2x.png",
-        "ipad-29@1x.png",
-        "ipad-29@2x.png",
-        "ipad-40@1x.png",
-        "ipad-40@2x.png",
-        "ipad-76@1x.png",
-        "ipad-76@2x.png",
-        "ipad-83.5@2x.png",
-        "iphone-20@2x.png",
-        "iphone-20@3x.png",
-        "iphone-29@2x.png",
-        "iphone-29@3x.png",
-        "iphone-40@2x.png",
-        "iphone-40@3x.png",
-        "iphone-60@2x.png",
-        "iphone-60@3x.png",
-      ]
-    `);
+      ).resolves.toMatchInlineSnapshot(`
+        [
+          "Contents.json",
+          "ios-marketing-1024@1x.png",
+          "ipad-20@1x.png",
+          "ipad-20@2x.png",
+          "ipad-29@1x.png",
+          "ipad-29@2x.png",
+          "ipad-40@1x.png",
+          "ipad-40@2x.png",
+          "ipad-76@1x.png",
+          "ipad-76@2x.png",
+          "ipad-83.5@2x.png",
+          "iphone-20@2x.png",
+          "iphone-20@3x.png",
+          "iphone-29@2x.png",
+          "iphone-29@3x.png",
+          "iphone-40@2x.png",
+          "iphone-40@3x.png",
+          "iphone-60@2x.png",
+          "iphone-60@3x.png",
+        ]
+      `);
+    }
   });
 });
