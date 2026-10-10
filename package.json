@@ -56,7 +56,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "~22.12",
     "concurrently": "^10.0.5",
-    "oxfmt": "^0.68.0",
+    "oxfmt": "^0.70.0",
     "oxlint": "^1.83.0",
     "oxlint-tsgolint": "^7.0.2002",
     "pixelmatch": "^7.2.0",
