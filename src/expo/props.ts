@@ -1,19 +1,21 @@
 import * as fse from "fs-extra";
-import type { Config } from "../lib";
+import { Config } from "../lib";
 import { ExportedConfigWithProps } from "expo/config-plugins";
 import path from "node:path";
 
-export type PluginOptions = Pick<Partial<Config>, "foregroundPath" | "backgroundPath"> | undefined;
+export const PluginProps = Config.pick("foregroundPath", "backgroundPath").partial();
+
+export type PluginProps = typeof PluginProps.inferIn;
 
 const defaultForegroundPath = "./icon.svg";
 const defaultBackgroundPath = "./icon-background.svg";
 
-export async function resolveOptions(
+export async function resolveProps(
   config: ExportedConfigWithProps,
-  options: PluginOptions = {},
+  props: PluginProps = {},
 ): Promise<Pick<Config, "projectRoot" | "foregroundPath" | "backgroundPath">> {
-  const { foregroundPath = defaultForegroundPath } = options;
-  let { backgroundPath } = options;
+  const { foregroundPath = defaultForegroundPath } = props;
+  let { backgroundPath } = props;
 
   if (
     backgroundPath === undefined &&
