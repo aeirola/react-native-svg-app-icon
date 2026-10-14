@@ -45,6 +45,25 @@ SVG rendering handled by the splendid [`sharp`](https://github.com/lovell/sharp)
 
 Requires node version 22, or later.
 
+### Expo
+
+Add `react-native-svg-app-icon` to your expo plugins. In `app.json`:
+
+```json
+{
+  // ...
+  "plugins": [
+    [
+      "react-native-svg-app-icon",
+      {
+        "foregroundPath": "./assets/icon.svg",
+        "backgroundPath": "./assets/icon-background.svg"
+      }
+    ]
+  ]
+}
+```
+
 ## Usage
 
 ### Prepare source file
