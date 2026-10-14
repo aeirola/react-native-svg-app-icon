@@ -1,13 +1,21 @@
 import type { ConfigPlugin } from "expo/config-plugins";
-import type { PluginOptions } from "./options";
+import { PluginProps } from "./props";
+import { type } from "arktype";
 import withAndroidPlugin from "./withAndroidPlugin";
 import withIosPlugin from "./withIosPlugin";
 
-export type { PluginOptions };
+export type { PluginProps };
 
-const withPlugin: ConfigPlugin<PluginOptions> = (config, options) => {
-  config = withAndroidPlugin(config, options);
-  return withIosPlugin(config, options);
+const withPlugin: ConfigPlugin<PluginProps | undefined> = (config, props = {}) => {
+  const validatedProps = PluginProps(props);
+  if (validatedProps instanceof type.errors) {
+    throw new Error(
+      `Failed to configure react-native-svg-app-icon plugin: ${validatedProps.summary}`,
+    );
+  }
+
+  config = withAndroidPlugin(config, validatedProps);
+  return withIosPlugin(config, validatedProps);
 };
 
 export default withPlugin;

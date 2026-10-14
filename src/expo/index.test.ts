@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ExportedConfig } from "expo/config-plugins";
+import type { ExportedConfig } from "expo/config-plugins";
 import withPlugin from "./index";
 
 describe("Expo config plugin", () => {
@@ -20,5 +20,17 @@ describe("Expo config plugin", () => {
         "slug": "test-app",
       }
     `);
+  });
+
+  it("throws an error on invalid plugin props", () => {
+    expect(() =>
+      withPlugin(
+        { name: "test-app", slug: "test-app" },
+        {
+          // @ts-expect-error Invalid type for testing purposes
+          foregroundPath: 42,
+        },
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(`[Error: Failed to configure react-native-svg-app-icon plugin: foregroundPath must be a string (was a number)]`);
   });
 });

@@ -1,6 +1,6 @@
 import * as fse from "fs-extra";
 import { type ConfigPlugin, withDangerousMod } from "expo/config-plugins";
-import { type PluginOptions, resolveOptions } from "./options";
+import { type PluginProps, resolveProps } from "./props";
 import { generate } from "../lib";
 import path from "node:path";
 
@@ -12,11 +12,11 @@ import path from "node:path";
  */
 const launcherResourceNames = new Set(["ic_launcher", "ic_launcher_round"]);
 
-const withAndroidPlugin: ConfigPlugin<PluginOptions> = (config, options) =>
+const withAndroidPlugin: ConfigPlugin<PluginProps> = (config, props) =>
   withDangerousMod(config, [
     "android",
     async (config) => {
-      const resolvedOptions = await resolveOptions(config, options);
+      const resolvedProps = await resolveProps(config, props);
 
       const resourcePath = path.join(
         config.modRequest.platformProjectRoot,
@@ -32,7 +32,7 @@ const withAndroidPlugin: ConfigPlugin<PluginOptions> = (config, options) =>
 
       const { generatedFiles } = await generate(
         {
-          ...resolvedOptions,
+          ...resolvedProps,
           platforms: ["android"],
           androidOutputPath: resourcePath,
           force: true,
