@@ -37,6 +37,9 @@ You can add the generated files to your repo from this one-time run, or alternat
 
 ## Installation
 
+**TODO:** Add instructions for expo projects.
+**TODO:** Add caveats for expo project: overwrites anything specified in expo config, only supports ios and android, doesn't support expo go or web icons.
+
 ```bash
 npm install --save-dev react-native-svg-app-icon
 ```
@@ -44,6 +47,25 @@ npm install --save-dev react-native-svg-app-icon
 SVG rendering handled by the splendid [`sharp`](https://github.com/lovell/sharp) library, meaning no dependencies outside of npm are required.
 
 Requires node version 22, or later.
+
+### Expo
+
+Add `react-native-svg-app-icon` to your expo plugins. In `app.json`:
+
+```json
+{
+  // ...
+  "plugins": [
+    [
+      "react-native-svg-app-icon",
+      {
+        "foregroundPath": "./assets/icon.svg",
+        "backgroundPath": "./assets/icon-background.svg"
+      }
+    ]
+  ]
+}
+```
 
 ## Usage
 
