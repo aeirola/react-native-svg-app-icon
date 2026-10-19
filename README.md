@@ -37,6 +37,9 @@ You can add the generated files to your repo from this one-time run, or alternat
 
 ## Installation
 
+**TODO:** Add instructions for expo projects.
+**TODO:** Add caveats for expo project: overwrites anything specified in expo config, only supports ios and android, doesn't support expo go or web icons.
+
 ```bash
 npm install --save-dev react-native-svg-app-icon
 ```

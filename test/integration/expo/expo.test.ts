@@ -31,6 +31,8 @@ describe("Expo integration tests", () => {
       );
     }
 
+    // TODO: Should match actual expected files like other integration tests
+    // TODO: Needs to add some kind of output file filtering
     await expect(readdirPortable(path.join(outputDir, "android", "app", "src", "main", "res")))
       .resolves.toMatchInlineSnapshot(`
       [
@@ -48,7 +50,6 @@ describe("Expo integration tests", () => {
         "drawable-xxhdpi/splashscreen_logo.png",
         "drawable-xxxhdpi",
         "drawable-xxxhdpi/splashscreen_logo.png",
-        "drawable/ic_launcher_background.xml",
         "drawable/rn_edit_text_material.xml",
         "mipmap-anydpi-v26",
         "mipmap-anydpi-v26/ic_launcher.xml",
