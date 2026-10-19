@@ -1,8 +1,16 @@
-import type { ConfigPlugin } from "expo/config-plugins";
+/*
+ TODO: Allow all config values, including platform selection
+ TODO: Check xcode handling for normal icons, ask copilot about icon plugin behaviour
+ TODO: Add image based integration tests, with path matchers instead of the time based matching
+ TODO: Add integration test checks for android manifest xml and xcode project files
+ TODO: Add separate PR for expo upgrade, with agent skill
+*/
+
+import { type ConfigPlugin, withPlugins } from "expo/config-plugins";
 import { PluginProps } from "./props";
 import { type } from "arktype";
-import withAndroidPlugin from "./withAndroidPlugin";
-import withIosPlugin from "./withIosPlugin";
+import withAndroidPlugin from "./android";
+import withIosPlugin from "./ios";
 
 export type { PluginProps };
 
@@ -14,8 +22,11 @@ const withPlugin: ConfigPlugin<PluginProps | undefined> = (config, props = {}) =
     );
   }
 
-  config = withAndroidPlugin(config, validatedProps);
-  return withIosPlugin(config, validatedProps);
+  return withPlugins(config, [
+    // TODO: Filter plugins based on platform selection
+    [withAndroidPlugin, validatedProps],
+    [withIosPlugin, validatedProps],
+  ]);
 };
 
 export default withPlugin;
