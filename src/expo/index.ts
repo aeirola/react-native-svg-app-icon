@@ -1,6 +1,4 @@
 /*
- TODO: Allow all config values, including platform selection
- TODO: Check xcode handling for normal icons, ask copilot about icon plugin behaviour
  TODO: Add image based integration tests, with path matchers instead of the time based matching
  TODO: Add integration test checks for android manifest xml and xcode project files
  TODO: Add separate PR for expo upgrade, with agent skill
@@ -22,11 +20,19 @@ const withPlugin: ConfigPlugin<PluginProps | undefined> = (config, props = {}) =
     );
   }
 
-  return withPlugins(config, [
-    // TODO: Filter plugins based on platform selection
-    [withAndroidPlugin, validatedProps],
-    [withIosPlugin, validatedProps],
-  ]);
+  const platforms = validatedProps.platforms ?? ["android", "ios"];
+
+  return withPlugins(
+    config,
+    platforms.map((platform) => {
+      switch (platform) {
+        case "android":
+          return [withAndroidPlugin, validatedProps];
+        case "ios":
+          return [withIosPlugin, validatedProps];
+      }
+    }),
+  );
 };
 
 export default withPlugin;

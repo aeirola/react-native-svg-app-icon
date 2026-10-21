@@ -1,7 +1,7 @@
 import * as fse from "fs-extra";
 import { type ConfigPlugin, withDangerousMod } from "expo/config-plugins";
-import { getResourceKey, getResourcePath } from "./resources";
 import type { Context } from "./context";
+import { getResourceKey } from "./resources";
 import path from "node:path";
 
 /**
@@ -22,7 +22,10 @@ const withRemovedConflictingResources: ConfigPlugin<{ context: Context }> = (con
   withDangerousMod(config, [
     "android",
     async (config) => {
-      const resourcePath = path.resolve(getResourcePath(config));
+      const resourcePath = context.outputPath;
+      if (resourcePath === undefined) {
+        return config;
+      }
       const generatedFilePaths = new Set(
         context.generatedFiles.map((filePath) => path.resolve(filePath)),
       );

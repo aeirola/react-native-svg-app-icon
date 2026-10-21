@@ -1,7 +1,6 @@
 import * as fse from "fs-extra";
 import { type ConfigPlugin, withDangerousMod } from "expo/config-plugins";
 import type { Context } from "./context";
-import { getAppIconSetPath } from "./assets";
 import path from "node:path";
 
 /**
@@ -18,7 +17,10 @@ const withRemovedLeftoverFiles: ConfigPlugin<{ context: Context }> = (config, { 
   withDangerousMod(config, [
     "ios",
     async (config) => {
-      const appIconSetPath = getAppIconSetPath(config);
+      const appIconSetPath = context.outputPath;
+      if (appIconSetPath === undefined) {
+        return config;
+      }
       const generatedFilePaths = new Set(
         context.generatedFiles.map((filePath) => path.resolve(filePath)),
       );

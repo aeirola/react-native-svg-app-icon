@@ -38,6 +38,28 @@ describe("Expo config plugin", () => {
     );
   });
 
+  it.each([
+    ["android", ["android"]],
+    ["ios", ["ios"]],
+    [undefined, ["android", "ios"]],
+  ] as const)("filters plugins by platforms %s", (platform, expected) => {
+    const config: ExportedConfig = withPlugin(
+      { name: "test-app", slug: "test-app", _internal: { projectRoot: __dirname } },
+      platform ? { platforms: [platform] } : {},
+    );
+
+    expect(Object.keys(config.mods ?? {})).toEqual(expected);
+  });
+
+  it("registers no mods for empty platforms", () => {
+    const config: ExportedConfig = withPlugin(
+      { name: "test-app", slug: "test-app", _internal: { projectRoot: __dirname } },
+      { platforms: [] },
+    );
+
+    expect(config.mods).toBeUndefined();
+  });
+
   it("throws an error on invalid plugin props", () => {
     expect(() =>
       withPlugin(
