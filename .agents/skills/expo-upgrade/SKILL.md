@@ -4,6 +4,14 @@ description: Upgrade the Expo SDK version of the `example-expo/` project and fix
 license: MIT
 ---
 
+## Check the upstream skill
+
+Before starting an Expo SDK upgrade, fetch the upstream skill at the source URL in this file's description and compare its guidance with this local skill.
+
+- If upstream guidance has changed, summarize the relevant differences and ask the user whether to apply them to this local skill before editing it. Apply only changes that fit this project's setup, preserving the repository-specific guidance below. If the user declines, continue the upgrade using this local skill as-is.
+- If there are no relevant changes, continue without asking.
+- If the upstream source cannot be checked, say so and ask whether to continue using this local skill as-is; do not assume it is up to date.
+
 ## Our setup
 
 - The Expo app lives in `example-expo/`. Run all Expo commands from that directory.
@@ -31,14 +39,18 @@ npx expo install --fix
 
 2. Run diagnostics: `npx expo-doctor`. Fix everything it reports.
 
-3. Verify the generated native projects and icon generation still work:
+3. Compare `example-expo/` with Expo's current default template at https://github.com/expo/expo/tree/main/templates/expo-template-default. Review changes in its dependencies, configuration, and project setup that are relevant to the upgraded SDK, and apply applicable improvements. Do not copy the template wholesale or add features this minimal app does not use; preserve the CNG setup and local `react-native-svg-app-icon` installation.
+
+4. Verify the generated native projects and icon generation still work:
 
 ```bash
 rm -rf ios android .expo
 npm run prepare   # expo prebuild + icon generation
 ```
 
-4. Verify the JS bundle builds: `npx expo export -p ios --clear` (output goes to the gitignored `dist/`).
+5. Verify the JS bundle builds: `npx expo export -p ios --clear` (output goes to the gitignored `dist/`).
+
+6. As the final dependency step, run `npm outdated` from `example-expo/` and update outdated dependencies not already handled by `npx expo install --fix`. Choose versions compatible with the target SDK and review release notes for breaking changes; preserve the root-installed `react-native-svg-app-icon` local dependency. After updating, rerun `npx expo-doctor` and `npx expo export -p ios --clear`.
 
 ## Housekeeping
 

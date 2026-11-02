@@ -10,7 +10,10 @@
     },
     "android": {
       "package": "com.anonymous.svgappiconexpoexample"
-    }
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
   },
   "svgAppIcon": {
     "foregroundPath": "./assets/icon.svg",
