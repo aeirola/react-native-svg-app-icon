@@ -45,6 +45,36 @@ SVG rendering handled by the splendid [`sharp`](https://github.com/lovell/sharp)
 
 Requires node version 22, or later.
 
+### Expo
+
+For Expo projects, install it as a development dependency with:
+
+```bash
+npx expo install react-native-svg-app-icon -- --save-dev
+```
+
+Add the plugin to the `plugins` array in your Expo config. In `app.json`, the configuration belongs inside the `"expo"` object:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "react-native-svg-app-icon",
+        {
+          "foregroundPath": "./assets/icon.svg",
+          "backgroundPath": "./assets/icon-background.svg"
+        }
+      ]
+    ]
+  }
+}
+```
+
+Run `npx expo prebuild` or a native build command to generate the native projects and icons.
+
+The plugin replaces the native launcher icons Expo would otherwise generate; it does not generate web or favicon icons. Expo Go cannot use these generated native assets, so use a development build or a production build instead.
+
 ## Usage
 
 ### Prepare source file
