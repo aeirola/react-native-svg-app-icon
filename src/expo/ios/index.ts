@@ -1,4 +1,4 @@
-import { type ConfigPlugin, withPlugins } from "expo/config-plugins";
+import { type ConfigPlugin, type StaticPlugin, withPlugins } from "expo/config-plugins";
 import type { Context } from "./context";
 import type { PluginProps } from "../props";
 import withAppIconName from "./withAppIconName";
@@ -13,11 +13,14 @@ import withRemovedLeftoverFiles from "./withRemovedLeftoverFiles";
 const withIosPlugin: ConfigPlugin<PluginProps> = (config, props) => {
   const context: Context = { generatedFiles: [], outputPath: undefined };
 
-  return withPlugins(config, [
-    [withRemovedLeftoverFiles, { context }],
+  const plugins: StaticPlugin[] = [
     [withGenerateIcons, { props, context }],
+    [withRemovedLeftoverFiles, { context }],
     [withAppIconName, {}],
-  ]);
+  ];
+
+  // Mods run in reverse registration order, so reverse the natural execution order.
+  return withPlugins(config, plugins.toReversed());
 };
 
 export default withIosPlugin;

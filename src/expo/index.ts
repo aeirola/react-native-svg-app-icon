@@ -1,5 +1,3 @@
-// TODO: Add integration test checks for android manifest xml and xcode project files
-
 import { type ConfigPlugin, withPlugins } from "expo/config-plugins";
 import { PluginProps } from "./props";
 import { type } from "arktype";

@@ -1,4 +1,4 @@
-import { type ConfigPlugin, withPlugins } from "expo/config-plugins";
+import { type ConfigPlugin, type StaticPlugin, withPlugins } from "expo/config-plugins";
 import type { Context } from "./context";
 import type { PluginProps } from "../props";
 import withGenerateIcons from "./withGenerateIcons";
@@ -13,11 +13,14 @@ import withRemovedConflictingResources from "./withRemovedConflictingResources";
 const withAndroidPlugin: ConfigPlugin<PluginProps> = (config, props) => {
   const context: Context = { generatedFiles: [], outputPath: undefined };
 
-  return withPlugins(config, [
-    [withRemovedConflictingResources, { context }],
+  const plugins: StaticPlugin[] = [
     [withGenerateIcons, { props, context }],
+    [withRemovedConflictingResources, { context }],
     [withLauncherIconManifest, {}],
-  ]);
+  ];
+
+  // Mods run in reverse registration order, so reverse the natural execution order.
+  return withPlugins(config, plugins.toReversed());
 };
 
 export default withAndroidPlugin;

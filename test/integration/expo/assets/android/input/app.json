@@ -1,3 +1,3 @@
 {
-  "plugins": ["../../../../../../app.plugin"]
+  "plugins": [["../../../../../../app.plugin", { "platforms": ["android"] }]]
 }

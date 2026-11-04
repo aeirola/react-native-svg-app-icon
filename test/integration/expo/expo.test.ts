@@ -17,7 +17,7 @@ describe("Expo integration tests", () => {
     const outputDir = path.join(fixtureDir, "output");
     await fse.copy(inputDir, outputDir);
 
-    const result = await runExpo(["prebuild", "--platform", platform, "--no-install", outputDir]);
+    const result = await runExpo(["prebuild", "--no-install", outputDir]);
 
     if (result.exitCode !== 0) {
       throw new Error(
