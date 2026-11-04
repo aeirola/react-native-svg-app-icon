@@ -1,6 +1,7 @@
 import * as fse from "fs-extra";
 import { type ConfigPlugin, withDangerousMod } from "expo/config-plugins";
 import type { Context } from "./context";
+import { isSubpathOf } from "../util/subpath";
 import path from "node:path";
 
 /**
@@ -21,6 +22,12 @@ const withRemovedLeftoverFiles: ConfigPlugin<{ context: Context }> = (config, { 
       if (appIconSetPath === undefined) {
         return config;
       }
+
+      // Guard against misconfigured output paths (e.g. ".") deleting unrelated files.
+      if (!isSubpathOf(appIconSetPath, config.modRequest.platformProjectRoot)) {
+        return config;
+      }
+
       const generatedFilePaths = new Set(
         context.generatedFiles.map((filePath) => path.resolve(filePath)),
       );

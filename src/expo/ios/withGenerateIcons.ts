@@ -1,6 +1,7 @@
 import { type ConfigPlugin, withDangerousMod } from "expo/config-plugins";
 import { type PluginProps, resolveProps } from "../props";
 import type { Context } from "./context";
+import { createWarningLogger } from "../util/warning-logger";
 import { generate } from "../../lib";
 import { getAppIconSetPath } from "./assets";
 import path from "node:path";
@@ -32,7 +33,7 @@ const withGenerateIcons: ConfigPlugin<{ props: PluginProps; context: Context }> 
           // Using force to always output all generated files
           force: true,
         },
-        undefined,
+        createWarningLogger("ios"),
       );
 
       context.generatedFiles = generatedFiles;

@@ -16,7 +16,7 @@ const withIosPlugin: ConfigPlugin<PluginProps> = (config, props) => {
   const plugins: StaticPlugin[] = [
     [withGenerateIcons, { props, context }],
     [withRemovedLeftoverFiles, { context }],
-    [withAppIconName, {}],
+    [withAppIconName, { context }],
   ];
 
   // Mods run in reverse registration order, so reverse the natural execution order.
