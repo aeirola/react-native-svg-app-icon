@@ -19,32 +19,41 @@ import sharpmatch from "./sharpmatch";
  * @param options - Comparison options
  * @param options.imageThreshold - Pixelmatch threshold for PNG comparison (0-1, default: 0)
  * @param options.generatedAfter - Only compare files modified after this timestamp (filters out pre-existing files)
+ * @param options.filter - Only consider output files whose relative path (forward slashes) matches this pattern, ignoring unrelated generated files
  * @throws {Error} If file counts don't match or any comparison fails
  */
 export async function verifyGeneratedFiles(
   baseDir: string,
-  options: { imageThreshold?: number; generatedAfter?: Date } = {},
+  options: {
+    imageThreshold?: number;
+    generatedAfter?: Date;
+    filter?: RegExp;
+  } = {},
 ): Promise<void> {
-  const { imageThreshold = 0, generatedAfter } = options;
+  const { imageThreshold = 0, generatedAfter, filter } = options;
 
   const outputDir = path.join(baseDir, "output");
   const expectedDir = path.join(baseDir, "expected");
   const diffDir = path.join(baseDir, "diff");
 
-  const allOutputFiles = await listDirectoryFiles(outputDir);
+  let generatedFiles = await listDirectoryFiles(outputDir);
   const expectedFiles = await listDirectoryFiles(expectedDir);
 
+  // Ignore generated files that are not relevant for the test (if a filter is provided)
+  if (filter) {
+    generatedFiles = generatedFiles.filter((file) => filter.test(file.split(path.sep).join("/")));
+  }
+
   // Filter to only files generated after the specified timestamp (if provided)
-  let generatedFiles = allOutputFiles;
   if (generatedAfter) {
-    generatedFiles = [];
-    for (const file of allOutputFiles) {
-      const filePath = path.join(outputDir, file);
-      const stats = await fse.stat(filePath);
+    const recentFiles: string[] = [];
+    for (const file of generatedFiles) {
+      const stats = await fse.stat(path.join(outputDir, file));
       if (stats.mtime > generatedAfter) {
-        generatedFiles.push(file);
+        recentFiles.push(file);
       }
     }
+    generatedFiles = recentFiles;
   }
 
   // Verify all expected files were generated

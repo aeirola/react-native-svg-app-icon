@@ -1,8 +1,4 @@
-/*
- TODO: Add image based integration tests, with path matchers instead of the time based matching
- TODO: Add integration test checks for android manifest xml and xcode project files
- TODO: Add separate PR for expo upgrade, with agent skill
-*/
+// TODO: Add integration test checks for android manifest xml and xcode project files
 
 import { type ConfigPlugin, withPlugins } from "expo/config-plugins";
 import { PluginProps } from "./props";
