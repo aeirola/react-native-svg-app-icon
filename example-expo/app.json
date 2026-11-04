@@ -14,7 +14,7 @@
     "plugins": [
       "expo-status-bar",
       [
-        "react-native-svg-app-icon", 
+        "react-native-svg-app-icon",
         {
           "foregroundPath": "./assets/icon.svg",
           "backgroundPath": "./assets/icon-background.svg"
