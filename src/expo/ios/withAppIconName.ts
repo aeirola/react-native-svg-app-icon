@@ -13,7 +13,7 @@ function getAppIconName(
   outputPath: string | undefined,
   projectDirectory: string,
 ): string | undefined {
-  // Only catalogs inside the app target's directory are part of the target's resources.
+  // Restrict output to the app target's directory.
   if (outputPath === undefined || !isSubpathOf(outputPath, projectDirectory)) {
     return undefined;
   }
