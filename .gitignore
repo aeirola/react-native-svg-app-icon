@@ -6,3 +6,5 @@ dist/
 **/*.test.assets/**/diff/
 test/integration/assets/**/output/
 test/integration/assets/**/diff/
+test/integration/expo/assets/**/output/
+test/integration/expo/assets/**/diff/
